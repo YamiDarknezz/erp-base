@@ -520,7 +520,7 @@
             }
           </div>
 
-          <!-- 4. Inventarios (Módulo Enterprise con Submódulos Reales) -->
+          <!-- 4. Inventarios (Módulo Enterprise: Operativo, Reportes y Gestión) -->
           <div>
             <div
               (click)="toggleSection('inventarios')"
@@ -542,62 +542,124 @@
 
             @if (expandedSection() === 'inventarios') {
               <div class="space-y-0.5 ml-4 pl-3 border-l border-primary/30 mt-1 py-1">
+                
+                <!-- 4.1 Operativo: Kardex Valorizado (Icono ⤵) -->
                 <div
-                  (click)="navigateTo('/inventarios/kardex')"
-                  class="flex items-center justify-between pr-2 py-1 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
-                  [class.text-primary]="currentUrl().includes('/inventarios/kardex')"
-                  [class.font-bold]="currentUrl().includes('/inventarios/kardex')"
+                  (click)="navigateTo('/inventarios/operativo/kardex')"
+                  class="flex items-center justify-between pl-6 pr-2.5 py-1.5 rounded-md text-xs font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-muted cursor-pointer transition-colors"
+                  [class.text-primary]="currentUrl().includes('/inventarios/operativo/kardex')"
+                  [class.font-bold]="currentUrl().includes('/inventarios/operativo/kardex')"
                 >
-                  <span>Kardex y Existencias</span>
+                  <div class="flex items-center gap-2">
+                    <svg class="w-3.5 h-3.5 text-primary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="19 14 12 21 5 14" /><line x1="12" y1="3" x2="12" y2="21" />
+                    </svg>
+                    <span>Kardex Valorizado</span>
+                  </div>
+                  <svg class="w-3.5 h-3.5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6 9 12 15 18 9" />
+                  </svg>
                 </div>
-                <div
-                  (click)="navigateTo('/inventarios/articulos')"
-                  class="flex items-center justify-between pr-2 py-1 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
-                  [class.text-primary]="currentUrl().includes('/inventarios/articulos')"
-                  [class.font-bold]="currentUrl().includes('/inventarios/articulos')"
-                >
-                  <span>Artículos (SKU)</span>
+
+                <!-- 4.2 Reportes de Inventario (Icono Documento 📋) Desplegable -->
+                <div>
+                  <div
+                    (click)="toggleGroup('reportes-inv')"
+                    class="flex items-center justify-between pl-6 pr-2.5 py-1.5 rounded-md text-xs font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-muted cursor-pointer transition-colors"
+                    [class.bg-surface-muted]="expandedGroup() === 'reportes-inv'"
+                  >
+                    <div class="flex items-center gap-2">
+                      <svg class="w-3.5 h-3.5 text-primary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                        <line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" />
+                      </svg>
+                      <span>Reportes</span>
+                    </div>
+                    <svg class="w-3.5 h-3.5 text-primary transition-transform duration-200" [class.rotate-180]="expandedGroup() === 'reportes-inv'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                  </div>
+
+                  @if (expandedGroup() === 'reportes-inv') {
+                    <div class="space-y-0.5 ml-8 pl-3 border-l border-primary/30 mt-0.5 py-0.5">
+                      <div
+                        (click)="navigateTo('/inventarios/reportes/stock-disponible')"
+                        class="flex items-center justify-between pr-2 py-1 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
+                        [class.text-primary]="currentUrl().includes('/inventarios/reportes/stock-disponible')"
+                        [class.font-bold]="currentUrl().includes('/inventarios/reportes/stock-disponible')"
+                      >
+                        <span>Stock Disponible</span>
+                      </div>
+                      <div
+                        (click)="navigateTo('/inventarios/reportes/stock-fisico')"
+                        class="flex items-center justify-between pr-2 py-1 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
+                        [class.text-primary]="currentUrl().includes('/inventarios/reportes/stock-fisico')"
+                        [class.font-bold]="currentUrl().includes('/inventarios/reportes/stock-fisico')"
+                      >
+                        <span>Stock Físico</span>
+                      </div>
+                      <div
+                        (click)="navigateTo('/inventarios/reportes/lotes')"
+                        class="flex items-center justify-between pr-2 py-1 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
+                        [class.text-primary]="currentUrl().includes('/inventarios/reportes/lotes')"
+                        [class.font-bold]="currentUrl().includes('/inventarios/reportes/lotes')"
+                      >
+                        <span>Trazabilidad de Lotes</span>
+                      </div>
+                    </div>
+                  }
                 </div>
-                <div
-                  (click)="navigateTo('/inventarios/depositos')"
-                  class="flex items-center justify-between pr-2 py-1 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
-                  [class.text-primary]="currentUrl().includes('/inventarios/depositos')"
-                  [class.font-bold]="currentUrl().includes('/inventarios/depositos')"
-                >
-                  <span>Depósitos y Almacenes</span>
+
+                <!-- 4.3 Gestión de Catálogos de Inventario (Icono Engranaje ⚙️) Desplegable -->
+                <div>
+                  <div
+                    (click)="toggleGroup('gestion-inv')"
+                    class="flex items-center justify-between pl-6 pr-2.5 py-1.5 rounded-md text-xs font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-muted cursor-pointer transition-colors"
+                    [class.bg-surface-muted]="expandedGroup() === 'gestion-inv'"
+                  >
+                    <div class="flex items-center gap-2">
+                      <svg class="w-3.5 h-3.5 text-primary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3" />
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                      </svg>
+                      <span>Gestión</span>
+                    </div>
+                    <svg class="w-3.5 h-3.5 text-primary transition-transform duration-200" [class.rotate-180]="expandedGroup() === 'gestion-inv'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                  </div>
+
+                  @if (expandedGroup() === 'gestion-inv') {
+                    <div class="space-y-0.5 ml-8 pl-3 border-l border-primary/30 mt-0.5 py-0.5">
+                      <div
+                        (click)="navigateTo('/inventarios/gestion/articulos')"
+                        class="flex items-center justify-between pr-2 py-1 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
+                        [class.text-primary]="currentUrl().includes('/inventarios/gestion/articulos')"
+                        [class.font-bold]="currentUrl().includes('/inventarios/gestion/articulos')"
+                      >
+                        <span>Artículos (SKU)</span>
+                      </div>
+                      <div
+                        (click)="navigateTo('/inventarios/gestion/depositos')"
+                        class="flex items-center justify-between pr-2 py-1 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
+                        [class.text-primary]="currentUrl().includes('/inventarios/gestion/depositos')"
+                        [class.font-bold]="currentUrl().includes('/inventarios/gestion/depositos')"
+                      >
+                        <span>Depósitos</span>
+                      </div>
+                      <div
+                        (click)="navigateTo('/inventarios/gestion/grupos')"
+                        class="flex items-center justify-between pr-2 py-1 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
+                        [class.text-primary]="currentUrl().includes('/inventarios/gestion/grupos')"
+                        [class.font-bold]="currentUrl().includes('/inventarios/gestion/grupos')"
+                      >
+                        <span>Grupos de Productos</span>
+                      </div>
+                    </div>
+                  }
                 </div>
-                <div
-                  (click)="navigateTo('/inventarios/grupos')"
-                  class="flex items-center justify-between pr-2 py-1 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
-                  [class.text-primary]="currentUrl().includes('/inventarios/grupos')"
-                  [class.font-bold]="currentUrl().includes('/inventarios/grupos')"
-                >
-                  <span>Grupos de Productos</span>
-                </div>
-                <div
-                  (click)="navigateTo('/inventarios/stock-disponible')"
-                  class="flex items-center justify-between pr-2 py-1 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
-                  [class.text-primary]="currentUrl().includes('/inventarios/stock-disponible')"
-                  [class.font-bold]="currentUrl().includes('/inventarios/stock-disponible')"
-                >
-                  <span>Stock Disponible</span>
-                </div>
-                <div
-                  (click)="navigateTo('/inventarios/stock-fisico')"
-                  class="flex items-center justify-between pr-2 py-1 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
-                  [class.text-primary]="currentUrl().includes('/inventarios/stock-fisico')"
-                  [class.font-bold]="currentUrl().includes('/inventarios/stock-fisico')"
-                >
-                  <span>Stock Físico</span>
-                </div>
-                <div
-                  (click)="navigateTo('/inventarios/lotes')"
-                  class="flex items-center justify-between pr-2 py-1 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
-                  [class.text-primary]="currentUrl().includes('/inventarios/lotes')"
-                  [class.font-bold]="currentUrl().includes('/inventarios/lotes')"
-                >
-                  <span>Trazabilidad de Lotes</span>
-                </div>
+
               </div>
             }
           </div>

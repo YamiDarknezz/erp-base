@@ -78,50 +78,62 @@ export const routes: Routes = [
       },
       { path: 'ventas/reportes', redirectTo: 'ventas/reportes/comisiones', pathMatch: 'full' },
 
-      // ── MÓDULO INVENTARIOS: OPERATIVO Y REPORTES ──
-      { path: 'inventarios', redirectTo: 'inventarios/kardex', pathMatch: 'full' },
+      // ── MÓDULO INVENTARIOS: OPERATIVO, GESTIÓN Y REPORTES ──
+      { path: 'inventarios', redirectTo: 'inventarios/operativo/kardex', pathMatch: 'full' },
+      { path: 'inventarios/kardex', redirectTo: 'inventarios/operativo/kardex', pathMatch: 'full' },
       {
-        path: 'inventarios/kardex',
-        loadComponent: () => import('./pages/inventarios/kardex/kardex').then(m => m.Kardex),
-      },
-      {
-        path: 'inventarios/articulos',
+        path: 'inventarios/operativo/kardex',
         loadComponent: () =>
-          import('./pages/inventarios/articulos/articulos').then(m => m.Articulos),
+          import('./pages/inventarios/operativo/kardex/kardex').then(m => m.Kardex),
       },
-      { path: 'gestion/articulos', redirectTo: 'inventarios/articulos', pathMatch: 'full' },
+
+      // Inventarios: Gestión de Catálogos
+      { path: 'gestion/articulos', redirectTo: 'inventarios/gestion/articulos', pathMatch: 'full' },
+      { path: 'inventarios/articulos', redirectTo: 'inventarios/gestion/articulos', pathMatch: 'full' },
       {
-        path: 'inventarios/depositos',
+        path: 'inventarios/gestion/articulos',
         loadComponent: () =>
-          import('./pages/inventarios/depositos/depositos').then(m => m.Depositos),
+          import('./pages/inventarios/gestion/articulos/articulos').then(m => m.Articulos),
       },
-      { path: 'gestion/depositos', redirectTo: 'inventarios/depositos', pathMatch: 'full' },
+      { path: 'gestion/depositos', redirectTo: 'inventarios/gestion/depositos', pathMatch: 'full' },
+      { path: 'inventarios/depositos', redirectTo: 'inventarios/gestion/depositos', pathMatch: 'full' },
       {
-        path: 'inventarios/grupos',
+        path: 'inventarios/gestion/depositos',
         loadComponent: () =>
-          import('./pages/inventarios/grupos/grupos').then(m => m.Grupos),
+          import('./pages/inventarios/gestion/depositos/depositos').then(m => m.Depositos),
       },
-      { path: 'gestion/grupos', redirectTo: 'inventarios/grupos', pathMatch: 'full' },
+      { path: 'gestion/grupos', redirectTo: 'inventarios/gestion/grupos', pathMatch: 'full' },
+      { path: 'inventarios/grupos', redirectTo: 'inventarios/gestion/grupos', pathMatch: 'full' },
       {
-        path: 'inventarios/stock-disponible',
+        path: 'inventarios/gestion/grupos',
         loadComponent: () =>
-          import('./pages/inventarios/stock-disponible/stock-disponible').then(
+          import('./pages/inventarios/gestion/grupos/grupos').then(m => m.Grupos),
+      },
+
+      // Inventarios: Reportes
+      { path: 'reportes/stock-disponible', redirectTo: 'inventarios/reportes/stock-disponible', pathMatch: 'full' },
+      { path: 'inventarios/stock-disponible', redirectTo: 'inventarios/reportes/stock-disponible', pathMatch: 'full' },
+      {
+        path: 'inventarios/reportes/stock-disponible',
+        loadComponent: () =>
+          import('./pages/inventarios/reportes/stock-disponible/stock-disponible').then(
             m => m.StockDisponible,
           ),
       },
-      { path: 'reportes/stock-disponible', redirectTo: 'inventarios/stock-disponible', pathMatch: 'full' },
+      { path: 'reportes/stock-fisico', redirectTo: 'inventarios/reportes/stock-fisico', pathMatch: 'full' },
+      { path: 'inventarios/stock-fisico', redirectTo: 'inventarios/reportes/stock-fisico', pathMatch: 'full' },
       {
-        path: 'inventarios/stock-fisico',
+        path: 'inventarios/reportes/stock-fisico',
         loadComponent: () =>
-          import('./pages/inventarios/stock-fisico/stock-fisico').then(m => m.StockFisico),
+          import('./pages/inventarios/reportes/stock-fisico/stock-fisico').then(m => m.StockFisico),
       },
-      { path: 'reportes/stock-fisico', redirectTo: 'inventarios/stock-fisico', pathMatch: 'full' },
+      { path: 'reportes/lotes', redirectTo: 'inventarios/reportes/lotes', pathMatch: 'full' },
+      { path: 'inventarios/lotes', redirectTo: 'inventarios/reportes/lotes', pathMatch: 'full' },
       {
-        path: 'inventarios/lotes',
+        path: 'inventarios/reportes/lotes',
         loadComponent: () =>
-          import('./pages/inventarios/lotes/lotes').then(m => m.Lotes),
+          import('./pages/inventarios/reportes/lotes/lotes').then(m => m.Lotes),
       },
-      { path: 'reportes/lotes', redirectTo: 'inventarios/lotes', pathMatch: 'full' },
     ],
   },
   { path: '**', redirectTo: 'login' },

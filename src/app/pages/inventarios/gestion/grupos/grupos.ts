@@ -1,5 +1,5 @@
 import { Component, signal, ChangeDetectionStrategy } from '@angular/core';
-import { DataGrid, GridColumn, GridAction } from '../../../shared/components/data-grid/data-grid';
+import { DataGrid, GridColumn, GridAction } from '../../../../shared/components/data-grid/data-grid';
 
 export interface GrupoProducto {
   id: string;

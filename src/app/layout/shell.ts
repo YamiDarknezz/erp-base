@@ -79,13 +79,13 @@ export class Shell {
     if (url.includes('/ventas/reportes/comprobantes')) return 'VENTAS \\ REPORTES \\ COMPROBANTES DE VENTA';
     if (url.includes('/ventas/reportes/pedidos')) return 'VENTAS \\ REPORTES \\ PEDIDOS Y EFECTIVIDAD';
     if (url.includes('/ventas/reportes/comisiones') || url.includes('/ventas/reportes')) return 'VENTAS \\ REPORTES \\ COMISIONES';
-    if (url.includes('/inventarios/articulos') || url.includes('/gestion/articulos')) return 'INVENTARIOS \\ ARTÍCULOS (SKU)';
-    if (url.includes('/inventarios/depositos') || url.includes('/gestion/depositos')) return 'INVENTARIOS \\ DEPÓSITOS Y ALMACENES';
-    if (url.includes('/inventarios/grupos') || url.includes('/gestion/grupos')) return 'INVENTARIOS \\ GRUPOS DE PRODUCTOS';
-    if (url.includes('/inventarios/kardex') || url === '/inventarios') return 'INVENTARIOS \\ KARDEX Y EXISTENCIAS';
-    if (url.includes('/inventarios/stock-disponible') || url.includes('/reportes/stock-disponible')) return 'INVENTARIOS \\ REPORTES \\ STOCK DISPONIBLE';
-    if (url.includes('/inventarios/stock-fisico') || url.includes('/reportes/stock-fisico')) return 'INVENTARIOS \\ REPORTES \\ STOCK FÍSICO';
-    if (url.includes('/inventarios/lotes') || url.includes('/reportes/lotes')) return 'INVENTARIOS \\ REPORTES \\ TRAZABILIDAD DE LOTES';
+    if (url.includes('/inventarios/operativo/kardex') || url.includes('/inventarios/kardex') || url === '/inventarios') return 'INVENTARIOS \\ OPERATIVO \\ KARDEX Y EXISTENCIAS';
+    if (url.includes('/inventarios/gestion/articulos') || url.includes('/gestion/articulos') || url.includes('/inventarios/articulos')) return 'INVENTARIOS \\ GESTIÓN \\ ARTÍCULOS (SKU)';
+    if (url.includes('/inventarios/gestion/depositos') || url.includes('/gestion/depositos') || url.includes('/inventarios/depositos')) return 'INVENTARIOS \\ GESTIÓN \\ DEPÓSITOS Y ALMACENES';
+    if (url.includes('/inventarios/gestion/grupos') || url.includes('/gestion/grupos') || url.includes('/inventarios/grupos')) return 'INVENTARIOS \\ GESTIÓN \\ GRUPOS DE PRODUCTOS';
+    if (url.includes('/inventarios/reportes/stock-disponible') || url.includes('/reportes/stock-disponible') || url.includes('/inventarios/stock-disponible')) return 'INVENTARIOS \\ REPORTES \\ STOCK DISPONIBLE';
+    if (url.includes('/inventarios/reportes/stock-fisico') || url.includes('/reportes/stock-fisico') || url.includes('/inventarios/stock-fisico')) return 'INVENTARIOS \\ REPORTES \\ STOCK FÍSICO';
+    if (url.includes('/inventarios/reportes/lotes') || url.includes('/reportes/lotes') || url.includes('/inventarios/lotes')) return 'INVENTARIOS \\ REPORTES \\ TRAZABILIDAD DE LOTES';
     return 'DASHBOARD';
   });
 
@@ -244,15 +244,34 @@ export class Shell {
       id: 'inventarios',
       label: 'Inventarios',
       icon: 'box',
-      path: '/inventarios/kardex',
+      path: '/inventarios/operativo/kardex',
       groups: [
-        { id: 'kardex', label: 'Kardex Valorizado', iconType: 'report', path: '/inventarios/kardex' },
-        { id: 'articulos', label: 'Artículos (SKU)', iconType: 'gear', path: '/inventarios/articulos' },
-        { id: 'depositos', label: 'Depósitos y Almacenes', iconType: 'flow', path: '/inventarios/depositos' },
-        { id: 'grupos', label: 'Grupos de Productos', iconType: 'flow', path: '/inventarios/grupos' },
-        { id: 'stock-disp', label: 'Stock Disponible', iconType: 'report', path: '/inventarios/stock-disponible' },
-        { id: 'stock-fis', label: 'Stock Físico', iconType: 'report', path: '/inventarios/stock-fisico' },
-        { id: 'lotes', label: 'Trazabilidad de Lotes', iconType: 'flow', path: '/inventarios/lotes' },
+        {
+          id: 'kardex',
+          label: 'Kardex Valorizado',
+          iconType: 'flow',
+          path: '/inventarios/operativo/kardex',
+        },
+        {
+          id: 'reportes-inv',
+          label: 'Reportes',
+          iconType: 'report',
+          items: [
+            { id: 'inv-rep1', label: 'Stock Disponible', path: '/inventarios/reportes/stock-disponible', isFavorite: true },
+            { id: 'inv-rep2', label: 'Stock Físico', path: '/inventarios/reportes/stock-fisico', isFavorite: false },
+            { id: 'inv-rep3', label: 'Trazabilidad de Lotes', path: '/inventarios/reportes/lotes', isFavorite: false },
+          ],
+        },
+        {
+          id: 'gestion-inv',
+          label: 'Gestión',
+          iconType: 'gear',
+          items: [
+            { id: 'inv-ges1', label: 'Artículos (SKU)', path: '/inventarios/gestion/articulos', isFavorite: true },
+            { id: 'inv-ges2', label: 'Depósitos y Almacenes', path: '/inventarios/gestion/depositos', isFavorite: false },
+            { id: 'inv-ges3', label: 'Grupos de Productos', path: '/inventarios/gestion/grupos', isFavorite: false },
+          ],
+        },
       ],
     },
     {
