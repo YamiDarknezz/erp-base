@@ -9,7 +9,7 @@
 | Campo         | Valor                                          |
 | ------------- | ---------------------------------------------- |
 | Nombre        | ERP Base (Inspirado en CHESS ERP)              |
-| Versión       | 6.2.0                                          |
+| Versión       | 0.0.1 (En desarrollo)                         |
 | Framework     | Angular 21 (Reactivity: Signals, Control Flow) |
 | Estilos       | SCSS + Tailwind CSS v4                         |
 | PWA           | `@angular/service-worker` v21 + Web Manifest   |

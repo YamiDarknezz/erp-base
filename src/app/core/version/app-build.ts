@@ -7,8 +7,8 @@ export interface AppBuildInfo {
 }
 
 export const APP_BUILD: AppBuildInfo = Object.freeze({
-  version: '6.2.0',
-  id: 'cdcc2e3e5a84',
-  builtAt: '2026-11-08T00:54:40.691Z',
+  version: '0.0.1',
+  id: '930dab546ef5',
+  builtAt: '2026-11-08T01:05:40.279Z',
   storageSchema: 1,
 });

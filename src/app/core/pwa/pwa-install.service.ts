@@ -10,9 +10,11 @@ export class PwaInstallService {
   private deferredPrompt: BeforeInstallPromptEvent | null = null;
   private readonly installable = signal<boolean>(false);
   private readonly installed = signal<boolean>(false);
+  private readonly notification = signal<string | null>(null);
 
   readonly canInstall = this.installable.asReadonly();
   readonly isInstalled = this.installed.asReadonly();
+  readonly message = this.notification.asReadonly();
 
   constructor() {
     if (typeof window !== 'undefined') {
@@ -26,6 +28,7 @@ export class PwaInstallService {
         this.installable.set(false);
         this.installed.set(true);
         this.deferredPrompt = null;
+        this.showTemporaryMessage('¡Aplicación PWA instalada exitosamente!');
       });
 
       if (window.matchMedia('(display-mode: standalone)').matches) {
@@ -35,8 +38,13 @@ export class PwaInstallService {
   }
 
   async install(): Promise<boolean> {
+    if (this.installed()) {
+      this.showTemporaryMessage('La aplicación ya se encuentra instalada en este dispositivo.');
+      return false;
+    }
+
     if (!this.deferredPrompt) {
-      // In browsers where beforeinstallprompt hasn't fired yet or is already installed
+      this.showTemporaryMessage('Para instalar la aplicación, utilice el icono de instalación en la barra de direcciones de su navegador.');
       return false;
     }
 
@@ -49,8 +57,21 @@ export class PwaInstallService {
         return true;
       }
     } catch (err) {
-      console.error('Error during PWA installation:', err);
+      console.error('Error durante la instalación PWA:', err);
     }
     return false;
+  }
+
+  private showTemporaryMessage(msg: string): void {
+    this.notification.set(msg);
+    setTimeout(() => {
+      if (this.notification() === msg) {
+        this.notification.set(null);
+      }
+    }, 4500);
+  }
+
+  clearMessage(): void {
+    this.notification.set(null);
   }
 }
