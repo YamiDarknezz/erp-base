@@ -91,12 +91,17 @@ Inspirado en la cabecera corporativa de sistemas ERP de alto rendimiento (refere
 
 ## 📊 7. Grillas de Datos Enterprise Reutilizables (DataGrid)
 
-1. **Componente Reutilizable**: Toda tabla o maestro de datos debe implementar el componente compartido de grilla para evitar redundancias de marcado.
-2. **Alta Densidad y Separaciones Verticales**: Filas compactas (`h-6.5`, ~26px), tipografía `11px`, líneas divisorias verticales visibles entre todas las columnas (`border-r border-outline`).
-3. **Columna ACCIONES Sticky / Flotante**: La columna de acciones debe fijarse al borde derecho (`sticky right-0`) con sombra y fondo de superficie para permanecer siempre visible cuando la tabla tiene desplazamiento horizontal.
-4. **Configuración Real de Columnas**: El botón y pestaña de "Configurar columnas" debe ser funcional en runtime (permitir mostrar/ocultar columnas dinámicamente con persistencia).
-5. **Margen Perimetral**: El contenedor de las grillas debe mantener un margen discreto (`p-1.5` o `p-2`) respecto a los bordes de la ventana para un encuadre visual óptimo.
-6. **Cero Títulos Duplicados**: La ubicación del módulo reside exclusivamente en la TopBar / Header (`VENTAS \ GESTIÓN`); no debe repetirse en el cuerpo de la página.
+1. **Componente Reutilizable**: Toda tabla o maestro de datos debe implementar el componente compartido `<app-data-grid />` para evitar redundancias de marcado.
+2. **Cálculo Automático de Viewport (Zero Configuración Manual)**:
+   - `responsiveRows` viene activado por defecto en `true`.
+   - La grilla utiliza un `ResizeObserver` nativo sobre su contenedor para medir la altura disponible (`wrapEl.clientHeight - theadH - hScrollOffset - 2`) y divide matemáticamente entre `rowHeight` (`26px` por defecto).
+   - El desarrollador **NO** tiene que ajustar manualmente números de filas, scrollbars ni tamaños de página en cada vista; el componente se auto-encuadra al 100% del viewport sin generar scrollbars verticales parásitos.
+   - Paginación dinámica en tiempo real: `pageSize` y `totalPages` se recalculan automáticamente si la ventana se redimensiona, si la pantalla se rota o si se abre en un dispositivo móvil.
+3. **Alta Densidad y Separaciones Verticales**: Filas compactas (`h-6.5`, ~26px), tipografía `11px`, líneas divisorias verticales visibles entre todas las columnas (`border-r border-outline`).
+4. **Columna ACCIONES Sticky / Flotante**: La columna de acciones debe fijarse al borde derecho (`sticky right-0`) con sombra y fondo de superficie esmerilada (`backdrop-blur-xs`) para permanecer siempre visible cuando la tabla tiene desplazamiento horizontal.
+5. **Configuración Real de Columnas**: El botón y pestaña de "Configurar columnas" es funcional en runtime (permite mostrar/ocultar columnas dinámicamente con persistencia automática en `localStorage` usando `storageKey`).
+6. **Margen Perimetral**: El contenedor de las grillas debe mantener un margen discreto (`p-1.5` o `p-2`) respecto a los bordes de la ventana para un encuadre visual óptimo.
+7. **Cero Títulos Duplicados**: La ubicación del módulo reside exclusivamente en la TopBar / Header (`VENTAS \ GESTIÓN`); no debe repetirse en el cuerpo de la página.
 
 ---
 
@@ -112,3 +117,70 @@ Inspirado en la cabecera corporativa de sistemas ERP de alto rendimiento (refere
    - Razón social, RUC, portal web y logotipos corporativos derivan exclusivamente de `CompanyConfigService`.
    - El componente `ErpLogo` soporta logotipos dinámicos por URL/imagen o isotipo vectorial SVG institucional.
 4. **Referencia Técnica**: Consulte [`docs/ARQUITECTURA_CENTRALIZACION_Y_DATOS.md`](file:///c:/Users/Erick/Documents/Proyectos/YamiDarknezz\erp-base/docs/ARQUITECTURA_CENTRALIZACION_Y_DATOS.md) para detalles sobre la estructura y conexión a APIs.
+
+---
+
+## 🪟 9. Sistema Global de Modales y Notificaciones (Pop-ups y Toasts)
+
+1. **Cero Duplicación de Marcado**:
+   - Los componentes visuales `<app-confirm-dialog />` y `<app-toast />` residen una sola vez en el contenedor principal (`src/app/layout/shell.html`).
+   - Queda estrictamente prohibido volver a declarar modales de confirmación o barras de notificación en las vistas hijas o componentes de página.
+2. **Inyección Universal por Servicios**:
+   - Cualquier vista nueva que requiera confirmación inyecta directamente `ConfirmDialogService`.
+     ```typescript
+     const ok = await this.confirmDialog.confirm({
+       title: 'Anular Documento',
+       message: '¿Está seguro de anular este registro?',
+       tone: 'danger', // 'danger' | 'warning' | 'info'
+     });
+     ```
+   - Cualquier vista nueva que requiera feedback feedback toast inyecta directamente `ToastService`.
+     ```typescript
+     this.toast.success('Registro guardado exitosamente');
+     this.toast.warning('Operación ejecutada con advertencias');
+     this.toast.danger('Ocurrió un error al procesar');
+     this.toast.info('Información actualizada');
+     ```
+3. **Regla de Oro en Diálogos**: Todos los botones de los modales de confirmación son exclusivamente de iconos con accesibilidad completa (`title` y `aria-label`).
+
+---
+
+## 📱 10. Reglas de Diseño Móvil y Responsividad en Vistas Nuevas
+
+1. **Encuadre de Página (Viewport Seguro)**:
+   - Las vistas que alojen maestros o tablas utilizan la clase base `w-full h-full overflow-hidden flex flex-col`.
+   - Las vistas de dashboards o paneles estadísticos con scroll vertical utilizan `w-full h-full overflow-y-auto`.
+2. **Dimensiones de Modales Emergentes**:
+   - Ancho responsivo: `w-full max-w-[calc(100vw-1.5rem)] sm:max-w-xl` (o `max-w-3xl` según el contenido).
+   - Altura máxima: `max-h-[92vh]` con `overflow-y-auto` en el cuerpo del formulario para asegurar total usabilidad en móviles apaisados o pantallas pequeñas.
+   - Márgenes perimetrales del backdrop: `p-2 sm:p-4`.
+3. **Tablas Internas dentro de Modales**:
+   - Si un modal incluye una grilla de detalle (ej. ítems de una orden o factura), la tabla debe envolverse en un contenedor con `overflow-x-auto` y la tabla tener `min-w-[500px] sm:min-w-full`. Esto previene cortes de texto o desbordes horizontales en pantallas estrechas.
+4. **Tarjetas de Totales y Resúmenes Transaccionales**:
+   - En vistas o modales con cálculos de subtotales e impuestos, la caja de resumen debe tener `w-full sm:w-72` (ancho completo en smartphone, ancho fijo alineado a la derecha en escritorio).
+5. **Cero Ruptura de Textos o Encabezados**:
+   - En encabezados de tarjetas con badges o acciones, usar siempre `flex flex-col sm:flex-row sm:items-center justify-between gap-1` y aplicar `truncate` con atributo `title` nativo en textos largos.
+
+---
+
+## 🚀 11. Guía Rápida: Cómo Crear una Vista Nueva en 3 Pasos (Zero Boilerplate)
+
+Al crear una nueva pantalla o maestro, el desarrollador **NO** necesita volver a ajustar parámetros de responsividad ni configurar librerías externas:
+
+1. **Crear el servicio o consumir el servicio de dominio existente**:
+   - Inyectar en el componente `.ts` el servicio correspondiente (ej. `SalesService`, `ClientService`).
+2. **Definir columnas y acciones en el TypeScript**:
+   - Declarar el array `columns: GridColumn[] = [...]` y `actions: GridAction[] = [...]`.
+   - Inyectar `ConfirmDialogService` o `ToastService` si requiere confirmaciones o alertas.
+3. **Insertar el componente DataGrid en la plantilla HTML**:
+   ```html
+   <app-data-grid
+     [columns]="columns"
+     [data]="miData()"
+     [actions]="actions"
+     storageKey="nombre-modulo-grid"
+     (onNew)="abrirModalNuevo()"
+     (onAction)="ejecutarAccion($event)"
+   />
+   ```
+   *Listo. La grilla automáticamente medirá la pantalla, paginará las filas exactas, activará scroll lateral fluido con columna sticky y respetará el diseño corporativo sin configuración adicional.*
