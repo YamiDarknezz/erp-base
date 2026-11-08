@@ -9,6 +9,7 @@ Este archivo registra el historial cronológico de versiones, hashes de compilac
 | Versión | Build ID | Fecha / Hora (UTC) | Descripción del Cambio | Estado |
 | :--- | :--- | :--- | :--- | :--- |
 <!-- VERSION_ENTRIES -->
+| v0.0.3 | `04698f96273e` | 2026-11-08T01:40:01.134Z | Grillas de alta densidad estilo ERP enterprise: líneas verticales entre columnas, cabeceras azules, toolbar compacto, cero títulos duplicados, breadcrumbs completos en header y monitor de versiones con zone.run y simulador de pruebas | Activo |
 | v0.0.2 | `fddfebb74ff9` | 2026-11-08T01:26:24.088Z | Optimización global: animación fluida izquierda-derecha del sidebar, submenús minimizados por defecto, eliminación de scroll parásito en dashboard, OnPush en todos los componentes | Activo |
 | v0.0.1 | `7e23e3e5ef3e` | 2026-11-08T01:20:27.247Z | Build generado automáticamente | Activo |
 | v0.0.1 | `dacb3beacee9` | 2026-11-08T01:18:46.867Z | Build generado automáticamente | Activo |

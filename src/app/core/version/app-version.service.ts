@@ -67,25 +67,36 @@ export class AppVersionService {
     // Monitoreo en segundo plano fuera de la zona Angular
     this.zone.runOutsideAngular(() => {
       const initialTimer = window.setTimeout(() => {
-        this.zone.run(() => { void this.check(); });
+        void this.check();
       }, 1500);
 
       const intervalTimer = window.setInterval(() => {
         if (document.visibilityState === 'visible') {
-          this.zone.run(() => { void this.check(); });
+          void this.check();
         }
-      }, 60000);
+      }, 30000); // Chequeo cada 30s en runtime
 
       let lastResume = 0;
       const onResume = () => {
-        if (document.visibilityState !== 'visible' || Date.now() - lastResume < 10000) return;
+        if (document.visibilityState !== 'visible' || Date.now() - lastResume < 5000) return;
         lastResume = Date.now();
-        this.zone.run(() => { void this.check(); });
+        void this.check();
       };
 
       window.addEventListener('focus', onResume);
       window.addEventListener('online', onResume);
       document.addEventListener('visibilitychange', onResume);
+
+      // Exponer utilidades globales para depuración y pruebas locales
+      (window as unknown as { __erpCheckVersion?: () => Promise<void> }).__erpCheckVersion = () => this.check();
+      (window as unknown as { __erpSimulateUpdate?: (v?: string) => void }).__erpSimulateUpdate = (v = '0.0.3') => {
+        this.zone.run(() => {
+          this.latestVersion.set(v);
+          this.available.set(true);
+          this.dismissed.set(false);
+          this.status.set(`Versión de prueba ${v} simulada.`);
+        });
+      };
 
       this.destroy.onDestroy(() => {
         window.clearTimeout(initialTimer);
@@ -151,25 +162,28 @@ export class AppVersionService {
     this.checking.set(true);
     try {
       const remote = await this.readLatest();
-      if (remote.id !== this.current.id) {
-        if (remote.id !== this.latestId) {
-          this.dismissed.set(false);
+      this.zone.run(() => {
+        if (remote.id !== this.current.id) {
+          if (remote.id !== this.latestId) {
+            this.dismissed.set(false);
+          }
+          this.latestId = remote.id;
+          this.latestVersion.set(remote.version);
+          this.available.set(true);
+          this.status.set(`Nueva versión ${remote.version} lista para aplicar.`);
+          console.info(`[VersionService] Nueva versión detectada: v${remote.version} (Build: ${remote.id})`);
+        } else {
+          this.available.set(false);
+          this.latestVersion.set(null);
+          this.latestId = null;
+          this.status.set('El sistema está actualizado.');
         }
-        this.latestId = remote.id;
-        this.latestVersion.set(remote.version);
-        this.available.set(true);
-        this.status.set(`Nueva versión ${remote.version} lista para aplicar.`);
-      } else {
-        this.available.set(false);
-        this.latestVersion.set(null);
-        this.latestId = null;
-        this.status.set('El sistema está actualizado.');
-      }
+      });
       void this.prepareWorker().catch(() => undefined);
     } catch {
       // Si falla por falta de conexión, no interrumpir la experiencia del usuario
     } finally {
-      this.checking.set(false);
+      this.zone.run(() => this.checking.set(false));
     }
   }
 

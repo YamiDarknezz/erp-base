@@ -69,12 +69,12 @@ export class Shell {
 
   protected readonly activeModuleTitle = computed(() => {
     const url = this.currentUrl();
-    if (url.includes('/ventas/ordenes-pedido')) return 'ÓRDENES DE PEDIDO';
-    if (url.includes('/ventas/pedidos')) return 'PEDIDOS';
-    if (url.includes('/ventas/facturacion')) return 'FACTURACIÓN';
-    if (url.includes('/inventarios')) return 'INVENTARIOS';
-    if (url.includes('/ventas/reportes')) return 'REPORTES';
-    if (url.includes('/ventas/gestion')) return 'GESTIÓN';
+    if (url.includes('/ventas/ordenes-pedido')) return 'VENTAS \\ PREVENTA \\ ÓRDENES DE PEDIDO';
+    if (url.includes('/ventas/pedidos')) return 'VENTAS \\ PREVENTA \\ PEDIDOS';
+    if (url.includes('/ventas/facturacion')) return 'VENTAS \\ FACTURACIÓN';
+    if (url.includes('/inventarios')) return 'INVENTARIOS \\ CONTROL DE EXISTENCIAS';
+    if (url.includes('/ventas/reportes')) return 'VENTAS \\ REPORTES';
+    if (url.includes('/ventas/gestion')) return 'VENTAS \\ GESTIÓN';
     return 'DASHBOARD';
   });
 
