@@ -1,0 +1,9 @@
+<app-data-grid
+  [columns]="columns"
+  [data]="reporte()"
+  [actions]="actions"
+  [showNewButton]="false"
+  searchPlaceholder="Buscar SKU o descripción en stock disponible..."
+  storageKey="reportes-stock-disponible"
+  (onAction)="handleAction($event)"
+/>

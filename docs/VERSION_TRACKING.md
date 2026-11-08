@@ -9,6 +9,8 @@ Este archivo registra el historial cronológico de versiones, hashes de compilac
 | Versión | Build ID | Fecha / Hora (UTC) | Descripción del Cambio | Estado |
 | :--- | :--- | :--- | :--- | :--- |
 <!-- VERSION_ENTRIES -->
+| v0.0.5 | `57207332864c` | 2026-11-08T04:52:11.529Z | Modales interactivos de gestión de permisos por roles, configuración de perfil y ficha de cuenta, redimensionamiento interactivo de columnas en DataGrid con persistencia, navegación completa en Gestión y Reportes, y diferenciación visual de botones de acción vs filtros pasivos | Activo |
+| v0.0.4 | `ee809df251e9` | 2026-11-08T04:49:31.980Z | Build generado automáticamente | Activo |
 | v0.0.4 | `daa94e9da56e` | 2026-11-08T01:50:15.736Z | Componente compartido DataGrid reutilizable en todas las vistas, eliminación total de HTML inline en .ts, columna ACCIONES fija flotante (sticky right), panel real de configuración de columnas con persistencia y fix de AbortError | Activo |
 | v0.0.3 | `04698f96273e` | 2026-11-08T01:40:01.134Z | Grillas de alta densidad estilo ERP enterprise: líneas verticales entre columnas, cabeceras azules, toolbar compacto, cero títulos duplicados, breadcrumbs completos en header y monitor de versiones con zone.run y simulador de pruebas | Activo |
 | v0.0.2 | `fddfebb74ff9` | 2026-11-08T01:26:24.088Z | Optimización global: animación fluida izquierda-derecha del sidebar, submenús minimizados por defecto, eliminación de scroll parásito en dashboard, OnPush en todos los componentes | Activo |

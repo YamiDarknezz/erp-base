@@ -69,12 +69,18 @@ export class Shell {
 
   protected readonly activeModuleTitle = computed(() => {
     const url = this.currentUrl();
+    if (url.includes('/gestion/articulos')) return 'GESTIÓN \\ ARTÍCULOS (SKU)';
+    if (url.includes('/gestion/depositos')) return 'GESTIÓN \\ DEPÓSITOS Y ALMACENES';
+    if (url.includes('/gestion/grupos')) return 'GESTIÓN \\ GRUPOS DE PRODUCTOS';
+    if (url.includes('/reportes/stock-disponible')) return 'REPORTES \\ STOCK DISPONIBLE';
+    if (url.includes('/reportes/stock-fisico')) return 'REPORTES \\ STOCK FÍSICO Y CONCILIACIÓN';
+    if (url.includes('/reportes/lotes')) return 'REPORTES \\ TRAZABILIDAD DE LOTES';
     if (url.includes('/ventas/ordenes-pedido')) return 'VENTAS \\ PREVENTA \\ ÓRDENES DE PEDIDO';
     if (url.includes('/ventas/pedidos')) return 'VENTAS \\ PREVENTA \\ PEDIDOS';
     if (url.includes('/ventas/facturacion')) return 'VENTAS \\ FACTURACIÓN';
     if (url.includes('/inventarios')) return 'INVENTARIOS \\ CONTROL DE EXISTENCIAS';
-    if (url.includes('/ventas/reportes')) return 'VENTAS \\ REPORTES';
-    if (url.includes('/ventas/gestion')) return 'VENTAS \\ GESTIÓN';
+    if (url.includes('/ventas/reportes')) return 'VENTAS \\ REPORTES Y COMISIONES';
+    if (url.includes('/ventas/gestion')) return 'VENTAS \\ GESTIÓN MAESTRO';
     return 'DASHBOARD';
   });
 
@@ -83,31 +89,59 @@ export class Shell {
   protected readonly userName = signal('admin');
   protected readonly userFullName = signal('Administrador General');
 
-  // General ERP Notifications
+  // Modals state for bottom sidebar buttons
+  protected readonly permissionsOpen = signal(false);
+  protected readonly profileOpen = signal(false);
+  protected readonly accountOpen = signal(false);
+
+  // User Roles & Permissions Matrix
+  protected readonly selectedRole = signal('Vendedor');
+  protected readonly rolesList = signal(['Vendedor', 'Jefe de Almacén', 'Contador General', 'Supervisor Comercial']);
+  protected readonly permissionsMatrix = signal([
+    { modulo: 'Preventa (Órdenes y Pedidos)', ver: true, crear: true, editar: true, anular: false, exportar: true },
+    { modulo: 'Facturación Electrónica', ver: true, crear: false, editar: false, anular: false, exportar: true },
+    { modulo: 'Control de Inventarios', ver: true, crear: false, editar: false, anular: false, exportar: true },
+    { modulo: 'Reportes de Stock y Lotes', ver: true, crear: false, editar: false, anular: false, exportar: true },
+    { modulo: 'Gestión de Catálogos (SKU/Clientes)', ver: true, crear: true, editar: true, anular: false, exportar: false },
+  ]);
+
+  // Personal Profile fields
+  protected readonly profileEmail = signal('admin@globalerp.com');
+  protected readonly profileCurrentPassword = signal('');
+  protected readonly profileNewPassword = signal('');
+  protected readonly profileTimeoutMinutes = signal(30);
+
+  // Generic ERP Operational Notifications
   protected readonly notifications = signal<NotificationItem[]>([
     {
       id: 'n1',
-      title: '5 pedidos pendientes de aprobación comercial',
-      time: 'Hace 10 minutos',
-      type: 'warning',
-    },
-    {
-      id: 'n2',
-      title: '12 productos con stock por debajo del mínimo',
-      time: 'Hace 25 minutos',
-      type: 'danger',
-    },
-    {
-      id: 'n3',
-      title: 'Cierre de caja del turno mañana listo para conciliar',
-      time: 'Hace 1 hora',
+      title: 'Cierre de turno operativo N° 01 conciliado exitosamente',
+      time: 'Hace 8 minutos',
       type: 'info',
     },
     {
-      id: 'n4',
-      title: '3 cotizaciones comerciales próximas a vencer hoy',
-      time: 'Hoy 09:15 a. m.',
+      id: 'n2',
+      title: 'Actualización general de listas de precios mayoristas completada',
+      time: 'Hace 20 minutos',
+      type: 'info',
+    },
+    {
+      id: 'n3',
+      title: 'Límite de crédito superado para cliente comercial CLI-00102',
+      time: 'Hace 45 minutos',
       type: 'warning',
+    },
+    {
+      id: 'n4',
+      title: 'Sincronización periódica de existencias con Depósito Central finalizada',
+      time: 'Hoy 08:30 a. m.',
+      type: 'info',
+    },
+    {
+      id: 'n5',
+      title: 'Alerta de reposición: 4 SKUs alcanzaron el punto de reorden',
+      time: 'Hoy 07:15 a. m.',
+      type: 'danger',
     },
   ]);
 
@@ -165,13 +199,23 @@ export class Shell {
           id: 'reportes',
           label: 'Reportes',
           iconType: 'report',
-          path: '/ventas/reportes',
+          items: [
+            { id: 'rep1', label: 'Stock Disponible', path: '/reportes/stock-disponible', isFavorite: true },
+            { id: 'rep2', label: 'Stock Físico', path: '/reportes/stock-fisico', isFavorite: false },
+            { id: 'rep3', label: 'Trazabilidad de Lotes', path: '/reportes/lotes', isFavorite: false },
+            { id: 'rep4', label: 'Comisiones de Ventas', path: '/ventas/reportes', isFavorite: false },
+          ],
         },
         {
           id: 'gestion',
           label: 'Gestión',
           iconType: 'gear',
-          path: '/ventas/gestion',
+          items: [
+            { id: 'ges1', label: 'Artículos (SKU)', path: '/gestion/articulos', isFavorite: true },
+            { id: 'ges2', label: 'Depósitos y Almacenes', path: '/gestion/depositos', isFavorite: false },
+            { id: 'ges3', label: 'Grupos de Productos', path: '/gestion/grupos', isFavorite: false },
+            { id: 'ges4', label: 'Proveedores / Clientes', path: '/ventas/gestion', isFavorite: true },
+          ],
         },
       ],
     },
@@ -285,6 +329,41 @@ export class Shell {
 
   async installPwa(): Promise<void> {
     await this.pwa.install();
+  }
+
+  openPermissions(): void {
+    this.closeSidebar();
+    this.permissionsOpen.set(true);
+  }
+
+  closePermissions(): void {
+    this.permissionsOpen.set(false);
+  }
+
+  openProfile(): void {
+    this.closeSidebar();
+    this.profileOpen.set(true);
+  }
+
+  closeProfile(): void {
+    this.profileOpen.set(false);
+  }
+
+  openAccount(): void {
+    this.closeSidebar();
+    this.accountOpen.set(true);
+  }
+
+  closeAccount(): void {
+    this.accountOpen.set(false);
+  }
+
+  savePermissions(): void {
+    this.closePermissions();
+  }
+
+  saveProfile(): void {
+    this.closeProfile();
   }
 
   logout(): void {

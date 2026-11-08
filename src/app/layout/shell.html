@@ -416,43 +416,119 @@
                   </svg>
                 </div>
 
-                <!-- 3.5 Reportes (Icono Documento 📋) -->
-                <div
-                  (click)="navigateTo('/ventas/reportes')"
-                  class="flex items-center justify-between pl-6 pr-2.5 py-1.5 rounded-md text-xs font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-muted cursor-pointer transition-colors"
-                  [class.text-primary]="currentUrl().includes('/ventas/reportes')"
-                  [class.font-bold]="currentUrl().includes('/ventas/reportes')"
-                >
-                  <div class="flex items-center gap-2">
-                    <svg class="w-3.5 h-3.5 text-primary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                      <polyline points="14 2 14 8 20 8" />
-                      <line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" />
+                <!-- 3.5 Reportes (Icono Documento 📋) Desplegable con Submódulos -->
+                <div>
+                  <div
+                    (click)="toggleGroup('reportes')"
+                    class="flex items-center justify-between pl-6 pr-2.5 py-1.5 rounded-md text-xs font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-muted cursor-pointer transition-colors"
+                    [class.bg-surface-muted]="expandedGroup() === 'reportes'"
+                  >
+                    <div class="flex items-center gap-2">
+                      <svg class="w-3.5 h-3.5 text-primary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                        <line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" />
+                      </svg>
+                      <span>Reportes</span>
+                    </div>
+                    <svg class="w-3.5 h-3.5 text-primary transition-transform duration-200" [class.rotate-180]="expandedGroup() === 'reportes'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="6 9 12 15 18 9" />
                     </svg>
-                    <span>Reportes</span>
                   </div>
-                  <svg class="w-3.5 h-3.5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="6 9 12 15 18 9" />
-                  </svg>
+
+                  @if (expandedGroup() === 'reportes') {
+                    <div class="space-y-0.5 ml-8 pl-3 border-l border-primary/30 mt-0.5 py-0.5">
+                      <div
+                        (click)="navigateTo('/reportes/stock-disponible')"
+                        class="flex items-center justify-between pr-2 py-1 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
+                        [class.text-primary]="currentUrl().includes('/reportes/stock-disponible')"
+                        [class.font-bold]="currentUrl().includes('/reportes/stock-disponible')"
+                      >
+                        <span>Stock Disponible</span>
+                      </div>
+                      <div
+                        (click)="navigateTo('/reportes/stock-fisico')"
+                        class="flex items-center justify-between pr-2 py-1 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
+                        [class.text-primary]="currentUrl().includes('/reportes/stock-fisico')"
+                        [class.font-bold]="currentUrl().includes('/reportes/stock-fisico')"
+                      >
+                        <span>Stock Físico</span>
+                      </div>
+                      <div
+                        (click)="navigateTo('/reportes/lotes')"
+                        class="flex items-center justify-between pr-2 py-1 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
+                        [class.text-primary]="currentUrl().includes('/reportes/lotes')"
+                        [class.font-bold]="currentUrl().includes('/reportes/lotes')"
+                      >
+                        <span>Trazabilidad de Lotes</span>
+                      </div>
+                      <div
+                        (click)="navigateTo('/ventas/reportes')"
+                        class="flex items-center justify-between pr-2 py-1 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
+                        [class.text-primary]="currentUrl().includes('/ventas/reportes')"
+                        [class.font-bold]="currentUrl().includes('/ventas/reportes')"
+                      >
+                        <span>Comisiones de Ventas</span>
+                      </div>
+                    </div>
+                  }
                 </div>
 
-                <!-- 3.6 Gestión (Icono Engranaje ⚙️) -->
-                <div
-                  (click)="navigateTo('/ventas/gestion')"
-                  class="flex items-center justify-between pl-6 pr-2.5 py-1.5 rounded-md text-xs font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-muted cursor-pointer transition-colors"
-                  [class.text-primary]="currentUrl().includes('/ventas/gestion')"
-                  [class.font-bold]="currentUrl().includes('/ventas/gestion')"
-                >
-                  <div class="flex items-center gap-2">
-                    <svg class="w-3.5 h-3.5 text-primary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <circle cx="12" cy="12" r="3" />
-                      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                <!-- 3.6 Gestión (Icono Engranaje ⚙️) Desplegable con Submódulos -->
+                <div>
+                  <div
+                    (click)="toggleGroup('gestion')"
+                    class="flex items-center justify-between pl-6 pr-2.5 py-1.5 rounded-md text-xs font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-muted cursor-pointer transition-colors"
+                    [class.bg-surface-muted]="expandedGroup() === 'gestion'"
+                  >
+                    <div class="flex items-center gap-2">
+                      <svg class="w-3.5 h-3.5 text-primary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3" />
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                      </svg>
+                      <span>Gestión</span>
+                    </div>
+                    <svg class="w-3.5 h-3.5 text-primary transition-transform duration-200" [class.rotate-180]="expandedGroup() === 'gestion'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="6 9 12 15 18 9" />
                     </svg>
-                    <span>Gestión</span>
                   </div>
-                  <svg class="w-3.5 h-3.5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="6 9 12 15 18 9" />
-                  </svg>
+
+                  @if (expandedGroup() === 'gestion') {
+                    <div class="space-y-0.5 ml-8 pl-3 border-l border-primary/30 mt-0.5 py-0.5">
+                      <div
+                        (click)="navigateTo('/gestion/articulos')"
+                        class="flex items-center justify-between pr-2 py-1 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
+                        [class.text-primary]="currentUrl().includes('/gestion/articulos')"
+                        [class.font-bold]="currentUrl().includes('/gestion/articulos')"
+                      >
+                        <span>Artículos (SKU)</span>
+                      </div>
+                      <div
+                        (click)="navigateTo('/gestion/depositos')"
+                        class="flex items-center justify-between pr-2 py-1 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
+                        [class.text-primary]="currentUrl().includes('/gestion/depositos')"
+                        [class.font-bold]="currentUrl().includes('/gestion/depositos')"
+                      >
+                        <span>Depósitos</span>
+                      </div>
+                      <div
+                        (click)="navigateTo('/gestion/grupos')"
+                        class="flex items-center justify-between pr-2 py-1 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
+                        [class.text-primary]="currentUrl().includes('/gestion/grupos')"
+                        [class.font-bold]="currentUrl().includes('/gestion/grupos')"
+                      >
+                        <span>Grupos de Productos</span>
+                      </div>
+                      <div
+                        (click)="navigateTo('/ventas/gestion')"
+                        class="flex items-center justify-between pr-2 py-1 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
+                        [class.text-primary]="currentUrl().includes('/ventas/gestion')"
+                        [class.font-bold]="currentUrl().includes('/ventas/gestion')"
+                      >
+                        <span>Proveedores / Clientes</span>
+                      </div>
+                    </div>
+                  }
                 </div>
 
               </div>
@@ -485,8 +561,9 @@
           <!-- 👤 Perfil -->
           <button
             type="button"
-            title="Mi perfil"
-            aria-label="Mi perfil"
+            (click)="openAccount()"
+            title="Mi perfil y sesión"
+            aria-label="Mi perfil y sesión"
             class="w-7 h-7 rounded flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-muted transition-colors cursor-pointer"
           >
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -497,8 +574,9 @@
           <!-- 🛡️ Seguridad -->
           <button
             type="button"
-            title="Seguridad y accesos"
-            aria-label="Seguridad y accesos"
+            (click)="openPermissions()"
+            title="Seguridad y accesos por rol"
+            aria-label="Seguridad y accesos por rol"
             class="w-7 h-7 rounded flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-muted transition-colors cursor-pointer"
           >
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -509,6 +587,7 @@
           <!-- ⚙️ Configuración -->
           <button
             type="button"
+            (click)="openProfile()"
             title="Configuración de preferencias"
             aria-label="Configuración de preferencias"
             class="w-7 h-7 rounded flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-muted transition-colors cursor-pointer"
@@ -539,5 +618,341 @@
     </main>
 
   </div>
+
+  <!-- ── MODAL 1: GESTIÓN DE PERMISOS Y ROLES DE USUARIO ── -->
+  @if (permissionsOpen()) {
+    <div class="fixed inset-0 z-50 bg-black/45 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150">
+      <div class="bg-surface rounded-xs border border-outline shadow-2xl w-full max-w-xl overflow-hidden flex flex-col max-h-[90vh]">
+        
+        <!-- Cabecera -->
+        <div class="h-10 px-3 bg-surface-alt border-b border-outline flex items-center justify-between shrink-0">
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </svg>
+            <span class="text-xs font-bold text-on-surface uppercase tracking-wide">Matriz de Permisos y Roles de Usuario</span>
+          </div>
+          <button
+            type="button"
+            (click)="closePermissions()"
+            title="Cerrar matriz de permisos"
+            aria-label="Cerrar"
+            class="w-6 h-6 rounded flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-muted cursor-pointer transition-colors"
+          >
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Selector de Rol -->
+        <div class="p-3 bg-surface border-b border-outline flex items-center justify-between gap-3 shrink-0">
+          <span class="text-xs font-semibold text-on-surface-variant">Rol de Usuario:</span>
+          <select
+            [ngModel]="selectedRole()"
+            (ngModelChange)="selectedRole.set($event)"
+            class="h-7 text-xs px-2 rounded-xs border border-outline bg-surface-alt text-on-surface focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
+          >
+            @for (role of rolesList(); track role) {
+              <option [value]="role">{{ role }}</option>
+            }
+          </select>
+        </div>
+
+        <!-- Matriz de Permisos -->
+        <div class="flex-1 overflow-y-auto p-3">
+          <table class="w-full text-[11px] border-collapse border border-outline">
+            <thead>
+              <tr class="bg-surface-alt text-on-surface-variant border-b border-outline text-left">
+                <th class="p-2 font-semibold border-r border-outline">Submódulo</th>
+                <th class="p-2 font-semibold text-center border-r border-outline w-12">Ver</th>
+                <th class="p-2 font-semibold text-center border-r border-outline w-12">Crear</th>
+                <th class="p-2 font-semibold text-center border-r border-outline w-12">Editar</th>
+                <th class="p-2 font-semibold text-center border-r border-outline w-12">Anular</th>
+                <th class="p-2 font-semibold text-center w-14">Exportar</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of permissionsMatrix(); track item.modulo) {
+                <tr class="border-b border-outline hover:bg-surface-muted transition-colors">
+                  <td class="p-2 font-medium text-on-surface border-r border-outline">{{ item.modulo }}</td>
+                  <td class="p-2 text-center border-r border-outline">
+                    <input type="checkbox" [(ngModel)]="item.ver" class="w-3.5 h-3.5 rounded-xs border-outline text-primary focus:ring-0 cursor-pointer" />
+                  </td>
+                  <td class="p-2 text-center border-r border-outline">
+                    <input type="checkbox" [(ngModel)]="item.crear" class="w-3.5 h-3.5 rounded-xs border-outline text-primary focus:ring-0 cursor-pointer" />
+                  </td>
+                  <td class="p-2 text-center border-r border-outline">
+                    <input type="checkbox" [(ngModel)]="item.editar" class="w-3.5 h-3.5 rounded-xs border-outline text-primary focus:ring-0 cursor-pointer" />
+                  </td>
+                  <td class="p-2 text-center border-r border-outline">
+                    <input type="checkbox" [(ngModel)]="item.anular" class="w-3.5 h-3.5 rounded-xs border-outline text-primary focus:ring-0 cursor-pointer" />
+                  </td>
+                  <td class="p-2 text-center">
+                    <input type="checkbox" [(ngModel)]="item.exportar" class="w-3.5 h-3.5 rounded-xs border-outline text-primary focus:ring-0 cursor-pointer" />
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pie de Acciones (PROHIBIDO TEXTO: SOLO ICONOS CON ACCESIBILIDAD) -->
+        <div class="h-11 px-3 bg-surface-alt border-t border-outline flex items-center justify-end gap-2 shrink-0">
+          <button
+            type="button"
+            (click)="closePermissions()"
+            title="Cancelar y descartar cambios"
+            aria-label="Cancelar"
+            class="w-8 h-8 rounded-xs border border-outline bg-surface hover:bg-surface-muted text-on-surface flex items-center justify-center cursor-pointer transition-colors shadow-2xs"
+          >
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            (click)="savePermissions()"
+            title="Guardar asignación de permisos"
+            aria-label="Guardar permisos"
+            class="w-8 h-8 rounded-xs bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white flex items-center justify-center cursor-pointer transition-colors shadow-2xs"
+          >
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+              <polyline points="17 21 17 13 7 13 7 21" />
+              <polyline points="7 3 7 8 15 8" />
+            </svg>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  }
+
+  <!-- ── MODAL 2: CONFIGURACIÓN DE PERFIL PERSONAL ── -->
+  @if (profileOpen()) {
+    <div class="fixed inset-0 z-50 bg-black/45 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150">
+      <div class="bg-surface rounded-xs border border-outline shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[90vh]">
+        
+        <!-- Cabecera -->
+        <div class="h-10 px-3 bg-surface-alt border-b border-outline flex items-center justify-between shrink-0">
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3" />
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+            </svg>
+            <span class="text-xs font-bold text-on-surface uppercase tracking-wide">Configuración de Perfil Personal</span>
+          </div>
+          <button
+            type="button"
+            (click)="closeProfile()"
+            title="Cerrar perfil"
+            aria-label="Cerrar"
+            class="w-6 h-6 rounded flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-muted cursor-pointer transition-colors"
+          >
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Formulario -->
+        <div class="flex-1 overflow-y-auto p-4 space-y-3">
+          <div>
+            <label class="block text-[11px] font-semibold text-on-surface-variant mb-1">Usuario Corporativo</label>
+            <input
+              type="text"
+              [value]="userName()"
+              readonly
+              class="w-full h-7 px-2.5 text-xs rounded-xs border border-outline bg-surface-muted text-on-surface-variant opacity-75 cursor-not-allowed"
+            />
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-semibold text-on-surface-variant mb-1">Nombre Completo</label>
+            <input
+              type="text"
+              [value]="userFullName()"
+              readonly
+              class="w-full h-7 px-2.5 text-xs rounded-xs border border-outline bg-surface-muted text-on-surface-variant opacity-75 cursor-not-allowed"
+            />
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-semibold text-on-surface-variant mb-1">Correo Electrónico</label>
+            <input
+              type="email"
+              [ngModel]="profileEmail()"
+              (ngModelChange)="profileEmail.set($event)"
+              class="w-full h-7 px-2.5 text-xs rounded-xs border border-outline bg-surface text-on-surface focus:outline-none focus:ring-1 focus:ring-primary"
+            />
+          </div>
+
+          <div class="pt-2 border-t border-outline">
+            <label class="block text-[11px] font-semibold text-on-surface-variant mb-1">Contraseña Actual</label>
+            <input
+              type="password"
+              [ngModel]="profileCurrentPassword()"
+              (ngModelChange)="profileCurrentPassword.set($event)"
+              placeholder="••••••••"
+              class="w-full h-7 px-2.5 text-xs rounded-xs border border-outline bg-surface text-on-surface focus:outline-none focus:ring-1 focus:ring-primary"
+            />
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-semibold text-on-surface-variant mb-1">Nueva Contraseña</label>
+            <input
+              type="password"
+              [ngModel]="profileNewPassword()"
+              (ngModelChange)="profileNewPassword.set($event)"
+              placeholder="Nueva clave..."
+              class="w-full h-7 px-2.5 text-xs rounded-xs border border-outline bg-surface text-on-surface focus:outline-none focus:ring-1 focus:ring-primary"
+            />
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-semibold text-on-surface-variant mb-1">Cierre por Inactividad</label>
+            <select
+              [ngModel]="profileTimeoutMinutes()"
+              (ngModelChange)="profileTimeoutMinutes.set(+$event)"
+              class="w-full h-7 px-2 text-xs rounded-xs border border-outline bg-surface text-on-surface focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
+            >
+              <option [value]="15">15 minutos de inactividad</option>
+              <option [value]="30">30 minutos de inactividad</option>
+              <option [value]="60">60 minutos de inactividad</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Pie de Acciones (PROHIBIDO TEXTO: SOLO ICONOS) -->
+        <div class="h-11 px-3 bg-surface-alt border-t border-outline flex items-center justify-end gap-2 shrink-0">
+          <button
+            type="button"
+            (click)="closeProfile()"
+            title="Cancelar"
+            aria-label="Cancelar"
+            class="w-8 h-8 rounded-xs border border-outline bg-surface hover:bg-surface-muted text-on-surface flex items-center justify-center cursor-pointer transition-colors shadow-2xs"
+          >
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            (click)="saveProfile()"
+            title="Guardar preferencias del perfil"
+            aria-label="Guardar perfil"
+            class="w-8 h-8 rounded-xs bg-primary hover:bg-primary/90 active:bg-primary text-on-primary flex items-center justify-center cursor-pointer transition-colors shadow-2xs"
+          >
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+              <polyline points="17 21 17 13 7 13 7 21" />
+              <polyline points="7 3 7 8 15 8" />
+            </svg>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  }
+
+  <!-- ── MODAL 3: FICHA DE CUENTA Y SESIÓN ACTIVA ── -->
+  @if (accountOpen()) {
+    <div class="fixed inset-0 z-50 bg-black/45 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150">
+      <div class="bg-surface rounded-xs border border-outline shadow-2xl w-full max-w-sm overflow-hidden flex flex-col max-h-[90vh]">
+        
+        <!-- Cabecera -->
+        <div class="h-10 px-3 bg-surface-alt border-b border-outline flex items-center justify-between shrink-0">
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
+            </svg>
+            <span class="text-xs font-bold text-on-surface uppercase tracking-wide">Ficha de Cuenta y Sesión</span>
+          </div>
+          <button
+            type="button"
+            (click)="closeAccount()"
+            title="Cerrar ficha"
+            aria-label="Cerrar"
+            class="w-6 h-6 rounded flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-muted cursor-pointer transition-colors"
+          >
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Contenido de la Ficha -->
+        <div class="p-4 space-y-3 text-xs">
+          <div class="flex items-center gap-3 pb-3 border-b border-outline">
+            <div class="w-10 h-10 rounded-full bg-primary/20 text-primary font-bold flex items-center justify-center text-sm">
+              AG
+            </div>
+            <div>
+              <div class="font-bold text-on-surface text-sm">{{ userFullName() }}</div>
+              <div class="text-[11px] text-on-surface-variant font-mono">@{{ userName() }}</div>
+            </div>
+          </div>
+
+          <div class="space-y-2 text-[11px]">
+            <div class="flex items-center justify-between">
+              <span class="text-on-surface-variant">Razón Social:</span>
+              <span class="font-semibold text-on-surface">{{ companyName() }}</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-on-surface-variant">Perfil de Acceso:</span>
+              <span class="font-semibold text-on-surface">{{ selectedRole() }}</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-on-surface-variant">Estado de Sesión:</span>
+              <span class="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-semibold">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Conectado
+              </span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-on-surface-variant">Terminal / Host:</span>
+              <span class="font-mono text-on-surface">192.168.1.104 (LAN 01)</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-on-surface-variant">Versión Cliente:</span>
+              <span class="font-mono text-primary font-bold">CHESS v{{ appVersion() }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pie de Acciones (PROHIBIDO TEXTO: SOLO ICONOS) -->
+        <div class="h-11 px-3 bg-surface-alt border-t border-outline flex items-center justify-between shrink-0">
+          <!-- Botón de Cerrar Sesión (Icono) -->
+          <button
+            type="button"
+            (click)="logout()"
+            title="Cerrar sesión activa"
+            aria-label="Cerrar sesión"
+            class="w-8 h-8 rounded-xs border border-danger/30 bg-danger/10 hover:bg-danger text-danger hover:text-white flex items-center justify-center cursor-pointer transition-colors shadow-2xs"
+          >
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+              <polyline points="16 17 21 12 16 7" />
+              <line x1="21" y1="12" x2="9" y2="12" />
+            </svg>
+          </button>
+
+          <!-- Botón Cerrar Modal (Icono) -->
+          <button
+            type="button"
+            (click)="closeAccount()"
+            title="Cerrar ficha"
+            aria-label="Cerrar"
+            class="w-8 h-8 rounded-xs border border-outline bg-surface hover:bg-surface-muted text-on-surface flex items-center justify-center cursor-pointer transition-colors shadow-2xs"
+          >
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  }
 
 </div>

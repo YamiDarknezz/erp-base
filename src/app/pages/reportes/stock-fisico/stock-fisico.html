@@ -1,0 +1,9 @@
+<app-data-grid
+  [columns]="columns"
+  [data]="reporte()"
+  [actions]="actions"
+  [showNewButton]="false"
+  searchPlaceholder="Buscar por SKU, depósito o lote en stock físico..."
+  storageKey="reportes-stock-fisico"
+  (onAction)="handleAction($event)"
+/>

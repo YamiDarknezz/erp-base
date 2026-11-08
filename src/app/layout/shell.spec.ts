@@ -30,4 +30,34 @@ describe('Shell', () => {
     component.closeSidebar();
     expect(component['sidebarOpen']()).toBe(false);
   });
+
+  it('should open and close permissions modal', () => {
+    const fixture = TestBed.createComponent(Shell);
+    const component = fixture.componentInstance;
+    expect(component['permissionsOpen']()).toBe(false);
+    component.openPermissions();
+    expect(component['permissionsOpen']()).toBe(true);
+    component.savePermissions();
+    expect(component['permissionsOpen']()).toBe(false);
+  });
+
+  it('should open and close profile modal', () => {
+    const fixture = TestBed.createComponent(Shell);
+    const component = fixture.componentInstance;
+    expect(component['profileOpen']()).toBe(false);
+    component.openProfile();
+    expect(component['profileOpen']()).toBe(true);
+    component.saveProfile();
+    expect(component['profileOpen']()).toBe(false);
+  });
+
+  it('should open and close account modal', () => {
+    const fixture = TestBed.createComponent(Shell);
+    const component = fixture.componentInstance;
+    expect(component['accountOpen']()).toBe(false);
+    component.openAccount();
+    expect(component['accountOpen']()).toBe(true);
+    component.closeAccount();
+    expect(component['accountOpen']()).toBe(false);
+  });
 });

@@ -1,0 +1,9 @@
+<app-data-grid
+  [columns]="columns"
+  [data]="lotes()"
+  [actions]="actions"
+  [showNewButton]="false"
+  searchPlaceholder="Buscar por código de lote, SKU o proveedor..."
+  storageKey="reportes-trazabilidad-lotes"
+  (onAction)="handleAction($event)"
+/>

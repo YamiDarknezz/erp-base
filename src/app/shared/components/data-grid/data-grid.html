@@ -6,9 +6,9 @@
     <!-- ── BARRA SUPERIOR DE HERRAMIENTAS Y ACCIONES (ALTA DENSIDAD) ── -->
     <div class="h-9 px-2 bg-surface border-b border-outline flex items-center justify-between gap-2 shrink-0">
       
-      <!-- Lado Izquierdo: Botón Nuevo + Filtros + Buscador -->
+      <!-- Lado Izquierdo: Botón de Acción (Color) + Filtros (Neutros sin color) -->
       <div class="flex items-center gap-2">
-        <!-- Botón Nuevo (+) Estilo Enterprise -->
+        <!-- 🟢 BOTÓN DE ACCIÓN: Nuevo (+) -->
         @if (showNewButton()) {
           <button
             type="button"
@@ -23,25 +23,25 @@
           </button>
         }
 
-        <!-- Checkbox Opcional: Incluir Anulados -->
+        <!-- ⚪ FILTRO PASIVO (Neutro, sin color de fondo): Checkbox -->
         @if (showAnuladosFilter()) {
-          <label class="inline-flex items-center gap-1.5 text-[11px] text-on-surface-variant hover:text-on-surface cursor-pointer select-none">
+          <label class="inline-flex items-center gap-1.5 text-[11px] text-on-surface-variant hover:text-on-surface cursor-pointer select-none px-1.5 py-0.5 rounded-xs border border-outline/70 bg-surface">
             <input
               type="checkbox"
               [(ngModel)]="incluirAnulados"
               class="w-3.5 h-3.5 rounded-xs border-outline text-primary focus:ring-0 cursor-pointer"
             />
-            <span>Incluir anulados.</span>
+            <span>Incluir anulados</span>
           </label>
         }
 
-        <!-- Buscador Rápido -->
+        <!-- ⚪ FILTRO PASIVO (Neutro, sin color de fondo): Buscador -->
         <div class="relative flex items-center">
           <input
             type="text"
             [(ngModel)]="searchQuery"
             [placeholder]="searchPlaceholder()"
-            class="h-6 text-[11px] pl-2 pr-6 rounded-xs border border-outline bg-surface text-on-surface placeholder:text-on-surface-muted focus:outline-none focus:ring-1 focus:ring-primary w-40 sm:w-60"
+            class="h-6 text-[11px] pl-2 pr-6 rounded-xs border border-outline bg-surface-alt/70 text-on-surface placeholder:text-on-surface-muted focus:outline-none focus:ring-1 focus:ring-primary focus:bg-surface w-40 sm:w-60 transition-colors"
           />
           <svg class="w-3 h-3 text-on-surface-muted absolute right-1.5 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
@@ -49,107 +49,87 @@
         </div>
       </div>
 
-      <!-- Lado Derecho: Iconos de Control Rápido de Grilla -->
-      <div class="flex items-center gap-1">
-        <!-- 📁 Exportar -->
+      <!-- Lado Derecho: BOTONES DE ACCIÓN (Con acento de color distinguible) -->
+      <div class="flex items-center gap-1.5">
+        <!-- 🔵 Botón Exportar (Con acento azul) -->
         <button
           type="button"
           (click)="onExport.emit()"
           title="Exportar datos de la grilla"
           aria-label="Exportar datos"
-          class="w-6 h-6 rounded-xs flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-muted cursor-pointer transition-colors"
+          class="w-6 h-6 rounded-xs flex items-center justify-center bg-blue-500/10 hover:bg-blue-600 hover:text-white text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-900/60 cursor-pointer transition-colors shadow-2xs"
         >
           <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
           </svg>
         </button>
 
-        <!-- 🔄 Recargar -->
+        <!-- 🟠 Botón Recargar (Con acento ámbar) -->
         <button
           type="button"
           (click)="onRefresh.emit()"
           title="Recargar registros"
           aria-label="Recargar registros"
-          class="w-6 h-6 rounded-xs flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-muted cursor-pointer transition-colors"
+          class="w-6 h-6 rounded-xs flex items-center justify-center bg-amber-500/10 hover:bg-amber-600 hover:text-white text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-900/60 cursor-pointer transition-colors shadow-2xs"
         >
           <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
           </svg>
         </button>
 
-        <!-- ↔️ Configurar Columnas (FUNCIONAL) -->
+        <!-- 🟣 Botón Configurar Columnas (Con acento primario) -->
         <button
           type="button"
           (click)="toggleConfig()"
-          title="Ajustar y configurar columnas visibles"
+          title="Configurar y redimensionar columnas visibles"
           aria-label="Configurar columnas"
-          class="w-6 h-6 rounded-xs flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-muted cursor-pointer transition-colors"
-          [class.bg-primary-soft]="isConfigOpen()"
-          [class.text-primary]="isConfigOpen()"
+          class="w-6 h-6 rounded-xs flex items-center justify-center bg-primary/10 hover:bg-primary hover:text-on-primary text-primary border border-primary/30 cursor-pointer transition-colors shadow-2xs"
+          [class.bg-primary]="isConfigOpen()"
+          [class.text-on-primary]="isConfigOpen()"
         >
           <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="15 18 19 12 15 6" /><polyline points="9 6 5 12 9 18" />
-          </svg>
-        </button>
-
-        <!-- 💾 Guardar configuración -->
-        <button
-          type="button"
-          (click)="toggleConfig()"
-          title="Guardar vista de columnas"
-          aria-label="Guardar vista"
-          class="w-6 h-6 rounded-xs flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-muted cursor-pointer transition-colors"
-        >
-          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
-            <polyline points="17 21 17 13 7 13 7 21" /><polyline points="7 3 7 8 15 8" />
-          </svg>
-        </button>
-
-        <!-- ⚙️ Configuración -->
-        <button
-          type="button"
-          (click)="toggleConfig()"
-          title="Configuración de preferencias"
-          aria-label="Configuración"
-          class="w-6 h-6 rounded-xs flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-muted cursor-pointer transition-colors"
-        >
-          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
           </svg>
         </button>
       </div>
 
     </div>
 
-    <!-- ── CUERPO PRINCIPAL DE LA GRILLA CON TABLA Y PESTAÑA LATERAL ── -->
+    <!-- ── CUERPO PRINCIPAL DE LA GRILLA (TABLA CON COLUMNAS REDIMENSIONABLES) ── -->
     <div class="flex-1 relative flex overflow-hidden">
       
       <!-- Tabla con scroll bidireccional -->
       <div class="flex-1 overflow-auto bg-surface">
         <table class="w-full text-left border-collapse text-[11px] font-sans">
           
-          <!-- Cabecera Azul Corporativa con Separaciones Verticales -->
+          <!-- Cabecera Azul Corporativa con Separaciones Verticales y Manijas de Redimensión -->
           <thead class="sticky top-0 z-10 select-none shadow-xs">
             <tr class="bg-[#1e6fba] dark:bg-[#1a5a96] text-white text-[10px] font-bold uppercase tracking-wider">
               @for (col of visibleColumns(); track col.field) {
                 <th
-                  class="py-1 px-2 border-r border-white/20 whitespace-nowrap"
+                  class="py-1 px-2 border-r border-white/20 whitespace-nowrap relative select-none"
                   [style.width]="col.width"
-                  [style.min-width]="col.minWidth"
+                  [style.min-width]="col.minWidth || col.width"
                 >
                   <div
-                    class="flex items-center justify-between gap-1"
+                    class="flex items-center justify-between gap-1 pr-1"
                     [class.justify-center]="col.align === 'center'"
                     [class.justify-end]="col.align === 'right'"
                   >
-                    <span>{{ col.header }}</span>
+                    <span class="truncate">{{ col.header }}</span>
                     @if (col.sortable !== false) {
                       <svg class="w-2.5 h-2.5 text-white/70 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                         <line x1="3" y1="8" x2="21" y2="8" /><line x1="3" y1="16" x2="21" y2="16" />
                       </svg>
                     }
                   </div>
+
+                  <!-- Manija interactiva para redimensionar columna libremente -->
+                  <div
+                    (mousedown)="onResizeStart($event, col.field)"
+                    class="absolute top-0 right-0 bottom-0 w-2 cursor-col-resize hover:bg-white/40 active:bg-white/60 transition-colors z-20"
+                    title="Arrastrar para redimensionar columna"
+                  ></div>
                 </th>
               }
 
@@ -175,6 +155,8 @@
                     [class.text-center]="col.align === 'center'"
                     [class.text-right]="col.align === 'right'"
                     [class.font-mono]="col.type === 'number' || col.type === 'currency' || col.type === 'date'"
+                    [style.width]="col.width"
+                    [style.min-width]="col.minWidth || col.width"
                   >
                     @switch (col.type) {
                       @case ('currency') {
@@ -264,8 +246,7 @@
                             }
                             @case ('delete') {
                               <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                                <polyline points="3 6 5 6 21 6" />
-                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+                                <polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
                               </svg>
                             }
                           }
@@ -281,23 +262,9 @@
         </table>
       </div>
 
-      <!-- Pestaña Lateral Derecha: Configurar Columnas -->
-      <div
-        (click)="toggleConfig()"
-        title="Configurar visibilidad de columnas"
-        class="w-6 border-l border-outline bg-surface-alt flex flex-col items-center justify-center select-none cursor-pointer hover:bg-surface-muted transition-colors py-2 text-on-surface-variant"
-      >
-        <svg class="w-3 h-3 mb-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="18" x2="21" y2="18" />
-        </svg>
-        <span class="text-[9px] font-semibold tracking-wider uppercase [writing-mode:vertical-rl] rotate-180">
-          Configurar columnas
-        </span>
-      </div>
-
       <!-- ── PANEL LATERAL FLOTANTE: CONFIGURACIÓN REAL DE COLUMNAS ── -->
       @if (isConfigOpen()) {
-        <div class="absolute inset-y-0 right-6 w-64 bg-surface border-l border-outline shadow-2xl z-30 flex flex-col animate-in slide-in-from-right duration-150">
+        <div class="absolute inset-y-0 right-0 w-64 bg-surface border-l border-outline shadow-2xl z-30 flex flex-col animate-in slide-in-from-right duration-150">
           <!-- Cabecera del Panel -->
           <div class="h-9 px-3 bg-surface-alt border-b border-outline flex items-center justify-between">
             <span class="text-xs font-bold text-on-surface">Configurar Columnas</span>
@@ -316,7 +283,7 @@
               <button
                 type="button"
                 (click)="closeConfig()"
-                title="Cerrar panel de columnas"
+                title="Cerrar panel de configuración"
                 aria-label="Cerrar configuración"
                 class="w-6 h-6 rounded flex items-center justify-center text-on-surface-variant hover:text-on-surface cursor-pointer"
               >
