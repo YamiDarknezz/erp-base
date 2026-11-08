@@ -8,14 +8,35 @@
 
 | Campo         | Valor                                          |
 | ------------- | ---------------------------------------------- |
-| Nombre        | ERP Base                                       |
+| Nombre        | ERP Base (Inspirado en CHESS ERP)              |
 | Framework     | Angular 21 (Reactivity: Signals, Control Flow) |
 | Estilos       | SCSS + Tailwind CSS v4                         |
+| PWA           | `@angular/service-worker` v21 + Web Manifest   |
 | Package Mgr   | pnpm 10.29.3                                   |
 | Node          | 24.19.0                                        |
 | Tests         | Vitest 4.x                                     |
 | SSR           | No (SPA optimizada)                            |
 | Routing       | Lazy loaded components con Guards              |
+
+---
+
+## 🚫 Reglas de Diseño Estrictas (`AGENTS.md`)
+
+Registradas formalmente en `AGENTS.md`:
+1. **PROHIBIDO EL TEXTO EN BOTONES**: Todos los botones de acción usan exclusivamente **iconos optimizados** (SVG limpios, vectoriales, con `title` y `aria-label`). No se permite texto visible dentro de los botones a menos que el usuario lo solicite explícitamente.
+2. **Jerarquía Visual Corporativa**: Header sobrio con menú hamburguesa, marca + versión, pestaña activa, empresa a la derecha, chip de usuario y fila de botones circulares tipo icono.
+3. **Cero Mención a Demos**: Interfaz lista para clientes finales sin términos como "prueba", "mock" o "demo".
+
+---
+
+## 📱 Progressive Web App (PWA)
+
+Configuración completa e integrada:
+- **Service Worker**: Activado en producción con `ngsw-config.json` y registrado mediante `provideServiceWorker` en `app.config.ts`.
+- **Manifiesto**: `public/manifest.webmanifest` con iconos en `public/icons/` (192x192, 512x512 y SVG maskable), `display: standalone` y `theme_color: #2563eb`.
+- **Servicio de Instalación (`PwaInstallService`)**: Basado en **Signals**, detecta `beforeinstallprompt`, expone `canInstall` y ejecuta `install()`.
+- **Botón de Descarga PWA**: Ubicado en el header superior como botón de icono (descarga) para instalar la app en Windows/Android/macOS.
+- **Documentación**: Trasladada y mejorada en `docs/GUIA_CONFIGURACION_PWA.md`.
 
 ---
 
@@ -43,64 +64,44 @@ Configuración centralizada en `src/tailwind.css` utilizando variables CSS nativ
 - Basado en Angular **Signals** y **Effects** reactivos.
 - Persistencia en `localStorage` (`erp-theme`).
 - Detección automática de preferencia del sistema operativo (`prefers-color-scheme`).
-- Script inline anti-flicker en `<head>` de `index.html` para evitar destellos blancos antes del renderizado.
+- Script inline anti-flicker en `<head>` de `index.html`.
 
 ---
 
 ## 🔐 Autenticación & Control de Acceso
 
-### AuthService (`src/app/core/auth/auth.service.ts`)
-- Manejo de sesión reactivo con `signal<boolean>`.
-- Persistencia de sesión en `sessionStorage` (`erp_auth`).
-- Credenciales configuradas para el acceso administrativo: `admin` / `admin`.
-- Cero menciones en UI de credenciales demo o textos de prueba (apariencia 100% de producto real para clientes).
-
-### Route Guards (`src/app/core/auth/auth.guard.ts`)
-- **`authGuard`**: Protege rutas privadas (`/dashboard`, módulos del ERP). Si no hay sesión activa, redirige inmediatamente a `/login`.
-- **`loginGuard`**: Si el usuario ya está autenticado e intenta visitar `/login`, lo redirige automáticamente a `/dashboard`.
-
----
-
-## 🗺️ Rutas de la Aplicación (`src/app/app.routes.ts`)
-
-```ts
-[
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
-  { path: 'login', loadComponent: () => Login, canActivate: [loginGuard] },
-  { path: 'dashboard', loadComponent: () => Dashboard, canActivate: [authGuard] },
-  { path: '**', redirectTo: 'login' }
-]
-```
+- **`AuthService`**: Señal reactiva `isAuthenticated`, persistencia en `sessionStorage`, credenciales `admin` / `admin`.
+- **`authGuard`**: Redirige a `/login` si no hay sesión.
+- **`loginGuard`**: Redirige a `/dashboard` si ya hay sesión activa.
 
 ---
 
 ## 🖥️ Vistas Desarrolladas
 
 ### 1. Vista de Login (`/login`)
-- **Layout Split Profesional**:
-  - **Panel Izquierdo (Marca corporativa)**: Gradiente sobrio, patrón de micro-puntos SVG, isotipo modular geométrico, tipografía de alta jerarquía y presentación de "Gestión integral para su empresa".
-  - **Panel Derecho (Formulario)**: Tarjeta limpia, inputs accesibles con bordes y focus ring corporativo, botón con estado de carga animado (`loading()`), mensaje de error sobrio en caso de credenciales incorrectas.
-  - **Selector de Tema**: Toggle accesible en la esquina superior para alternar entre tema claro y oscuro en tiempo real.
-  - **Adaptabilidad Móvil**: Oculta el panel decorativo en pantallas pequeñas mostrando versión compacta del logo.
+- Layout split corporativo con marca en panel izquierdo, formulario limpio a la derecha y selector de tema por icono.
 
-### 2. Vista de Dashboard Shell (`/dashboard`)
-- Vista protegida que sirve como receptor tras el login exitoso.
-- Barra superior con isotipo, nombre de producto, botón de tema y botón de cierre de sesión (`Cerrar Sesión`).
-
----
-
-## 🧹 Limpieza Inicial del Boilerplate
-
-| Archivo | Qué se hizo |
-| --- | --- |
-| `src/app/app.html` | Eliminado todo el template demo de Angular. Reemplazado con solo `<router-outlet />`. |
-| `src/app/app.ts` | Eliminado `signal('erp-base')`. Componente raíz limpio. |
-| `src/app/app.scss` | Reset básico `:host { display: block; }`. |
-| `src/styles.scss` | CSS reset global acoplado a los tokens de diseño. |
-| `src/index.html` | Título "Sistema ERP", `lang="es"`, favicon SVG y script pre-render theme. |
-| `src/app/app.spec.ts` | Test unitario con `TestBed` pasando en Vitest. |
-| `public/favicon.ico` | Eliminado el favicon angular por defecto (15 KB). |
-| `public/favicon.svg` | Favicon SVG personalizado. |
+### 2. Vista de Dashboard (`/dashboard`)
+Inspirada en el sistema CHESS ERP:
+- **Header Superior**:
+  - **Izquierda**: Botón hamburguesa (icono), Isotipo + Texto "CHESS 6.2.57", Pestaña activa en badge "DASHBOARD".
+  - **Derecha**: Nombre de la empresa (`DISTRIBUIDORA GLOBAL S.A.C. - PE`), Chip de usuario (`admin` - `Administrador General`), y fila de botones circulares de acción tipo icono:
+    - 🔔 **Notificaciones** con badge flotante y popover de alertas recientes.
+    - 🌓 **Tema** claro/oscuro.
+    - 🎧 **Soporte** / Mesa de ayuda.
+    - 📥 **Descarga PWA** / Versión instalable.
+    - 🚪 **Cerrar Sesión** segura.
+- **Sidebar Retráctil**:
+  - Desplegable al accionar la hamburguesa con backdrop desenfocado.
+  - Módulos del ERP: Dashboard, Ventas y Facturación, Inventario, Compras, Logística, Finanzas, Reportes, Configuración.
+  - Indicador de estado "Conectado al servidor central" y versión.
+- **Panel Central de Alertas Operacionales**:
+  - Tarjetas destacadas en ámbar y rojo (SKU bajo margen, Comprobantes no informados, Planillas por liquidar, Despachos pendientes, Cuentas por cobrar).
+  - Indicadores con números prominentes, badges de advertencia e iconos de detalle.
+  - Timestamp de actualización y botón de refresco por icono.
+- **Fondo Ambiental & Marca de Agua**:
+  - Degradado fluido con ondas SVG sutiles adaptadas al tema claro y oscuro.
+  - Marca de agua "CHESS 6.2" en la esquina inferior izquierda.
 
 ---
 
@@ -116,5 +117,5 @@ Configuración centralizada en `src/tailwind.css` utilizando variables CSS nativ
 
 ## 🛠️ Estado del Proyecto
 
-- **Build de producción**: `ng build` exitoso (0 errores, bundles separados y lazy loaded).
+- **Build de producción**: `ng build` exitoso (0 errores, Service Worker generado, assets listos).
 - **Tests unitarios**: `ng test --watch=false` ejecutado con Vitest (100% pasando).
