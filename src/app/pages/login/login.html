@@ -1,0 +1,181 @@
+<div class="flex min-h-screen">
+  <!-- ═══ Brand Panel ═══ -->
+  <div
+    class="hidden lg:flex lg:w-[42%] bg-gradient-to-br from-blue-700 via-blue-800 to-indigo-900 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex-col justify-between p-10 xl:p-12 relative overflow-hidden"
+  >
+    <!-- Decorative dot pattern -->
+    <div
+      class="absolute inset-0 opacity-[0.06]"
+      style="
+        background-image: radial-gradient(circle at 1px 1px, white 1px, transparent 0);
+        background-size: 32px 32px;
+      "
+    ></div>
+
+    <!-- Logo -->
+    <div class="relative z-10">
+      <div class="flex items-center gap-3.5">
+        <svg class="w-10 h-10 text-white/90" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="2" width="16" height="16" rx="3" fill="currentColor" />
+          <rect x="22" y="2" width="16" height="7" rx="2" fill="currentColor" opacity="0.7" />
+          <rect x="22" y="13" width="16" height="5" rx="2" fill="currentColor" opacity="0.4" />
+          <rect x="2" y="22" width="16" height="5" rx="2" fill="currentColor" opacity="0.4" />
+          <rect x="2" y="31" width="7" height="7" rx="2" fill="currentColor" opacity="0.7" />
+          <rect x="13" y="31" width="5" height="7" rx="2" fill="currentColor" opacity="0.4" />
+          <rect x="22" y="22" width="16" height="16" rx="3" fill="currentColor" opacity="0.6" />
+        </svg>
+        <span class="text-white text-xl font-semibold tracking-tight">Sistema ERP</span>
+      </div>
+    </div>
+
+    <!-- Tagline -->
+    <div class="relative z-10 space-y-4">
+      <h1 class="text-white text-3xl xl:text-4xl font-bold leading-tight">
+        Gestión integral<br />para su empresa
+      </h1>
+      <p class="text-blue-200/60 dark:text-slate-400 text-base max-w-sm leading-relaxed">
+        Administre todos los procesos de su organización desde una plataforma unificada, segura y eficiente.
+      </p>
+    </div>
+
+    <!-- Footer -->
+    <div class="relative z-10">
+      <p class="text-blue-300/30 dark:text-slate-600 text-sm">
+        &copy; {{ currentYear }} Sistema ERP
+      </p>
+    </div>
+  </div>
+
+  <!-- ═══ Login Form Panel ═══ -->
+  <div class="flex-1 flex items-center justify-center p-6 sm:p-8 bg-surface relative">
+    <!-- Theme toggle -->
+    <button
+      type="button"
+      (click)="theme.toggle()"
+      class="absolute top-5 right-5 p-2.5 rounded-xl bg-surface-alt border border-outline text-on-surface-variant hover:text-on-surface hover:bg-surface-muted transition-colors cursor-pointer"
+      [attr.aria-label]="theme.isDark() ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'"
+    >
+      @if (theme.isDark()) {
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="5" />
+          <line x1="12" y1="1" x2="12" y2="3" />
+          <line x1="12" y1="21" x2="12" y2="23" />
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+          <line x1="1" y1="12" x2="3" y2="12" />
+          <line x1="21" y1="12" x2="23" y2="12" />
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+        </svg>
+      } @else {
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+        </svg>
+      }
+    </button>
+
+    <div class="w-full max-w-[400px]">
+      <!-- Mobile logo (visible only on small screens) -->
+      <div class="lg:hidden flex items-center gap-3 mb-10 justify-center">
+        <svg class="w-9 h-9 text-primary" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="2" width="16" height="16" rx="3" fill="currentColor" />
+          <rect x="22" y="2" width="16" height="7" rx="2" fill="currentColor" opacity="0.7" />
+          <rect x="22" y="13" width="16" height="5" rx="2" fill="currentColor" opacity="0.4" />
+          <rect x="2" y="22" width="16" height="5" rx="2" fill="currentColor" opacity="0.4" />
+          <rect x="2" y="31" width="7" height="7" rx="2" fill="currentColor" opacity="0.7" />
+          <rect x="13" y="31" width="5" height="7" rx="2" fill="currentColor" opacity="0.4" />
+          <rect x="22" y="22" width="16" height="16" rx="3" fill="currentColor" opacity="0.6" />
+        </svg>
+        <span class="text-on-surface text-xl font-semibold tracking-tight">Sistema ERP</span>
+      </div>
+
+      <!-- Header -->
+      <div>
+        <h2 class="text-2xl font-bold text-on-surface">Iniciar Sesión</h2>
+        <p class="text-on-surface-variant mt-2 text-sm">
+          Ingrese sus credenciales para acceder al sistema
+        </p>
+      </div>
+
+      <!-- Form -->
+      <form (ngSubmit)="onSubmit()" class="mt-8 space-y-5">
+        <div>
+          <label for="username" class="block text-sm font-medium text-on-surface mb-1.5">
+            Usuario
+          </label>
+          <input
+            id="username"
+            type="text"
+            name="username"
+            [(ngModel)]="username"
+            placeholder="Ingrese su usuario"
+            autocomplete="username"
+            class="w-full px-4 py-2.5 rounded-lg border border-outline bg-surface text-on-surface placeholder:text-on-surface-muted focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
+          />
+        </div>
+
+        <div>
+          <label for="password" class="block text-sm font-medium text-on-surface mb-1.5">
+            Contraseña
+          </label>
+          <input
+            id="password"
+            type="password"
+            name="password"
+            [(ngModel)]="password"
+            placeholder="Ingrese su contraseña"
+            autocomplete="current-password"
+            class="w-full px-4 py-2.5 rounded-lg border border-outline bg-surface text-on-surface placeholder:text-on-surface-muted focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
+          />
+        </div>
+
+        @if (error()) {
+          <div class="flex items-center gap-2 text-sm text-danger bg-danger-soft rounded-lg px-4 py-3">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="w-4 h-4 shrink-0"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <line x1="15" y1="9" x2="9" y2="15" />
+              <line x1="9" y1="9" x2="15" y2="15" />
+            </svg>
+            <span>{{ error() }}</span>
+          </div>
+        }
+
+        <button
+          type="submit"
+          [disabled]="loading() || !username || !password"
+          class="w-full py-2.5 px-4 bg-primary text-on-primary rounded-lg font-medium hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+        >
+          @if (loading()) {
+            <span class="flex items-center justify-center gap-2">
+              <svg
+                class="w-4 h-4 animate-spin"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                />
+              </svg>
+              Ingresando...
+            </span>
+          } @else {
+            Iniciar Sesión
+          }
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
