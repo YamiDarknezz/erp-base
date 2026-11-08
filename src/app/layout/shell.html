@@ -475,11 +475,11 @@
 
                   <!-- Sub-opciones de Preventa (Tercer Nivel con micro-icono + estrella de favoritos) -->
                   @if (expandedGroup() === 'preventa') {
-                    <div class="space-y-0.5 ml-3 pl-2 border-l border-primary/20 mt-0.5 py-0.5">
+                    <div class="space-y-0.5 ml-3 pl-2 border-l border-primary/20 mt-0.5 py-1">
                       <!-- Órdenes de Pedido -->
                       <div
                         (click)="navigateTo('/ventas/ordenes-pedido')"
-                        class="group flex items-center justify-between px-2 py-1.2 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
+                        class="group flex items-center justify-between px-2 py-1.5 min-h-[26px] rounded-md text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
                         [class.text-primary]="currentUrl().includes('/ventas/ordenes-pedido')"
                         [class.font-bold]="currentUrl().includes('/ventas/ordenes-pedido')"
                       >
@@ -505,7 +505,7 @@
                       <!-- Pedidos -->
                       <div
                         (click)="navigateTo('/ventas/preventa/pedidos')"
-                        class="group flex items-center justify-between px-2 py-1.2 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
+                        class="group flex items-center justify-between px-2 py-1.5 min-h-[26px] rounded-md text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
                         [class.text-primary]="currentUrl().includes('/ventas/preventa/pedidos')"
                         [class.font-bold]="currentUrl().includes('/ventas/preventa/pedidos')"
                       >
@@ -531,7 +531,7 @@
                       <!-- Controles y Ajustes -->
                       <div
                         (click)="navigateTo('/ventas/preventa/pedidos')"
-                        class="group flex items-center justify-between px-2 py-1.2 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
+                        class="group flex items-center justify-between px-2 py-1.5 min-h-[26px] rounded-md text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
                       >
                         <div class="flex items-center gap-2 min-w-0">
                           <svg class="w-3 h-3 text-primary/80 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -633,11 +633,11 @@
                   </div>
 
                   @if (expandedGroup() === 'reportes-ventas') {
-                    <div class="space-y-0.5 ml-3 pl-2 border-l border-primary/20 mt-0.5 py-0.5">
+                    <div class="space-y-0.5 ml-3 pl-2 border-l border-primary/20 mt-0.5 py-1">
                       <!-- Comprobantes -->
                       <div
                         (click)="navigateTo('/ventas/reportes/comprobantes')"
-                        class="group flex items-center justify-between px-2 py-1.2 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
+                        class="group flex items-center justify-between px-2 py-1.5 min-h-[26px] rounded-md text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
                         [class.text-primary]="currentUrl().includes('/ventas/reportes/comprobantes')"
                         [class.font-bold]="currentUrl().includes('/ventas/reportes/comprobantes')"
                       >
@@ -663,7 +663,7 @@
                       <!-- Pedidos -->
                       <div
                         (click)="navigateTo('/ventas/reportes/pedidos')"
-                        class="group flex items-center justify-between px-2 py-1.2 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
+                        class="group flex items-center justify-between px-2 py-1.5 min-h-[26px] rounded-md text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
                         [class.text-primary]="currentUrl().includes('/ventas/reportes/pedidos')"
                         [class.font-bold]="currentUrl().includes('/ventas/reportes/pedidos')"
                       >
@@ -689,7 +689,7 @@
                       <!-- Comisiones -->
                       <div
                         (click)="navigateTo('/ventas/reportes/comisiones')"
-                        class="group flex items-center justify-between px-2 py-1.2 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
+                        class="group flex items-center justify-between px-2 py-1.5 min-h-[26px] rounded-md text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
                         [class.text-primary]="currentUrl().includes('/ventas/reportes/comisiones')"
                         [class.font-bold]="currentUrl().includes('/ventas/reportes/comisiones')"
                       >
@@ -737,11 +737,11 @@
                   </div>
 
                   @if (expandedGroup() === 'gestion-ventas') {
-                    <div class="space-y-0.5 ml-3 pl-2 border-l border-primary/20 mt-0.5 py-0.5">
+                    <div class="space-y-0.5 ml-3 pl-2 border-l border-primary/20 mt-0.5 py-1">
                       <!-- Clientes y Proveedores -->
                       <div
                         (click)="navigateTo('/ventas/gestion/clientes')"
-                        class="group flex items-center justify-between px-2 py-1.2 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
+                        class="group flex items-center justify-between px-2 py-1.5 min-h-[26px] rounded-md text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
                         [class.text-primary]="currentUrl().includes('/ventas/gestion/clientes')"
                         [class.font-bold]="currentUrl().includes('/ventas/gestion/clientes')"
                       >
@@ -768,7 +768,7 @@
                       <!-- Personal Comercial -->
                       <div
                         (click)="navigateTo('/ventas/gestion/personal-comercial')"
-                        class="group flex items-center justify-between px-2 py-1.2 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
+                        class="group flex items-center justify-between px-2 py-1.5 min-h-[26px] rounded-md text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
                         [class.text-primary]="currentUrl().includes('/ventas/gestion/personal-comercial')"
                         [class.font-bold]="currentUrl().includes('/ventas/gestion/personal-comercial')"
                       >
@@ -794,7 +794,7 @@
                       <!-- Precios de Venta -->
                       <div
                         (click)="navigateTo('/ventas/gestion/precios-venta')"
-                        class="group flex items-center justify-between px-2 py-1.2 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
+                        class="group flex items-center justify-between px-2 py-1.5 min-h-[26px] rounded-md text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
                         [class.text-primary]="currentUrl().includes('/ventas/gestion/precios-venta')"
                         [class.font-bold]="currentUrl().includes('/ventas/gestion/precios-venta')"
                       >
@@ -899,11 +899,11 @@
                   </div>
 
                   @if (expandedGroup() === 'reportes-inv') {
-                    <div class="space-y-0.5 ml-3 pl-2 border-l border-primary/20 mt-0.5 py-0.5">
+                    <div class="space-y-0.5 ml-3 pl-2 border-l border-primary/20 mt-0.5 py-1">
                       <!-- Stock Disponible -->
                       <div
                         (click)="navigateTo('/inventarios/reportes/stock-disponible')"
-                        class="group flex items-center justify-between px-2 py-1.2 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
+                        class="group flex items-center justify-between px-2 py-1.5 min-h-[26px] rounded-md text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
                         [class.text-primary]="currentUrl().includes('/inventarios/reportes/stock-disponible')"
                         [class.font-bold]="currentUrl().includes('/inventarios/reportes/stock-disponible')"
                       >
@@ -931,7 +931,7 @@
                       <!-- Stock Físico -->
                       <div
                         (click)="navigateTo('/inventarios/reportes/stock-fisico')"
-                        class="group flex items-center justify-between px-2 py-1.2 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
+                        class="group flex items-center justify-between px-2 py-1.5 min-h-[26px] rounded-md text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
                         [class.text-primary]="currentUrl().includes('/inventarios/reportes/stock-fisico')"
                         [class.font-bold]="currentUrl().includes('/inventarios/reportes/stock-fisico')"
                       >
@@ -957,7 +957,7 @@
                       <!-- Trazabilidad de Lotes -->
                       <div
                         (click)="navigateTo('/inventarios/reportes/lotes')"
-                        class="group flex items-center justify-between px-2 py-1.2 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
+                        class="group flex items-center justify-between px-2 py-1.5 min-h-[26px] rounded-md text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
                         [class.text-primary]="currentUrl().includes('/inventarios/reportes/lotes')"
                         [class.font-bold]="currentUrl().includes('/inventarios/reportes/lotes')"
                       >
@@ -1005,11 +1005,11 @@
                   </div>
 
                   @if (expandedGroup() === 'gestion-inv') {
-                    <div class="space-y-0.5 ml-3 pl-2 border-l border-primary/20 mt-0.5 py-0.5">
+                    <div class="space-y-0.5 ml-3 pl-2 border-l border-primary/20 mt-0.5 py-1">
                       <!-- Artículos (SKU) -->
                       <div
                         (click)="navigateTo('/inventarios/gestion/articulos')"
-                        class="group flex items-center justify-between px-2 py-1.2 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
+                        class="group flex items-center justify-between px-2 py-1.5 min-h-[26px] rounded-md text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
                         [class.text-primary]="currentUrl().includes('/inventarios/gestion/articulos')"
                         [class.font-bold]="currentUrl().includes('/inventarios/gestion/articulos')"
                       >
@@ -1036,7 +1036,7 @@
                       <!-- Depósitos y Almacenes -->
                       <div
                         (click)="navigateTo('/inventarios/gestion/depositos')"
-                        class="group flex items-center justify-between px-2 py-1.2 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
+                        class="group flex items-center justify-between px-2 py-1.5 min-h-[26px] rounded-md text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
                         [class.text-primary]="currentUrl().includes('/inventarios/gestion/depositos')"
                         [class.font-bold]="currentUrl().includes('/inventarios/gestion/depositos')"
                       >
@@ -1062,7 +1062,7 @@
                       <!-- Grupos de Productos -->
                       <div
                         (click)="navigateTo('/inventarios/gestion/grupos')"
-                        class="group flex items-center justify-between px-2 py-1.2 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
+                        class="group flex items-center justify-between px-2 py-1.5 min-h-[26px] rounded-md text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
                         [class.text-primary]="currentUrl().includes('/inventarios/gestion/grupos')"
                         [class.font-bold]="currentUrl().includes('/inventarios/gestion/grupos')"
                       >
