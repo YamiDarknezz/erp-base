@@ -1,0 +1,364 @@
+<div class="w-full h-full p-2 flex flex-col bg-surface-alt overflow-hidden select-none text-on-surface">
+
+  <!-- ── CONTENEDOR ENCUADRADO DE LA GRILLA (CON MARGEN PERIMETRAL) ── -->
+  <div class="flex-1 flex flex-col rounded-xs border border-outline bg-surface overflow-hidden shadow-xs relative">
+
+    <!-- ── BARRA SUPERIOR DE HERRAMIENTAS Y ACCIONES (ALTA DENSIDAD) ── -->
+    <div class="h-9 px-2 bg-surface border-b border-outline flex items-center justify-between gap-2 shrink-0">
+      
+      <!-- Lado Izquierdo: Botón Nuevo + Filtros + Buscador -->
+      <div class="flex items-center gap-2">
+        <!-- Botón Nuevo (+) Estilo Enterprise -->
+        @if (showNewButton()) {
+          <button
+            type="button"
+            (click)="onNew.emit()"
+            [title]="newButtonTitle()"
+            [attr.aria-label]="newButtonTitle()"
+            class="w-6 h-6 rounded-xs bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white flex items-center justify-center font-bold text-xs shadow-xs cursor-pointer transition-colors"
+          >
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+              <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+          </button>
+        }
+
+        <!-- Checkbox Opcional: Incluir Anulados -->
+        @if (showAnuladosFilter()) {
+          <label class="inline-flex items-center gap-1.5 text-[11px] text-on-surface-variant hover:text-on-surface cursor-pointer select-none">
+            <input
+              type="checkbox"
+              [(ngModel)]="incluirAnulados"
+              class="w-3.5 h-3.5 rounded-xs border-outline text-primary focus:ring-0 cursor-pointer"
+            />
+            <span>Incluir anulados.</span>
+          </label>
+        }
+
+        <!-- Buscador Rápido -->
+        <div class="relative flex items-center">
+          <input
+            type="text"
+            [(ngModel)]="searchQuery"
+            [placeholder]="searchPlaceholder()"
+            class="h-6 text-[11px] pl-2 pr-6 rounded-xs border border-outline bg-surface text-on-surface placeholder:text-on-surface-muted focus:outline-none focus:ring-1 focus:ring-primary w-40 sm:w-60"
+          />
+          <svg class="w-3 h-3 text-on-surface-muted absolute right-1.5 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+        </div>
+      </div>
+
+      <!-- Lado Derecho: Iconos de Control Rápido de Grilla -->
+      <div class="flex items-center gap-1">
+        <!-- 📁 Exportar -->
+        <button
+          type="button"
+          (click)="onExport.emit()"
+          title="Exportar datos de la grilla"
+          aria-label="Exportar datos"
+          class="w-6 h-6 rounded-xs flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-muted cursor-pointer transition-colors"
+        >
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+          </svg>
+        </button>
+
+        <!-- 🔄 Recargar -->
+        <button
+          type="button"
+          (click)="onRefresh.emit()"
+          title="Recargar registros"
+          aria-label="Recargar registros"
+          class="w-6 h-6 rounded-xs flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-muted cursor-pointer transition-colors"
+        >
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
+          </svg>
+        </button>
+
+        <!-- ↔️ Configurar Columnas (FUNCIONAL) -->
+        <button
+          type="button"
+          (click)="toggleConfig()"
+          title="Ajustar y configurar columnas visibles"
+          aria-label="Configurar columnas"
+          class="w-6 h-6 rounded-xs flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-muted cursor-pointer transition-colors"
+          [class.bg-primary-soft]="isConfigOpen()"
+          [class.text-primary]="isConfigOpen()"
+        >
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 19 12 15 6" /><polyline points="9 6 5 12 9 18" />
+          </svg>
+        </button>
+
+        <!-- 💾 Guardar configuración -->
+        <button
+          type="button"
+          (click)="toggleConfig()"
+          title="Guardar vista de columnas"
+          aria-label="Guardar vista"
+          class="w-6 h-6 rounded-xs flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-muted cursor-pointer transition-colors"
+        >
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+            <polyline points="17 21 17 13 7 13 7 21" /><polyline points="7 3 7 8 15 8" />
+          </svg>
+        </button>
+
+        <!-- ⚙️ Configuración -->
+        <button
+          type="button"
+          (click)="toggleConfig()"
+          title="Configuración de preferencias"
+          aria-label="Configuración"
+          class="w-6 h-6 rounded-xs flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-muted cursor-pointer transition-colors"
+        >
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+          </svg>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- ── CUERPO PRINCIPAL DE LA GRILLA CON TABLA Y PESTAÑA LATERAL ── -->
+    <div class="flex-1 relative flex overflow-hidden">
+      
+      <!-- Tabla con scroll bidireccional -->
+      <div class="flex-1 overflow-auto bg-surface">
+        <table class="w-full text-left border-collapse text-[11px] font-sans">
+          
+          <!-- Cabecera Azul Corporativa con Separaciones Verticales -->
+          <thead class="sticky top-0 z-10 select-none shadow-xs">
+            <tr class="bg-[#1e6fba] dark:bg-[#1a5a96] text-white text-[10px] font-bold uppercase tracking-wider">
+              @for (col of visibleColumns(); track col.field) {
+                <th
+                  class="py-1 px-2 border-r border-white/20 whitespace-nowrap"
+                  [style.width]="col.width"
+                  [style.min-width]="col.minWidth"
+                >
+                  <div
+                    class="flex items-center justify-between gap-1"
+                    [class.justify-center]="col.align === 'center'"
+                    [class.justify-end]="col.align === 'right'"
+                  >
+                    <span>{{ col.header }}</span>
+                    @if (col.sortable !== false) {
+                      <svg class="w-2.5 h-2.5 text-white/70 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <line x1="3" y1="8" x2="21" y2="8" /><line x1="3" y1="16" x2="21" y2="16" />
+                      </svg>
+                    }
+                  </div>
+                </th>
+              }
+
+              <!-- Columna ACCIONES Sticky Fija a la Derecha (Siempre Visible en Scroll Horizontal) -->
+              @if (actions().length > 0) {
+                <th class="sticky right-0 z-20 bg-[#1e6fba] dark:bg-[#1a5a96] py-1 px-2 border-l border-white/30 text-center whitespace-nowrap min-w-28 shadow-[-4px_0_6px_-1px_rgba(0,0,0,0.18)]">
+                  <span>ACCIONES</span>
+                </th>
+              }
+            </tr>
+          </thead>
+
+          <!-- Filas de Datos Ultra Compactas (h-6.5) con Separadores Verticales -->
+          <tbody class="divide-y divide-outline/50">
+            @for (item of filteredData(); track item.id || item.codigo || $index; let idx = $index) {
+              <tr
+                class="h-6.5 hover:bg-blue-50/70 dark:hover:bg-blue-950/40 transition-colors"
+                [class.bg-surface-alt]="idx % 2 === 1"
+              >
+                @for (col of visibleColumns(); track col.field) {
+                  <td
+                    class="py-0.5 px-2 border-r border-outline/70 whitespace-nowrap"
+                    [class.text-center]="col.align === 'center'"
+                    [class.text-right]="col.align === 'right'"
+                    [class.font-mono]="col.type === 'number' || col.type === 'currency' || col.type === 'date'"
+                  >
+                    @switch (col.type) {
+                      @case ('currency') {
+                        <span class="font-mono font-bold text-on-surface">
+                          S/ {{ item[col.field] | number:'1.2-2' }}
+                        </span>
+                      }
+                      @case ('number') {
+                        <span class="font-mono text-on-surface">
+                          {{ item[col.field] }}
+                        </span>
+                      }
+                      @case ('boolean') {
+                        <span
+                          class="font-bold text-[10px]"
+                          [class.text-rose-600]="item[col.field]"
+                          [class.text-on-surface-muted]="!item[col.field]"
+                        >
+                          {{ item[col.field] ? 'SÍ' : 'NO' }}
+                        </span>
+                      }
+                      @case ('badge') {
+                        <span
+                          class="px-1.5 py-0.2 rounded-xs text-[10px] font-bold"
+                          [class]="col.badgeClassMap ? col.badgeClassMap(item[col.field]) : 'bg-surface-muted text-on-surface'"
+                        >
+                          {{ item[col.field] }}
+                        </span>
+                      }
+                      @default {
+                        <span class="text-on-surface truncate block" [title]="getCellValue(item, col)">
+                          {{ getCellValue(item, col) }}
+                        </span>
+                      }
+                    }
+                  </td>
+                }
+
+                <!-- Celda ACCIONES Sticky Fija a la Derecha (Flotante) -->
+                @if (actions().length > 0) {
+                  <td class="sticky right-0 z-10 bg-surface dark:bg-slate-900 py-0.5 px-1 border-l border-outline/80 text-center whitespace-nowrap shadow-[-4px_0_6px_-1px_rgba(0,0,0,0.12)]">
+                    <div class="inline-flex items-center justify-center gap-1">
+                      @for (act of actions(); track act.id) {
+                        <button
+                          type="button"
+                          (click)="triggerAction(act.id, item, $event)"
+                          [title]="act.title"
+                          [attr.aria-label]="act.title"
+                          class="w-5 h-5 rounded flex items-center justify-center text-on-surface-variant transition-colors cursor-pointer"
+                          [class.hover:text-primary]="!act.color || act.color === 'primary'"
+                          [class.hover:bg-primary-soft]="!act.color || act.color === 'primary'"
+                          [class.hover:text-emerald-600]="act.color === 'emerald'"
+                          [class.hover:bg-emerald-50]="act.color === 'emerald'"
+                          [class.hover:text-blue-600]="act.color === 'blue'"
+                          [class.hover:bg-blue-50]="act.color === 'blue'"
+                          [class.hover:text-rose-600]="act.color === 'rose'"
+                          [class.hover:bg-rose-50]="act.color === 'rose'"
+                        >
+                          @switch (act.icon) {
+                            @case ('view') {
+                              <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+                              </svg>
+                            }
+                            @case ('edit') {
+                              <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <path d="M12 20h9" /><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                              </svg>
+                            }
+                            @case ('file') {
+                              <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                <polyline points="14 2 14 8 20 8" />
+                              </svg>
+                            }
+                            @case ('print') {
+                              <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 6 2 18 2 18 9" />
+                                <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+                                <rect x="6" y="14" width="12" height="8" />
+                              </svg>
+                            }
+                            @case ('check') {
+                              <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <polyline points="20 6 9 17 4 12" />
+                              </svg>
+                            }
+                            @case ('delete') {
+                              <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <polyline points="3 6 5 6 21 6" />
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+                              </svg>
+                            }
+                          }
+                        </button>
+                      }
+                    </div>
+                  </td>
+                }
+
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pestaña Lateral Derecha: Configurar Columnas -->
+      <div
+        (click)="toggleConfig()"
+        title="Configurar visibilidad de columnas"
+        class="w-6 border-l border-outline bg-surface-alt flex flex-col items-center justify-center select-none cursor-pointer hover:bg-surface-muted transition-colors py-2 text-on-surface-variant"
+      >
+        <svg class="w-3 h-3 mb-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="18" x2="21" y2="18" />
+        </svg>
+        <span class="text-[9px] font-semibold tracking-wider uppercase [writing-mode:vertical-rl] rotate-180">
+          Configurar columnas
+        </span>
+      </div>
+
+      <!-- ── PANEL LATERAL FLOTANTE: CONFIGURACIÓN REAL DE COLUMNAS ── -->
+      @if (isConfigOpen()) {
+        <div class="absolute inset-y-0 right-6 w-64 bg-surface border-l border-outline shadow-2xl z-30 flex flex-col animate-in slide-in-from-right duration-150">
+          <!-- Cabecera del Panel -->
+          <div class="h-9 px-3 bg-surface-alt border-b border-outline flex items-center justify-between">
+            <span class="text-xs font-bold text-on-surface">Configurar Columnas</span>
+            <div class="flex items-center gap-1">
+              <button
+                type="button"
+                (click)="resetColumnsConfig()"
+                title="Restablecer columnas por defecto"
+                aria-label="Restablecer columnas"
+                class="w-6 h-6 rounded flex items-center justify-center text-on-surface-variant hover:text-on-surface cursor-pointer"
+              >
+                <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                (click)="closeConfig()"
+                title="Cerrar panel de columnas"
+                aria-label="Cerrar configuración"
+                class="w-6 h-6 rounded flex items-center justify-center text-on-surface-variant hover:text-on-surface cursor-pointer"
+              >
+                <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Lista de Columnas con Checkbox Real -->
+          <div class="flex-1 overflow-y-auto p-2 space-y-1">
+            @for (col of columnsState(); track col.field) {
+              <label class="flex items-center gap-2 px-2 py-1 rounded hover:bg-surface-muted cursor-pointer text-xs select-none">
+                <input
+                  type="checkbox"
+                  [checked]="col.visible"
+                  (change)="toggleColumnVisibility(col.field)"
+                  class="w-3.5 h-3.5 rounded-xs border-outline text-primary focus:ring-0 cursor-pointer"
+                />
+                <span class="truncate font-medium text-on-surface" [class.text-on-surface-muted]="!col.visible">
+                  {{ col.header }}
+                </span>
+              </label>
+            }
+          </div>
+
+          <!-- Pie del Panel -->
+          <div class="p-2 border-t border-outline bg-surface-alt text-[10px] text-on-surface-muted text-center">
+            Preferencias guardadas automáticamente
+          </div>
+        </div>
+      }
+
+    </div>
+
+    <!-- ── PIE DE GRILLA: CONTADOR Y ESTADO ── -->
+    <div class="h-6 px-3 bg-surface border-t border-outline flex items-center justify-between text-[10px] text-on-surface-muted shrink-0 select-none">
+      <span>Mostrando {{ filteredData().length }} de {{ data().length }} registros</span>
+      <span>Página 1 de 1</span>
+    </div>
+
+  </div>
+
+</div>

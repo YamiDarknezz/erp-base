@@ -1,0 +1,11 @@
+<app-data-grid
+  [columns]="columns"
+  [data]="registros()"
+  [actions]="actions"
+  [showAnuladosFilter]="true"
+  newButtonTitle="Nuevo proveedor o cliente"
+  searchPlaceholder="Buscar por código, razón social, RUC o domicilio..."
+  storageKey="gestion-maestro"
+  (onNew)="handleNew()"
+  (onAction)="handleAction($event)"
+/>

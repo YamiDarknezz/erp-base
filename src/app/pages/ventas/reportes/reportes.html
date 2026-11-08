@@ -1,0 +1,9 @@
+<app-data-grid
+  [columns]="columns"
+  [data]="reportes()"
+  [actions]="actions"
+  [showNewButton]="false"
+  searchPlaceholder="Buscar por asesor comercial..."
+  storageKey="ventas-reportes"
+  (onAction)="handleAction($event)"
+/>

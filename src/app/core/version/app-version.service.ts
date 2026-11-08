@@ -123,26 +123,24 @@ export class AppVersionService {
     url.searchParams.set('ngsw-bypass', 'true');
     url.searchParams.set('check', String(Date.now()));
 
+    let timer: number | undefined;
     const controller = new AbortController();
+    timer = window.setTimeout(() => controller.abort(), timeout);
+
     try {
-      return await this.withTimeout(
-        (async () => {
-          const response = await fetch(url.toString(), {
-            cache: 'no-store',
-            headers: { 'Cache-Control': 'no-cache, no-store' },
-            signal: controller.signal,
-          });
-          if (!response.ok) throw new Error('No se pudo obtener app-version.json');
-          const data = (await response.json()) as RemoteVersionInfo;
-          if (!data.id || !data.version) {
-            throw new Error('Estructura inválida en app-version.json');
-          }
-          return data;
-        })(),
-        timeout
-      );
+      const response = await fetch(url.toString(), {
+        cache: 'no-store',
+        headers: { 'Cache-Control': 'no-cache, no-store' },
+        signal: controller.signal,
+      });
+      if (!response.ok) throw new Error('No se pudo obtener app-version.json');
+      const data = (await response.json()) as RemoteVersionInfo;
+      if (!data.id || !data.version) {
+        throw new Error('Estructura inválida en app-version.json');
+      }
+      return data;
     } finally {
-      controller.abort();
+      if (timer) window.clearTimeout(timer);
     }
   }
 

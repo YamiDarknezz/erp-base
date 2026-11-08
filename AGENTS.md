@@ -78,3 +78,22 @@ Inspirado en la cabecera corporativa de sistemas ERP de alto rendimiento (refere
 ## 🧪 5. Verificación de Código
 
 - Cada cambio debe verificar que `ng build` compila con 0 errores y que los tests unitarios (`ng test --watch=false`) se ejecutan y aprueban exitosamente.
+
+---
+
+## 📁 6. Separación Estricta de Archivos (PROHIBIDO HTML/CSS INLINE EN .TS)
+
+- **Queda terminantemente prohibido incluir código HTML en el atributo `template: ...` o CSS en `styles: ...` dentro de los archivos TypeScript (`.ts`)**.
+- Todo componente debe tener su archivo de plantilla HTML independiente (`templateUrl: './component.html'`) y su archivo SCSS (`styleUrl: './component.scss'`).
+- La arquitectura debe ser modular, limpia y desacoplada.
+
+---
+
+## 📊 7. Grillas de Datos Enterprise Reutilizables (DataGrid)
+
+1. **Componente Reutilizable**: Toda tabla o maestro de datos debe implementar el componente compartido de grilla para evitar redundancias de marcado.
+2. **Alta Densidad y Separaciones Verticales**: Filas compactas (`h-6.5`, ~26px), tipografía `11px`, líneas divisorias verticales visibles entre todas las columnas (`border-r border-outline`).
+3. **Columna ACCIONES Sticky / Flotante**: La columna de acciones debe fijarse al borde derecho (`sticky right-0`) con sombra y fondo de superficie para permanecer siempre visible cuando la tabla tiene desplazamiento horizontal.
+4. **Configuración Real de Columnas**: El botón y pestaña de "Configurar columnas" debe ser funcional en runtime (permitir mostrar/ocultar columnas dinámicamente con persistencia).
+5. **Margen Perimetral**: El contenedor de las grillas debe mantener un margen discreto (`p-1.5` o `p-2`) respecto a los bordes de la ventana para un encuadre visual óptimo.
+6. **Cero Títulos Duplicados**: La ubicación del módulo reside exclusivamente en la TopBar / Header (`VENTAS \ GESTIÓN`); no debe repetirse en el cuerpo de la página.

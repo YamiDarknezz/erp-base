@@ -1,0 +1,10 @@
+<app-data-grid
+  [columns]="columns"
+  [data]="articulos()"
+  [actions]="actions"
+  newButtonTitle="Nuevo artículo de inventario"
+  searchPlaceholder="Buscar por SKU, descripción o almacén..."
+  storageKey="inventarios-stock"
+  (onNew)="handleNew()"
+  (onAction)="handleAction($event)"
+/>

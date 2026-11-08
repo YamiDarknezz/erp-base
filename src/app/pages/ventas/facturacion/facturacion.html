@@ -1,0 +1,10 @@
+<app-data-grid
+  [columns]="columns"
+  [data]="facturas()"
+  [actions]="actions"
+  newButtonTitle="Emitir comprobante electrónico"
+  searchPlaceholder="Buscar por comprobante, cliente o RUC..."
+  storageKey="ventas-facturacion"
+  (onNew)="handleNew()"
+  (onAction)="handleAction($event)"
+/>

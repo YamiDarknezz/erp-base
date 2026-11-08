@@ -1,0 +1,10 @@
+<app-data-grid
+  [columns]="columns"
+  [data]="ordenes()"
+  [actions]="actions"
+  newButtonTitle="Nueva orden de pedido"
+  searchPlaceholder="Buscar orden, cliente o zona..."
+  storageKey="ventas-ordenes-pedido"
+  (onNew)="handleNew()"
+  (onAction)="handleAction($event)"
+/>

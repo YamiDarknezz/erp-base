@@ -133,3 +133,18 @@ Toda la documentación técnica del proyecto se encuentra centralizada y ordenad
 
 - **Build de producción**: `ng build` exitoso con hook `prebuild` (0 errores, Service Worker generado, assets listos).
 - **Tests unitarios**: `ng test --watch=false` ejecutado con Vitest (100% pasando).
+
+---
+
+## 🎯 Directivas de Calidad y Arquitectura de Código
+
+1. **Separación de Plantillas (PROHIBIDO HTML en archivos `.ts`)**:
+   - Cada componente debe mantener su archivo de plantilla `.html` y hoja de estilos `.scss` independientes.
+   - Está prohibido el uso de plantillas inline (`template: ...`) en `.ts`.
+2. **Componente Reutilizable DataGrid**:
+   - Centraliza el diseño enterprise de grilla con cabecera azul, líneas divisorias verticales, microbotones de icono, toolbar superior y pie de conteo.
+   - Soporta columna `ACCIONES` fija flotante (`sticky right-0`) para conservar visibilidad al desplazarse horizontalmente.
+   - Panel de configuración de visibilidad de columnas funcional en runtime.
+3. **Márgenes y Diagramación**:
+   - Margen perimetral discreto (`p-1.5` o `p-2`) alrededor del contenedor de la grilla.
+   - Cero títulos duplicados en el cuerpo: el título/ruta se mantiene únicamente en la barra superior.
