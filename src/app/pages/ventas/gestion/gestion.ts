@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, ChangeDetectionStrategy } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 
 export interface Cliente {
@@ -14,6 +14,7 @@ export interface Cliente {
 @Component({
   selector: 'app-gestion',
   imports: [DecimalPipe],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="p-4 sm:p-6 space-y-4 max-w-7xl mx-auto w-full">
       <div class="flex items-center justify-between">

@@ -9,6 +9,7 @@ Este archivo registra el historial cronológico de versiones, hashes de compilac
 | Versión | Build ID | Fecha / Hora (UTC) | Descripción del Cambio | Estado |
 | :--- | :--- | :--- | :--- | :--- |
 <!-- VERSION_ENTRIES -->
+| v0.0.2 | `fddfebb74ff9` | 2026-11-08T01:26:24.088Z | Optimización global: animación fluida izquierda-derecha del sidebar, submenús minimizados por defecto, eliminación de scroll parásito en dashboard, OnPush en todos los componentes | Activo |
 | v0.0.1 | `7e23e3e5ef3e` | 2026-11-08T01:20:27.247Z | Build generado automáticamente | Activo |
 | v0.0.1 | `dacb3beacee9` | 2026-11-08T01:18:46.867Z | Build generado automáticamente | Activo |
 | v0.0.1 | `2d50f88075ad` | 2026-11-08T01:17:44.803Z | Build generado automáticamente | Activo |

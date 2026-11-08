@@ -1,4 +1,4 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DecimalPipe } from '@angular/common';
 
@@ -16,6 +16,7 @@ export interface Pedido {
   selector: 'app-pedidos',
   imports: [FormsModule, DecimalPipe],
   templateUrl: './pedidos.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Pedidos {
   protected readonly searchQuery = signal('');

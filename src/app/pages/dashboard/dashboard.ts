@@ -1,4 +1,5 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, ChangeDetectionStrategy } from '@angular/core';
+import { APP_BUILD } from '../../core/version/app-build';
 
 export interface AlertItem {
   id: string;
@@ -11,8 +12,10 @@ export interface AlertItem {
   selector: 'app-dashboard',
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Dashboard {
+  protected readonly appVersion = signal(APP_BUILD.version || '0.0.2');
   protected readonly isRefreshing = signal(false);
   protected readonly lastUpdated = signal(this.formatTimestamp(new Date()));
 

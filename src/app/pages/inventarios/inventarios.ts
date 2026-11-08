@@ -1,4 +1,4 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 export interface ArticuloInventario {
@@ -15,6 +15,7 @@ export interface ArticuloInventario {
 @Component({
   selector: 'app-inventarios',
   imports: [FormsModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="p-4 sm:p-6 space-y-4 max-w-7xl mx-auto w-full">
       <div class="flex items-center justify-between">

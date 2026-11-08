@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { filter } from 'rxjs/operators';
@@ -44,6 +44,7 @@ export interface NotificationItem {
   imports: [RouterOutlet, FormsModule],
   templateUrl: './shell.html',
   styleUrl: './shell.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Shell {
   private readonly auth = inject(AuthService);
@@ -52,15 +53,15 @@ export class Shell {
   protected readonly pwa = inject(PwaInstallService);
 
   // App Build & Version
-  protected readonly appVersion = signal(APP_BUILD.version || '0.0.1');
+  protected readonly appVersion = signal(APP_BUILD.version || '0.0.2');
 
   // Sidebar starts CLOSED as requested
   protected readonly sidebarOpen = signal(false);
   protected readonly notificationsOpen = signal(false);
 
-  // Expanded menu accordion state (Ventas -> Preventa active by default)
-  protected readonly expandedSection = signal<string | null>('ventas');
-  protected readonly expandedGroup = signal<string | null>('preventa');
+  // Expanded menu accordion state (all closed / minimized by default)
+  protected readonly expandedSection = signal<string | null>(null);
+  protected readonly expandedGroup = signal<string | null>(null);
   protected readonly searchQuery = signal('');
 
   // Active module title in header based on current route

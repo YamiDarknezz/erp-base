@@ -193,17 +193,23 @@
   <div class="flex-1 relative overflow-hidden flex">
 
     <!-- ── SIDEBAR FLOTANTE / OVERLAY (POR ENCIMA SIN EMPUJAR) ── -->
-    @if (sidebarOpen()) {
-      <!-- Backdrop transparente para cerrar al hacer clic afuera sin oscurecer agresivamente -->
-      <div
-        (click)="closeSidebar()"
-        class="fixed inset-0 top-11 z-35 bg-black/15 dark:bg-black/35 backdrop-blur-[0.5px] transition-opacity"
-      ></div>
+    <!-- Backdrop transparente para cerrar al hacer clic afuera sin oscurecer agresivamente -->
+    <div
+      (click)="closeSidebar()"
+      class="sidebar-overlay-backdrop fixed inset-0 top-11 z-35 bg-black/20 dark:bg-black/40 backdrop-blur-[0.5px]"
+      [class.opacity-100]="sidebarOpen()"
+      [class.pointer-events-auto]="sidebarOpen()"
+      [class.opacity-0]="!sidebarOpen()"
+      [class.pointer-events-none]="!sidebarOpen()"
+      aria-hidden="true"
+    ></div>
 
-      <!-- Drawer Lateral Flotante (Exacto al Screenshot de Referencia) -->
-      <aside
-        class="fixed top-11 left-0 bottom-0 w-72 bg-surface border-r border-outline shadow-2xl z-40 flex flex-col justify-between overflow-hidden animate-in slide-in-from-left duration-150 select-none"
-      >
+    <!-- Drawer Lateral Flotante (Deslizamiento rápido y fluido de izquierda a derecha) -->
+    <aside
+      class="sidebar-overlay-drawer fixed top-11 left-0 bottom-0 w-72 bg-surface border-r border-outline shadow-2xl z-40 flex flex-col justify-between overflow-hidden select-none"
+      [class.translate-x-0]="sidebarOpen()"
+      [class.-translate-x-full]="!sidebarOpen()"
+    >
         <!-- Contenido scrolleable -->
         <div class="flex-1 overflow-y-auto px-2.5 py-2.5 space-y-0.5">
           
@@ -526,7 +532,6 @@
         </div>
 
       </aside>
-    }
 
     <!-- ── ESPACIO DE TRABAJO PRINCIPAL (NO AFECTADO NI EMPUJADO POR EL SIDEBAR) ── -->
     <main class="flex-1 w-full h-full overflow-y-auto">
