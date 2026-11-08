@@ -97,3 +97,18 @@ Inspirado en la cabecera corporativa de sistemas ERP de alto rendimiento (refere
 4. **Configuración Real de Columnas**: El botón y pestaña de "Configurar columnas" debe ser funcional en runtime (permitir mostrar/ocultar columnas dinámicamente con persistencia).
 5. **Margen Perimetral**: El contenedor de las grillas debe mantener un margen discreto (`p-1.5` o `p-2`) respecto a los bordes de la ventana para un encuadre visual óptimo.
 6. **Cero Títulos Duplicados**: La ubicación del módulo reside exclusivamente en la TopBar / Header (`VENTAS \ GESTIÓN`); no debe repetirse en el cuerpo de la página.
+
+---
+
+## 🏛️ 8. Arquitectura Desacoplada: Cero Datos Hardcodeados en Componentes
+
+1. **Inyección Obligatoria de Servicios**:
+   - Queda estrictamente prohibido incrustar arrays o datos mock directamente dentro de los componentes UI (`pages/`, `shared/components/`).
+   - Todo componente debe inyectar su servicio de dominio (`SalesService`, `InvoiceService`, `CollectionService`, `ClientService`, `ProductService`) o de contexto (`CompanyConfigService`, `UserContextService`, `BranchContextService`, `NotificationService`).
+2. **Semillas de Datos Aisladas**:
+   - Toda información inicial o de prueba reside en `src/app/core/data/*.seed.ts`.
+   - Esto permite purgar datos o conectar endpoints de API reales sin modificar la interfaz de usuario.
+3. **Identidad Dinámica (Marca y Logo)**:
+   - Razón social, RUC, portal web y logotipos corporativos derivan exclusivamente de `CompanyConfigService`.
+   - El componente `ErpLogo` soporta logotipos dinámicos por URL/imagen o isotipo vectorial SVG institucional.
+4. **Referencia Técnica**: Consulte [`docs/ARQUITECTURA_CENTRALIZACION_Y_DATOS.md`](file:///c:/Users/Erick/Documents/Proyectos/YamiDarknezz\erp-base/docs/ARQUITECTURA_CENTRALIZACION_Y_DATOS.md) para detalles sobre la estructura y conexión a APIs.
