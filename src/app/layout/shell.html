@@ -1,5 +1,13 @@
 <div class="h-screen flex flex-col bg-surface-alt text-on-surface overflow-hidden">
 
+  <!-- Backdrop global transparente para notificaciones y sedes (cierra al hacer clic en cualquier parte fuera) -->
+  @if (notificationsOpen()) {
+    <div class="fixed inset-0 z-40 bg-transparent" (click)="closeNotifications()"></div>
+  }
+  @if (branchSelectorOpen()) {
+    <div class="fixed inset-0 z-40 bg-transparent" (click)="branchSelectorOpen.set(false)"></div>
+  }
+
   <!-- ═══════════════════════════════════════════════════════════ -->
   <!-- 1. TOP BAR / HEADER CORPORATIVO (Fijo, Angosto h-11)        -->
   <!-- ═══════════════════════════════════════════════════════════ -->
@@ -60,7 +68,8 @@
           <span class="font-bold text-[10.5px] truncate max-w-[140px] lg:max-w-[180px]">{{ selectedBranch() }}</span>
           <button
             type="button"
-            (click)="toggleBranchSelector()"
+            id="branch-selector-btn"
+            (click)="toggleBranchSelector($event)"
             title="Cambiar sede o sucursal operativa"
             aria-label="Cambiar sede operativa"
             class="w-5 h-5 rounded-full flex items-center justify-center hover:bg-surface text-on-surface-variant cursor-pointer active:scale-90 transition-all"
@@ -72,8 +81,7 @@
         </div>
 
         @if (branchSelectorOpen()) {
-          <div class="fixed inset-0 z-40" (click)="branchSelectorOpen.set(false)"></div>
-          <div class="absolute right-0 top-full mt-1.5 w-[calc(100vw-1.5rem)] sm:w-64 max-w-xs rounded-2xl bg-surface/95 backdrop-blur-xl border border-outline/70 shadow-2xl z-50 p-2 animate-in fade-in zoom-in-95 duration-150">
+          <div id="branch-selector-popover" class="absolute right-0 top-full mt-1.5 w-[calc(100vw-1.5rem)] sm:w-64 max-w-xs rounded-2xl bg-surface/95 backdrop-blur-xl border border-outline/70 shadow-2xl z-50 p-2 animate-in fade-in zoom-in-95 duration-150">
             <div class="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-primary border-b border-outline/60 mb-1">
               Sedes Operativas
             </div>
@@ -131,7 +139,8 @@
         <div class="relative">
           <button
             type="button"
-            (click)="toggleNotifications()"
+            id="notifications-btn"
+            (click)="toggleNotifications($event)"
             title="Centro de notificaciones"
             aria-label="Centro de notificaciones"
             class="w-7 h-7 sm:w-7.5 sm:h-7.5 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-muted/70 active:scale-95 transition-all relative cursor-pointer"
@@ -145,10 +154,7 @@
 
           <!-- Popover de Notificaciones con Cierre Automático al Hacer Clic Fuera (Tarjeta Apple) -->
           @if (notificationsOpen()) {
-            <!-- Backdrop transparente para cerrar al hacer clic en cualquier parte fuera -->
-            <div class="fixed inset-0 z-40" (click)="closeNotifications()"></div>
-
-            <div class="absolute right-0 mt-1.5 w-[calc(100vw-1.5rem)] sm:w-84 max-w-sm rounded-2xl bg-surface/95 backdrop-blur-xl border border-outline/70 shadow-2xl z-50 p-3.5 animate-in fade-in zoom-in-95 duration-150">
+            <div id="notifications-popover" class="absolute right-0 mt-1.5 w-[calc(100vw-1.5rem)] sm:w-84 max-w-sm rounded-2xl bg-surface/95 backdrop-blur-xl border border-outline/70 shadow-2xl z-50 p-3.5 animate-in fade-in zoom-in-95 duration-150">
               <div class="flex items-center justify-between pb-2 border-b border-outline/60">
                 <div class="flex items-center gap-1.5">
                   <span class="text-[11px] font-bold text-on-surface uppercase tracking-wider">Centro de Notificaciones</span>
@@ -331,48 +337,77 @@
             </div>
           </div>
 
-          <!-- 1. Favoritos -->
-          <div
-            (click)="navigateTo('/dashboard')"
-            class="flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-on-surface-variant hover:text-on-surface hover:bg-surface-muted cursor-pointer transition-colors"
-          >
-            <svg class="w-4 h-4 text-primary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-            </svg>
-            <span>Favoritos</span>
-          </div>
-
-          <!-- 2. Seteos Iniciales -->
+          <!-- 1. Favoritos (Sección interactiva con contador y listado dinámico) -->
           <div>
             <div
-              (click)="toggleSection('seteos')"
-              class="flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-semibold text-on-surface-variant hover:text-on-surface hover:bg-surface-muted cursor-pointer transition-colors"
+              (click)="toggleSection('favoritos')"
+              class="flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-colors"
+              [class.bg-surface-muted]="expandedSection() === 'favoritos'"
+              [class.text-primary]="expandedSection() === 'favoritos'"
+              [class.text-on-surface-variant]="expandedSection() !== 'favoritos'"
             >
               <div class="flex items-center gap-2.5">
-                <svg class="w-4 h-4 text-primary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <line x1="4" y1="21" x2="4" y2="14" /><line x1="4" y1="10" x2="4" y2="3" />
-                  <line x1="12" y1="21" x2="12" y2="12" /><line x1="12" y1="8" x2="12" y2="3" />
-                  <line x1="20" y1="21" x2="20" y2="16" /><line x1="20" y1="12" x2="20" y2="3" />
-                  <line x1="1" y1="14" x2="7" y2="14" /><line x1="9" y1="8" x2="15" y2="8" /><line x1="17" y1="16" x2="23" y2="16" />
+                <svg class="w-4 h-4 text-warning fill-warning/20 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
                 </svg>
-                <span>Seteos Iniciales</span>
+                <span class="font-bold">Favoritos</span>
               </div>
-              <svg class="w-3.5 h-3.5 text-primary transition-transform duration-200" [class.rotate-180]="expandedSection() === 'seteos'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="6 9 12 15 18 9" />
-              </svg>
+              <div class="flex items-center gap-1.5">
+                @if (favoriteItems().length > 0) {
+                  <span class="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-warning/15 text-warning font-bold">
+                    {{ favoriteItems().length }}
+                  </span>
+                }
+                <svg class="w-3.5 h-3.5 text-primary transition-transform duration-200" [class.rotate-180]="expandedSection() === 'favoritos'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </div>
             </div>
+
+            @if (expandedSection() === 'favoritos') {
+              <div class="space-y-0.5 mt-0.5 ml-3 pl-2 border-l border-warning/30 animate-in fade-in duration-100">
+                @for (fav of favoriteItems(); track fav.path) {
+                  <div
+                    (click)="navigateTo(fav.path)"
+                    class="group flex items-center justify-between px-2 py-1.5 rounded-md text-xs font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-muted cursor-pointer transition-colors"
+                    [class.text-primary]="currentUrl().includes(fav.path)"
+                    [class.font-bold]="currentUrl().includes(fav.path)"
+                  >
+                    <div class="flex items-center gap-2 min-w-0">
+                      <svg class="w-3.5 h-3.5 text-warning shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                      </svg>
+                      <span class="truncate">{{ fav.title }}</span>
+                    </div>
+                    <button
+                      type="button"
+                      (click)="toggleFavorite(fav.path, $event)"
+                      title="Quitar de favoritos"
+                      aria-label="Quitar de favoritos"
+                      class="p-0.5 rounded text-on-surface-muted hover:text-danger active:scale-90 transition-all cursor-pointer"
+                    >
+                      <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                      </svg>
+                    </button>
+                  </div>
+                } @empty {
+                  <div class="px-2 py-2 text-[11px] text-on-surface-muted italic">
+                    Sin favoritos. Presione la estrella en cualquier opción para fijarla aquí.
+                  </div>
+                }
+              </div>
+            }
           </div>
 
-          <!-- 3. Ventas (Expandido con diseño idéntico al screenshot) -->
+          <!-- 2. Ventas -->
           <div>
             <!-- Header Ventas -->
             <div
               (click)="toggleSection('ventas')"
               class="flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-colors"
-              [class.bg-slate-200]="expandedSection() === 'ventas' && !theme.isDark()"
-              [class.text-slate-900]="expandedSection() === 'ventas' && !theme.isDark()"
-              [class.bg-slate-800]="expandedSection() === 'ventas' && theme.isDark()"
-              [class.text-white]="expandedSection() === 'ventas' && theme.isDark()"
+              [class.bg-surface-muted]="expandedSection() === 'ventas'"
+              [class.text-primary]="currentUrl().includes('/ventas')"
               [class.text-on-surface-variant]="expandedSection() !== 'ventas'"
             >
               <div class="flex items-center gap-2.5">
@@ -387,34 +422,43 @@
               </svg>
             </div>
 
-            <!-- Subitems de Ventas -->
+            <!-- Subitems de Ventas (Con contenedor estandarizado ml-3 pl-2 border-l border-primary/25) -->
             @if (expandedSection() === 'ventas') {
-              <div class="space-y-0.5 mt-0.5 animate-in fade-in duration-100">
+              <div class="space-y-0.5 mt-0.5 ml-3 pl-2 border-l border-primary/25 animate-in fade-in duration-100">
                 
-                <!-- 3.1 Indicadores -->
+                <!-- 2.1 Indicadores (Pestaña terminal: NO tiene chevron, TIENE estrella de favorito) -->
                 <div
                   (click)="navigateTo('/dashboard')"
-                  class="flex items-center justify-between pl-7 pr-2.5 py-1.5 rounded-md text-xs font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-muted cursor-pointer transition-colors"
+                  class="group flex items-center justify-between px-2 py-1.5 rounded-md text-xs font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-muted cursor-pointer transition-colors"
+                  [class.text-primary]="currentUrl() === '/dashboard'"
+                  [class.font-bold]="currentUrl() === '/dashboard'"
                 >
-                  <div class="flex items-center gap-2">
+                  <div class="flex items-center gap-2 min-w-0">
                     <svg class="w-3.5 h-3.5 text-primary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                       <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
                       <polyline points="17 6 23 6 23 12" />
                     </svg>
-                    <span>Indicadores</span>
+                    <span class="truncate">Indicadores</span>
                   </div>
-                  <svg class="w-3.5 h-3.5 text-primary opacity-60 hover:opacity-100" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                  </svg>
+                  <button
+                    type="button"
+                    (click)="toggleFavorite('/dashboard', $event)"
+                    [title]="isFavorite('/dashboard') ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+                    [aria-label]="isFavorite('/dashboard') ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+                    class="p-0.5 rounded text-on-surface-muted hover:text-warning transition-colors"
+                  >
+                    <svg class="w-3.5 h-3.5 shrink-0" [class.fill-warning]="isFavorite('/dashboard')" [class.text-warning]="isFavorite('/dashboard')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                    </svg>
+                  </button>
                 </div>
 
-                <!-- 3.2 Preventa (Operativo con icono flecha ⤵ y subitems) -->
+                <!-- 2.2 Preventa (Submenú desplegable: TIENE chevron, NO tiene estrella directa) -->
                 <div>
                   <div
                     (click)="toggleGroup('preventa')"
-                    class="flex items-center justify-between pl-6 pr-2.5 py-1.5 rounded-md text-xs font-semibold cursor-pointer transition-colors"
-                    [class.bg-slate-200/70]="expandedGroup() === 'preventa' && !theme.isDark()"
-                    [class.bg-slate-800/80]="expandedGroup() === 'preventa' && theme.isDark()"
+                    class="flex items-center justify-between px-2 py-1.5 rounded-md text-xs font-semibold cursor-pointer transition-colors"
+                    [class.bg-surface-muted]="expandedGroup() === 'preventa'"
                     [class.text-on-surface]="expandedGroup() === 'preventa'"
                     [class.text-on-surface-variant]="expandedGroup() !== 'preventa'"
                   >
@@ -429,101 +473,151 @@
                     </svg>
                   </div>
 
-                  <!-- Sub-opciones de Preventa (Órdenes de Pedido, Pedidos, Controles y Ajustes) -->
+                  <!-- Sub-opciones de Preventa (Tercer Nivel con micro-icono + estrella de favoritos) -->
                   @if (expandedGroup() === 'preventa') {
-                    <div class="space-y-0.5 ml-4 pl-4 border-l border-primary/30 mt-0.5 py-0.5">
+                    <div class="space-y-0.5 ml-3 pl-2 border-l border-primary/20 mt-0.5 py-0.5">
+                      <!-- Órdenes de Pedido -->
                       <div
                         (click)="navigateTo('/ventas/ordenes-pedido')"
-                        class="flex items-center justify-between pr-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
+                        class="group flex items-center justify-between px-2 py-1.2 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
                         [class.text-primary]="currentUrl().includes('/ventas/ordenes-pedido')"
                         [class.font-bold]="currentUrl().includes('/ventas/ordenes-pedido')"
                       >
-                        <div class="flex items-center gap-2">
-                          <svg class="w-3.5 h-3.5 text-primary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="9 18 15 12 9 6" />
+                        <div class="flex items-center gap-2 min-w-0">
+                          <svg class="w-3 h-3 text-primary/80 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" />
                           </svg>
-                          <span>Órdenes de Pedido</span>
+                          <span class="truncate">Órdenes de Pedido</span>
                         </div>
-                        <svg class="w-3 h-3 text-primary opacity-50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                        </svg>
+                        <button
+                          type="button"
+                          (click)="toggleFavorite('/ventas/ordenes-pedido', $event)"
+                          [title]="isFavorite('/ventas/ordenes-pedido') ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+                          [aria-label]="isFavorite('/ventas/ordenes-pedido') ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+                          class="p-0.5 rounded text-on-surface-muted hover:text-warning transition-colors"
+                        >
+                          <svg class="w-3 h-3 shrink-0" [class.fill-warning]="isFavorite('/ventas/ordenes-pedido')" [class.text-warning]="isFavorite('/ventas/ordenes-pedido')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                          </svg>
+                        </button>
                       </div>
 
+                      <!-- Pedidos -->
                       <div
                         (click)="navigateTo('/ventas/preventa/pedidos')"
-                        class="flex items-center justify-between pr-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
+                        class="group flex items-center justify-between px-2 py-1.2 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
                         [class.text-primary]="currentUrl().includes('/ventas/preventa/pedidos')"
                         [class.font-bold]="currentUrl().includes('/ventas/preventa/pedidos')"
                       >
-                        <div class="flex items-center gap-2">
-                          <svg class="w-3.5 h-3.5 text-primary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="9 18 15 12 9 6" />
+                        <div class="flex items-center gap-2 min-w-0">
+                          <svg class="w-3 h-3 text-primary/80 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" /><line x1="3" y1="6" x2="21" y2="6" /><path d="M16 10a4 4 0 0 1-8 0" />
                           </svg>
-                          <span>Pedidos</span>
+                          <span class="truncate">Pedidos</span>
                         </div>
-                        <svg class="w-3 h-3 text-primary opacity-50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                        </svg>
+                        <button
+                          type="button"
+                          (click)="toggleFavorite('/ventas/preventa/pedidos', $event)"
+                          [title]="isFavorite('/ventas/preventa/pedidos') ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+                          [aria-label]="isFavorite('/ventas/preventa/pedidos') ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+                          class="p-0.5 rounded text-on-surface-muted hover:text-warning transition-colors"
+                        >
+                          <svg class="w-3 h-3 shrink-0" [class.fill-warning]="isFavorite('/ventas/preventa/pedidos')" [class.text-warning]="isFavorite('/ventas/preventa/pedidos')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                          </svg>
+                        </button>
                       </div>
 
+                      <!-- Controles y Ajustes -->
                       <div
                         (click)="navigateTo('/ventas/preventa/pedidos')"
-                        class="flex items-center justify-between pr-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
+                        class="group flex items-center justify-between px-2 py-1.2 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
                       >
-                        <div class="flex items-center gap-2">
-                          <svg class="w-3.5 h-3.5 text-primary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="9 18 15 12 9 6" />
+                        <div class="flex items-center gap-2 min-w-0">
+                          <svg class="w-3 h-3 text-primary/80 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="4" y1="21" x2="4" y2="14" /><line x1="4" y1="10" x2="4" y2="3" />
+                            <line x1="12" y1="21" x2="12" y2="12" /><line x1="12" y1="8" x2="12" y2="3" />
+                            <line x1="20" y1="21" x2="20" y2="16" /><line x1="20" y1="12" x2="20" y2="3" />
+                            <line x1="1" y1="14" x2="7" y2="14" /><line x1="9" y1="8" x2="15" y2="8" /><line x1="17" y1="16" x2="23" y2="16" />
                           </svg>
-                          <span>Controles y Ajustes</span>
+                          <span class="truncate">Controles y Ajustes</span>
                         </div>
-                        <svg class="w-3 h-3 text-primary opacity-50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                        </svg>
+                        <button
+                          type="button"
+                          (click)="toggleFavorite('/ventas/preventa/pedidos', $event)"
+                          [title]="isFavorite('/ventas/preventa/pedidos') ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+                          [aria-label]="isFavorite('/ventas/preventa/pedidos') ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+                          class="p-0.5 rounded text-on-surface-muted hover:text-warning transition-colors"
+                        >
+                          <svg class="w-3 h-3 shrink-0" [class.fill-warning]="isFavorite('/ventas/preventa/pedidos')" [class.text-warning]="isFavorite('/ventas/preventa/pedidos')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                          </svg>
+                        </button>
                       </div>
                     </div>
                   }
                 </div>
 
-                <!-- 3.3 Facturación (Icono ⤵) -->
+                <!-- 2.3 Facturación (Pestaña terminal: NO tiene chevron, TIENE estrella de favorito) -->
                 <div
                   (click)="navigateTo('/ventas/facturacion')"
-                  class="flex items-center justify-between pl-6 pr-2.5 py-1.5 rounded-md text-xs font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-muted cursor-pointer transition-colors"
+                  class="group flex items-center justify-between px-2 py-1.5 rounded-md text-xs font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-muted cursor-pointer transition-colors"
                   [class.text-primary]="currentUrl().includes('/ventas/facturacion')"
                   [class.font-bold]="currentUrl().includes('/ventas/facturacion')"
                 >
-                  <div class="flex items-center gap-2">
+                  <div class="flex items-center gap-2 min-w-0">
                     <svg class="w-3.5 h-3.5 text-primary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <polyline points="19 14 12 21 5 14" /><line x1="12" y1="3" x2="12" y2="21" />
+                      <rect x="2" y="5" width="20" height="14" rx="2" />
+                      <line x1="2" y1="10" x2="22" y2="10" />
                     </svg>
-                    <span>Facturación</span>
+                    <span class="truncate">Facturación</span>
                   </div>
-                  <svg class="w-3.5 h-3.5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="6 9 12 15 18 9" />
-                  </svg>
+                  <button
+                    type="button"
+                    (click)="toggleFavorite('/ventas/facturacion', $event)"
+                    [title]="isFavorite('/ventas/facturacion') ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+                    [aria-label]="isFavorite('/ventas/facturacion') ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+                    class="p-0.5 rounded text-on-surface-muted hover:text-warning transition-colors"
+                  >
+                    <svg class="w-3.5 h-3.5 shrink-0" [class.fill-warning]="isFavorite('/ventas/facturacion')" [class.text-warning]="isFavorite('/ventas/facturacion')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                    </svg>
+                  </button>
                 </div>
 
-                <!-- 3.4 Trade Spend (Icono ⤵) -->
+                <!-- 2.4 Trade Spend (Pestaña terminal: NO tiene chevron, TIENE estrella de favorito) -->
                 <div
                   (click)="navigateTo('/ventas/preventa/pedidos')"
-                  class="flex items-center justify-between pl-6 pr-2.5 py-1.5 rounded-md text-xs font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-muted cursor-pointer transition-colors"
+                  class="group flex items-center justify-between px-2 py-1.5 rounded-md text-xs font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-muted cursor-pointer transition-colors"
                 >
-                  <div class="flex items-center gap-2">
+                  <div class="flex items-center gap-2 min-w-0">
                     <svg class="w-3.5 h-3.5 text-primary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <polyline points="19 14 12 21 5 14" /><line x1="12" y1="3" x2="12" y2="21" />
+                      <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
+                      <line x1="7" y1="7" x2="7.01" y2="7" />
                     </svg>
-                    <span>Trade Spend</span>
+                    <span class="truncate">Trade Spend</span>
                   </div>
-                  <svg class="w-3.5 h-3.5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="6 9 12 15 18 9" />
-                  </svg>
+                  <button
+                    type="button"
+                    (click)="toggleFavorite('/ventas/preventa/pedidos', $event)"
+                    [title]="isFavorite('/ventas/preventa/pedidos') ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+                    [aria-label]="isFavorite('/ventas/preventa/pedidos') ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+                    class="p-0.5 rounded text-on-surface-muted hover:text-warning transition-colors"
+                  >
+                    <svg class="w-3.5 h-3.5 shrink-0" [class.fill-warning]="isFavorite('/ventas/preventa/pedidos')" [class.text-warning]="isFavorite('/ventas/preventa/pedidos')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                    </svg>
+                  </button>
                 </div>
 
-                <!-- 3.5 Reportes de Ventas (Icono Documento 📋) Desplegable con Submódulos -->
+                <!-- 2.5 Reportes de Ventas (Submenú desplegable: TIENE chevron, NO tiene estrella directa) -->
                 <div>
                   <div
                     (click)="toggleGroup('reportes-ventas')"
-                    class="flex items-center justify-between pl-6 pr-2.5 py-1.5 rounded-md text-xs font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-muted cursor-pointer transition-colors"
+                    class="flex items-center justify-between px-2 py-1.5 rounded-md text-xs font-semibold cursor-pointer transition-colors"
                     [class.bg-surface-muted]="expandedGroup() === 'reportes-ventas'"
+                    [class.text-on-surface]="expandedGroup() === 'reportes-ventas'"
+                    [class.text-on-surface-variant]="expandedGroup() !== 'reportes-ventas'"
                   >
                     <div class="flex items-center gap-2">
                       <svg class="w-3.5 h-3.5 text-primary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -539,41 +633,96 @@
                   </div>
 
                   @if (expandedGroup() === 'reportes-ventas') {
-                    <div class="space-y-0.5 ml-8 pl-3 border-l border-primary/30 mt-0.5 py-0.5">
+                    <div class="space-y-0.5 ml-3 pl-2 border-l border-primary/20 mt-0.5 py-0.5">
+                      <!-- Comprobantes -->
                       <div
                         (click)="navigateTo('/ventas/reportes/comprobantes')"
-                        class="flex items-center justify-between pr-2 py-1 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
+                        class="group flex items-center justify-between px-2 py-1.2 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
                         [class.text-primary]="currentUrl().includes('/ventas/reportes/comprobantes')"
                         [class.font-bold]="currentUrl().includes('/ventas/reportes/comprobantes')"
                       >
-                        <span>Comprobantes</span>
+                        <div class="flex items-center gap-2 min-w-0">
+                          <svg class="w-3 h-3 text-primary/80 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="5" width="20" height="14" rx="2" /><line x1="2" y1="10" x2="22" y2="10" />
+                          </svg>
+                          <span class="truncate">Comprobantes</span>
+                        </div>
+                        <button
+                          type="button"
+                          (click)="toggleFavorite('/ventas/reportes/comprobantes', $event)"
+                          [title]="isFavorite('/ventas/reportes/comprobantes') ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+                          [aria-label]="isFavorite('/ventas/reportes/comprobantes') ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+                          class="p-0.5 rounded text-on-surface-muted hover:text-warning transition-colors"
+                        >
+                          <svg class="w-3 h-3 shrink-0" [class.fill-warning]="isFavorite('/ventas/reportes/comprobantes')" [class.text-warning]="isFavorite('/ventas/reportes/comprobantes')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                          </svg>
+                        </button>
                       </div>
+
+                      <!-- Pedidos -->
                       <div
                         (click)="navigateTo('/ventas/reportes/pedidos')"
-                        class="flex items-center justify-between pr-2 py-1 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
+                        class="group flex items-center justify-between px-2 py-1.2 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
                         [class.text-primary]="currentUrl().includes('/ventas/reportes/pedidos')"
                         [class.font-bold]="currentUrl().includes('/ventas/reportes/pedidos')"
                       >
-                        <span>Pedidos</span>
+                        <div class="flex items-center gap-2 min-w-0">
+                          <svg class="w-3 h-3 text-primary/80 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" /><polyline points="17 6 23 6 23 12" />
+                          </svg>
+                          <span class="truncate">Pedidos</span>
+                        </div>
+                        <button
+                          type="button"
+                          (click)="toggleFavorite('/ventas/reportes/pedidos', $event)"
+                          [title]="isFavorite('/ventas/reportes/pedidos') ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+                          [aria-label]="isFavorite('/ventas/reportes/pedidos') ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+                          class="p-0.5 rounded text-on-surface-muted hover:text-warning transition-colors"
+                        >
+                          <svg class="w-3 h-3 shrink-0" [class.fill-warning]="isFavorite('/ventas/reportes/pedidos')" [class.text-warning]="isFavorite('/ventas/reportes/pedidos')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                          </svg>
+                        </button>
                       </div>
+
+                      <!-- Comisiones -->
                       <div
                         (click)="navigateTo('/ventas/reportes/comisiones')"
-                        class="flex items-center justify-between pr-2 py-1 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
+                        class="group flex items-center justify-between px-2 py-1.2 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
                         [class.text-primary]="currentUrl().includes('/ventas/reportes/comisiones')"
                         [class.font-bold]="currentUrl().includes('/ventas/reportes/comisiones')"
                       >
-                        <span>Comisiones</span>
+                        <div class="flex items-center gap-2 min-w-0">
+                          <svg class="w-3 h-3 text-primary/80 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="19" y1="5" x2="5" y2="19" /><circle cx="6.5" cy="6.5" r="2.5" /><circle cx="17.5" cy="17.5" r="2.5" />
+                          </svg>
+                          <span class="truncate">Comisiones</span>
+                        </div>
+                        <button
+                          type="button"
+                          (click)="toggleFavorite('/ventas/reportes/comisiones', $event)"
+                          [title]="isFavorite('/ventas/reportes/comisiones') ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+                          [aria-label]="isFavorite('/ventas/reportes/comisiones') ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+                          class="p-0.5 rounded text-on-surface-muted hover:text-warning transition-colors"
+                        >
+                          <svg class="w-3 h-3 shrink-0" [class.fill-warning]="isFavorite('/ventas/reportes/comisiones')" [class.text-warning]="isFavorite('/ventas/reportes/comisiones')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                          </svg>
+                        </button>
                       </div>
                     </div>
                   }
                 </div>
 
-                <!-- 3.6 Gestión de Ventas (Icono Engranaje ⚙️) Desplegable con Submódulos -->
+                <!-- 2.6 Gestión de Ventas (Submenú desplegable: TIENE chevron, NO tiene estrella directa) -->
                 <div>
                   <div
                     (click)="toggleGroup('gestion-ventas')"
-                    class="flex items-center justify-between pl-6 pr-2.5 py-1.5 rounded-md text-xs font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-muted cursor-pointer transition-colors"
+                    class="flex items-center justify-between px-2 py-1.5 rounded-md text-xs font-semibold cursor-pointer transition-colors"
                     [class.bg-surface-muted]="expandedGroup() === 'gestion-ventas'"
+                    [class.text-on-surface]="expandedGroup() === 'gestion-ventas'"
+                    [class.text-on-surface-variant]="expandedGroup() !== 'gestion-ventas'"
                   >
                     <div class="flex items-center gap-2">
                       <svg class="w-3.5 h-3.5 text-primary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -588,30 +737,84 @@
                   </div>
 
                   @if (expandedGroup() === 'gestion-ventas') {
-                    <div class="space-y-0.5 ml-8 pl-3 border-l border-primary/30 mt-0.5 py-0.5">
+                    <div class="space-y-0.5 ml-3 pl-2 border-l border-primary/20 mt-0.5 py-0.5">
+                      <!-- Clientes y Proveedores -->
                       <div
                         (click)="navigateTo('/ventas/gestion/clientes')"
-                        class="flex items-center justify-between pr-2 py-1 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
+                        class="group flex items-center justify-between px-2 py-1.2 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
                         [class.text-primary]="currentUrl().includes('/ventas/gestion/clientes')"
                         [class.font-bold]="currentUrl().includes('/ventas/gestion/clientes')"
                       >
-                        <span>Clientes y Proveedores</span>
+                        <div class="flex items-center gap-2 min-w-0">
+                          <svg class="w-3 h-3 text-primary/80 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" />
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                          </svg>
+                          <span class="truncate">Clientes y Proveedores</span>
+                        </div>
+                        <button
+                          type="button"
+                          (click)="toggleFavorite('/ventas/gestion/clientes', $event)"
+                          [title]="isFavorite('/ventas/gestion/clientes') ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+                          [aria-label]="isFavorite('/ventas/gestion/clientes') ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+                          class="p-0.5 rounded text-on-surface-muted hover:text-warning transition-colors"
+                        >
+                          <svg class="w-3 h-3 shrink-0" [class.fill-warning]="isFavorite('/ventas/gestion/clientes')" [class.text-warning]="isFavorite('/ventas/gestion/clientes')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                          </svg>
+                        </button>
                       </div>
+
+                      <!-- Personal Comercial -->
                       <div
                         (click)="navigateTo('/ventas/gestion/personal-comercial')"
-                        class="flex items-center justify-between pr-2 py-1 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
+                        class="group flex items-center justify-between px-2 py-1.2 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
                         [class.text-primary]="currentUrl().includes('/ventas/gestion/personal-comercial')"
                         [class.font-bold]="currentUrl().includes('/ventas/gestion/personal-comercial')"
                       >
-                        <span>Personal Comercial</span>
+                        <div class="flex items-center gap-2 min-w-0">
+                          <svg class="w-3 h-3 text-primary/80 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="8.5" cy="7" r="4" /><polyline points="17 11 19 13 23 9" />
+                          </svg>
+                          <span class="truncate">Personal Comercial</span>
+                        </div>
+                        <button
+                          type="button"
+                          (click)="toggleFavorite('/ventas/gestion/personal-comercial', $event)"
+                          [title]="isFavorite('/ventas/gestion/personal-comercial') ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+                          [aria-label]="isFavorite('/ventas/gestion/personal-comercial') ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+                          class="p-0.5 rounded text-on-surface-muted hover:text-warning transition-colors"
+                        >
+                          <svg class="w-3 h-3 shrink-0" [class.fill-warning]="isFavorite('/ventas/gestion/personal-comercial')" [class.text-warning]="isFavorite('/ventas/gestion/personal-comercial')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                          </svg>
+                        </button>
                       </div>
+
+                      <!-- Precios de Venta -->
                       <div
                         (click)="navigateTo('/ventas/gestion/precios-venta')"
-                        class="flex items-center justify-between pr-2 py-1 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
+                        class="group flex items-center justify-between px-2 py-1.2 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
                         [class.text-primary]="currentUrl().includes('/ventas/gestion/precios-venta')"
                         [class.font-bold]="currentUrl().includes('/ventas/gestion/precios-venta')"
                       >
-                        <span>Precios de Venta</span>
+                        <div class="flex items-center gap-2 min-w-0">
+                          <svg class="w-3 h-3 text-primary/80 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="1" x2="12" y2="23" /><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                          </svg>
+                          <span class="truncate">Precios de Venta</span>
+                        </div>
+                        <button
+                          type="button"
+                          (click)="toggleFavorite('/ventas/gestion/precios-venta', $event)"
+                          [title]="isFavorite('/ventas/gestion/precios-venta') ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+                          [aria-label]="isFavorite('/ventas/gestion/precios-venta') ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+                          class="p-0.5 rounded text-on-surface-muted hover:text-warning transition-colors"
+                        >
+                          <svg class="w-3 h-3 shrink-0" [class.fill-warning]="isFavorite('/ventas/gestion/precios-venta')" [class.text-warning]="isFavorite('/ventas/gestion/precios-venta')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                          </svg>
+                        </button>
                       </div>
                     </div>
                   }
@@ -621,20 +824,21 @@
             }
           </div>
 
-          <!-- 4. Inventarios (Módulo Enterprise: Operativo, Reportes y Gestión) -->
+          <!-- 3. Inventarios -->
           <div>
             <div
               (click)="toggleSection('inventarios')"
-              class="flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-semibold text-on-surface-variant hover:text-on-surface hover:bg-surface-muted cursor-pointer transition-colors"
+              class="flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-colors"
               [class.bg-surface-muted]="expandedSection() === 'inventarios'"
               [class.text-primary]="currentUrl().includes('/inventarios')"
+              [class.text-on-surface-variant]="expandedSection() !== 'inventarios'"
             >
               <div class="flex items-center gap-2.5">
                 <svg class="w-4 h-4 text-primary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
                   <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
                 </svg>
-                <span>Inventarios</span>
+                <span class="font-bold">Inventarios</span>
               </div>
               <svg class="w-3.5 h-3.5 text-primary transition-transform duration-200" [class.rotate-180]="expandedSection() === 'inventarios'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="6 9 12 15 18 9" />
@@ -642,32 +846,44 @@
             </div>
 
             @if (expandedSection() === 'inventarios') {
-              <div class="space-y-0.5 ml-4 pl-3 border-l border-primary/30 mt-1 py-1">
+              <div class="space-y-0.5 mt-0.5 ml-3 pl-2 border-l border-primary/25 animate-in fade-in duration-100">
                 
-                <!-- 4.1 Operativo: Kardex Valorizado (Icono ⤵) -->
+                <!-- 3.1 Kardex Valorizado (Pestaña terminal: NO tiene chevron, TIENE estrella de favorito) -->
                 <div
                   (click)="navigateTo('/inventarios/operativo/kardex')"
-                  class="flex items-center justify-between pl-6 pr-2.5 py-1.5 rounded-md text-xs font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-muted cursor-pointer transition-colors"
+                  class="group flex items-center justify-between px-2 py-1.5 rounded-md text-xs font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-muted cursor-pointer transition-colors"
                   [class.text-primary]="currentUrl().includes('/inventarios/operativo/kardex')"
                   [class.font-bold]="currentUrl().includes('/inventarios/operativo/kardex')"
                 >
-                  <div class="flex items-center gap-2">
+                  <div class="flex items-center gap-2 min-w-0">
                     <svg class="w-3.5 h-3.5 text-primary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <polyline points="19 14 12 21 5 14" /><line x1="12" y1="3" x2="12" y2="21" />
+                      <polygon points="12 2 2 7 12 12 22 7 12 2" />
+                      <polyline points="2 17 12 22 22 17" />
+                      <polyline points="2 12 12 17 22 12" />
                     </svg>
-                    <span>Kardex Valorizado</span>
+                    <span class="truncate">Kardex Valorizado</span>
                   </div>
-                  <svg class="w-3.5 h-3.5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="6 9 12 15 18 9" />
-                  </svg>
+                  <button
+                    type="button"
+                    (click)="toggleFavorite('/inventarios/operativo/kardex', $event)"
+                    [title]="isFavorite('/inventarios/operativo/kardex') ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+                    [aria-label]="isFavorite('/inventarios/operativo/kardex') ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+                    class="p-0.5 rounded text-on-surface-muted hover:text-warning transition-colors"
+                  >
+                    <svg class="w-3.5 h-3.5 shrink-0" [class.fill-warning]="isFavorite('/inventarios/operativo/kardex')" [class.text-warning]="isFavorite('/inventarios/operativo/kardex')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                    </svg>
+                  </button>
                 </div>
 
-                <!-- 4.2 Reportes de Inventario (Icono Documento 📋) Desplegable -->
+                <!-- 3.2 Reportes de Inventario (Submenú desplegable: TIENE chevron, NO tiene estrella directa) -->
                 <div>
                   <div
                     (click)="toggleGroup('reportes-inv')"
-                    class="flex items-center justify-between pl-6 pr-2.5 py-1.5 rounded-md text-xs font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-muted cursor-pointer transition-colors"
+                    class="flex items-center justify-between px-2 py-1.5 rounded-md text-xs font-semibold cursor-pointer transition-colors"
                     [class.bg-surface-muted]="expandedGroup() === 'reportes-inv'"
+                    [class.text-on-surface]="expandedGroup() === 'reportes-inv'"
+                    [class.text-on-surface-variant]="expandedGroup() !== 'reportes-inv'"
                   >
                     <div class="flex items-center gap-2">
                       <svg class="w-3.5 h-3.5 text-primary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -683,41 +899,98 @@
                   </div>
 
                   @if (expandedGroup() === 'reportes-inv') {
-                    <div class="space-y-0.5 ml-8 pl-3 border-l border-primary/30 mt-0.5 py-0.5">
+                    <div class="space-y-0.5 ml-3 pl-2 border-l border-primary/20 mt-0.5 py-0.5">
+                      <!-- Stock Disponible -->
                       <div
                         (click)="navigateTo('/inventarios/reportes/stock-disponible')"
-                        class="flex items-center justify-between pr-2 py-1 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
+                        class="group flex items-center justify-between px-2 py-1.2 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
                         [class.text-primary]="currentUrl().includes('/inventarios/reportes/stock-disponible')"
                         [class.font-bold]="currentUrl().includes('/inventarios/reportes/stock-disponible')"
                       >
-                        <span>Stock Disponible</span>
+                        <div class="flex items-center gap-2 min-w-0">
+                          <svg class="w-3 h-3 text-primary/80 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8" />
+                            <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+                            <polyline points="12 22.08 12 12" />
+                          </svg>
+                          <span class="truncate">Stock Disponible</span>
+                        </div>
+                        <button
+                          type="button"
+                          (click)="toggleFavorite('/inventarios/reportes/stock-disponible', $event)"
+                          [title]="isFavorite('/inventarios/reportes/stock-disponible') ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+                          [aria-label]="isFavorite('/inventarios/reportes/stock-disponible') ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+                          class="p-0.5 rounded text-on-surface-muted hover:text-warning transition-colors"
+                        >
+                          <svg class="w-3 h-3 shrink-0" [class.fill-warning]="isFavorite('/inventarios/reportes/stock-disponible')" [class.text-warning]="isFavorite('/inventarios/reportes/stock-disponible')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                          </svg>
+                        </button>
                       </div>
+
+                      <!-- Stock Físico -->
                       <div
                         (click)="navigateTo('/inventarios/reportes/stock-fisico')"
-                        class="flex items-center justify-between pr-2 py-1 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
+                        class="group flex items-center justify-between px-2 py-1.2 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
                         [class.text-primary]="currentUrl().includes('/inventarios/reportes/stock-fisico')"
                         [class.font-bold]="currentUrl().includes('/inventarios/reportes/stock-fisico')"
                       >
-                        <span>Stock Físico</span>
+                        <div class="flex items-center gap-2 min-w-0">
+                          <svg class="w-3 h-3 text-primary/80 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+                          </svg>
+                          <span class="truncate">Stock Físico</span>
+                        </div>
+                        <button
+                          type="button"
+                          (click)="toggleFavorite('/inventarios/reportes/stock-fisico', $event)"
+                          [title]="isFavorite('/inventarios/reportes/stock-fisico') ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+                          [aria-label]="isFavorite('/inventarios/reportes/stock-fisico') ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+                          class="p-0.5 rounded text-on-surface-muted hover:text-warning transition-colors"
+                        >
+                          <svg class="w-3 h-3 shrink-0" [class.fill-warning]="isFavorite('/inventarios/reportes/stock-fisico')" [class.text-warning]="isFavorite('/inventarios/reportes/stock-fisico')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                          </svg>
+                        </button>
                       </div>
+
+                      <!-- Trazabilidad de Lotes -->
                       <div
                         (click)="navigateTo('/inventarios/reportes/lotes')"
-                        class="flex items-center justify-between pr-2 py-1 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
+                        class="group flex items-center justify-between px-2 py-1.2 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
                         [class.text-primary]="currentUrl().includes('/inventarios/reportes/lotes')"
                         [class.font-bold]="currentUrl().includes('/inventarios/reportes/lotes')"
                       >
-                        <span>Trazabilidad de Lotes</span>
+                        <div class="flex items-center gap-2 min-w-0">
+                          <svg class="w-3 h-3 text-primary/80 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
+                          </svg>
+                          <span class="truncate">Trazabilidad de Lotes</span>
+                        </div>
+                        <button
+                          type="button"
+                          (click)="toggleFavorite('/inventarios/reportes/lotes', $event)"
+                          [title]="isFavorite('/inventarios/reportes/lotes') ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+                          [aria-label]="isFavorite('/inventarios/reportes/lotes') ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+                          class="p-0.5 rounded text-on-surface-muted hover:text-warning transition-colors"
+                        >
+                          <svg class="w-3 h-3 shrink-0" [class.fill-warning]="isFavorite('/inventarios/reportes/lotes')" [class.text-warning]="isFavorite('/inventarios/reportes/lotes')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                          </svg>
+                        </button>
                       </div>
                     </div>
                   }
                 </div>
 
-                <!-- 4.3 Gestión de Catálogos de Inventario (Icono Engranaje ⚙️) Desplegable -->
+                <!-- 3.3 Gestión de Catálogos (Submenú desplegable: TIENE chevron, NO tiene estrella directa) -->
                 <div>
                   <div
                     (click)="toggleGroup('gestion-inv')"
-                    class="flex items-center justify-between pl-6 pr-2.5 py-1.5 rounded-md text-xs font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-muted cursor-pointer transition-colors"
+                    class="flex items-center justify-between px-2 py-1.5 rounded-md text-xs font-semibold cursor-pointer transition-colors"
                     [class.bg-surface-muted]="expandedGroup() === 'gestion-inv'"
+                    [class.text-on-surface]="expandedGroup() === 'gestion-inv'"
+                    [class.text-on-surface-variant]="expandedGroup() !== 'gestion-inv'"
                   >
                     <div class="flex items-center gap-2">
                       <svg class="w-3.5 h-3.5 text-primary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -732,30 +1005,84 @@
                   </div>
 
                   @if (expandedGroup() === 'gestion-inv') {
-                    <div class="space-y-0.5 ml-8 pl-3 border-l border-primary/30 mt-0.5 py-0.5">
+                    <div class="space-y-0.5 ml-3 pl-2 border-l border-primary/20 mt-0.5 py-0.5">
+                      <!-- Artículos (SKU) -->
                       <div
                         (click)="navigateTo('/inventarios/gestion/articulos')"
-                        class="flex items-center justify-between pr-2 py-1 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
+                        class="group flex items-center justify-between px-2 py-1.2 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
                         [class.text-primary]="currentUrl().includes('/inventarios/gestion/articulos')"
                         [class.font-bold]="currentUrl().includes('/inventarios/gestion/articulos')"
                       >
-                        <span>Artículos (SKU)</span>
+                        <div class="flex items-center gap-2 min-w-0">
+                          <svg class="w-3 h-3 text-primary/80 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
+                            <line x1="7" y1="7" x2="7.01" y2="7" />
+                          </svg>
+                          <span class="truncate">Artículos (SKU)</span>
+                        </div>
+                        <button
+                          type="button"
+                          (click)="toggleFavorite('/inventarios/gestion/articulos', $event)"
+                          [title]="isFavorite('/inventarios/gestion/articulos') ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+                          [aria-label]="isFavorite('/inventarios/gestion/articulos') ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+                          class="p-0.5 rounded text-on-surface-muted hover:text-warning transition-colors"
+                        >
+                          <svg class="w-3 h-3 shrink-0" [class.fill-warning]="isFavorite('/inventarios/gestion/articulos')" [class.text-warning]="isFavorite('/inventarios/gestion/articulos')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                          </svg>
+                        </button>
                       </div>
+
+                      <!-- Depósitos y Almacenes -->
                       <div
                         (click)="navigateTo('/inventarios/gestion/depositos')"
-                        class="flex items-center justify-between pr-2 py-1 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
+                        class="group flex items-center justify-between px-2 py-1.2 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
                         [class.text-primary]="currentUrl().includes('/inventarios/gestion/depositos')"
                         [class.font-bold]="currentUrl().includes('/inventarios/gestion/depositos')"
                       >
-                        <span>Depósitos</span>
+                        <div class="flex items-center gap-2 min-w-0">
+                          <svg class="w-3 h-3 text-primary/80 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" />
+                          </svg>
+                          <span class="truncate">Depósitos</span>
+                        </div>
+                        <button
+                          type="button"
+                          (click)="toggleFavorite('/inventarios/gestion/depositos', $event)"
+                          [title]="isFavorite('/inventarios/gestion/depositos') ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+                          [aria-label]="isFavorite('/inventarios/gestion/depositos') ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+                          class="p-0.5 rounded text-on-surface-muted hover:text-warning transition-colors"
+                        >
+                          <svg class="w-3 h-3 shrink-0" [class.fill-warning]="isFavorite('/inventarios/gestion/depositos')" [class.text-warning]="isFavorite('/inventarios/gestion/depositos')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                          </svg>
+                        </button>
                       </div>
+
+                      <!-- Grupos de Productos -->
                       <div
                         (click)="navigateTo('/inventarios/gestion/grupos')"
-                        class="flex items-center justify-between pr-2 py-1 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
+                        class="group flex items-center justify-between px-2 py-1.2 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
                         [class.text-primary]="currentUrl().includes('/inventarios/gestion/grupos')"
                         [class.font-bold]="currentUrl().includes('/inventarios/gestion/grupos')"
                       >
-                        <span>Grupos de Productos</span>
+                        <div class="flex items-center gap-2 min-w-0">
+                          <svg class="w-3 h-3 text-primary/80 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" />
+                          </svg>
+                          <span class="truncate">Grupos de Productos</span>
+                        </div>
+                        <button
+                          type="button"
+                          (click)="toggleFavorite('/inventarios/gestion/grupos', $event)"
+                          [title]="isFavorite('/inventarios/gestion/grupos') ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+                          [aria-label]="isFavorite('/inventarios/gestion/grupos') ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+                          class="p-0.5 rounded text-on-surface-muted hover:text-warning transition-colors"
+                        >
+                          <svg class="w-3 h-3 shrink-0" [class.fill-warning]="isFavorite('/inventarios/gestion/grupos')" [class.text-warning]="isFavorite('/inventarios/gestion/grupos')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                          </svg>
+                        </button>
                       </div>
                     </div>
                   }
@@ -765,20 +1092,21 @@
             }
           </div>
 
-          <!-- 5. Cuentas por Cobrar (Módulo Enterprise: Operativo y Reportes) -->
+          <!-- 4. Cuentas por Cobrar -->
           <div>
             <div
               (click)="toggleSection('cuentas-cobrar')"
-              class="flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-semibold text-on-surface-variant hover:text-on-surface hover:bg-surface-muted cursor-pointer transition-colors"
+              class="flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-colors"
               [class.bg-surface-muted]="expandedSection() === 'cuentas-cobrar'"
               [class.text-primary]="currentUrl().includes('/cuentas-cobrar')"
+              [class.text-on-surface-variant]="expandedSection() !== 'cuentas-cobrar'"
             >
               <div class="flex items-center gap-2.5">
                 <svg class="w-4 h-4 text-primary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <rect x="2" y="4" width="20" height="16" rx="2" />
                   <line x1="2" y1="10" x2="22" y2="10" />
                 </svg>
-                <span>Cuentas por Cobrar</span>
+                <span class="font-bold">Cuentas por Cobrar</span>
               </div>
               <svg class="w-3.5 h-3.5 text-primary transition-transform duration-200" [class.rotate-180]="expandedSection() === 'cuentas-cobrar'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="6 9 12 15 18 9" />
@@ -786,43 +1114,59 @@
             </div>
 
             @if (expandedSection() === 'cuentas-cobrar') {
-              <div class="space-y-0.5 ml-4 pl-3 border-l border-primary/30 mt-1 py-1">
-                <!-- 5.1 Planillas de Cobranza -->
+              <div class="space-y-0.5 mt-0.5 ml-3 pl-2 border-l border-primary/25 animate-in fade-in duration-100">
+                <!-- Planillas de Cobranza (Pestaña terminal: NO tiene chevron, TIENE estrella de favorito) -->
                 <div
                   (click)="navigateTo('/cuentas-cobrar/operativo/planillas')"
-                  class="flex items-center justify-between pl-6 pr-2.5 py-1.5 rounded-md text-xs font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-muted cursor-pointer transition-colors"
+                  class="group flex items-center justify-between px-2 py-1.5 rounded-md text-xs font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-muted cursor-pointer transition-colors"
                   [class.text-primary]="currentUrl().includes('/cuentas-cobrar/operativo/planillas')"
                   [class.font-bold]="currentUrl().includes('/cuentas-cobrar/operativo/planillas')"
                 >
-                  <div class="flex items-center gap-2">
+                  <div class="flex items-center gap-2 min-w-0">
                     <svg class="w-3.5 h-3.5 text-primary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <polyline points="19 14 12 21 5 14" /><line x1="12" y1="3" x2="12" y2="21" />
+                      <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+                      <line x1="1" y1="10" x2="23" y2="10" />
                     </svg>
-                    <span>Planillas de Cobranza</span>
+                    <span class="truncate">Planillas de Cobranza</span>
                   </div>
-                  <svg class="w-3.5 h-3.5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="6 9 12 15 18 9" />
-                  </svg>
+                  <button
+                    type="button"
+                    (click)="toggleFavorite('/cuentas-cobrar/operativo/planillas', $event)"
+                    [title]="isFavorite('/cuentas-cobrar/operativo/planillas') ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+                    [aria-label]="isFavorite('/cuentas-cobrar/operativo/planillas') ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+                    class="p-0.5 rounded text-on-surface-muted hover:text-warning transition-colors"
+                  >
+                    <svg class="w-3.5 h-3.5 shrink-0" [class.fill-warning]="isFavorite('/cuentas-cobrar/operativo/planillas')" [class.text-warning]="isFavorite('/cuentas-cobrar/operativo/planillas')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                    </svg>
+                  </button>
                 </div>
 
-                <!-- 5.2 Antigüedad de Deuda -->
+                <!-- Antigüedad de Deuda (Pestaña terminal: NO tiene chevron, TIENE estrella de favorito) -->
                 <div
                   (click)="navigateTo('/cuentas-cobrar/reportes/antiguedad-deuda')"
-                  class="flex items-center justify-between pl-6 pr-2.5 py-1.5 rounded-md text-xs font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-muted cursor-pointer transition-colors"
+                  class="group flex items-center justify-between px-2 py-1.5 rounded-md text-xs font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-muted cursor-pointer transition-colors"
                   [class.text-primary]="currentUrl().includes('/cuentas-cobrar/reportes/antiguedad-deuda')"
                   [class.font-bold]="currentUrl().includes('/cuentas-cobrar/reportes/antiguedad-deuda')"
                 >
-                  <div class="flex items-center gap-2">
+                  <div class="flex items-center gap-2 min-w-0">
                     <svg class="w-3.5 h-3.5 text-primary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                      <polyline points="14 2 14 8 20 8" />
-                      <line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" />
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                      <line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" />
                     </svg>
-                    <span>Antigüedad de Deuda</span>
+                    <span class="truncate">Antigüedad de Deuda</span>
                   </div>
-                  <svg class="w-3.5 h-3.5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="6 9 12 15 18 9" />
-                  </svg>
+                  <button
+                    type="button"
+                    (click)="toggleFavorite('/cuentas-cobrar/reportes/antiguedad-deuda', $event)"
+                    [title]="isFavorite('/cuentas-cobrar/reportes/antiguedad-deuda') ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+                    [aria-label]="isFavorite('/cuentas-cobrar/reportes/antiguedad-deuda') ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+                    class="p-0.5 rounded text-on-surface-muted hover:text-warning transition-colors"
+                  >
+                    <svg class="w-3.5 h-3.5 shrink-0" [class.fill-warning]="isFavorite('/cuentas-cobrar/reportes/antiguedad-deuda')" [class.text-warning]="isFavorite('/cuentas-cobrar/reportes/antiguedad-deuda')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                    </svg>
+                  </button>
                 </div>
               </div>
             }

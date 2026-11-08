@@ -331,6 +331,74 @@ export class Shell {
       .subscribe((event: any) => {
         this.currentUrl.set(event.urlAfterRedirects || event.url);
       });
+
+    // Cargar favoritos guardados
+    try {
+      if (typeof localStorage !== 'undefined') {
+        const stored = localStorage.getItem('erp-favorite-paths');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            this.favoritePaths.set(parsed);
+          }
+        }
+      }
+    } catch {}
+  }
+
+  // Catálogo de ítems navegables con icono para favoritos
+  protected readonly navigableItems = [
+    { id: 'indicadores', title: 'Indicadores', path: '/dashboard', icon: 'chart' },
+    { id: 'ordenes-pedido', title: 'Órdenes de Pedido', path: '/ventas/ordenes-pedido', icon: 'file-text' },
+    { id: 'pedidos', title: 'Pedidos', path: '/ventas/preventa/pedidos', icon: 'shopping-bag' },
+    { id: 'controles', title: 'Controles y Ajustes', path: '/ventas/preventa/pedidos', icon: 'sliders' },
+    { id: 'facturacion', title: 'Facturación', path: '/ventas/facturacion', icon: 'receipt' },
+    { id: 'trade-spend', title: 'Trade Spend', path: '/ventas/preventa/pedidos', icon: 'tag' },
+    { id: 'comprobantes-rep', title: 'Comprobantes de Venta', path: '/ventas/reportes/comprobantes', icon: 'receipt' },
+    { id: 'pedidos-rep', title: 'Pedidos y Efectividad', path: '/ventas/reportes/pedidos', icon: 'bar-chart' },
+    { id: 'comisiones-rep', title: 'Comisiones de Ventas', path: '/ventas/reportes/comisiones', icon: 'percent' },
+    { id: 'clientes', title: 'Clientes y Proveedores', path: '/ventas/gestion/clientes', icon: 'users' },
+    { id: 'personal-comercial', title: 'Personal Comercial', path: '/ventas/gestion/personal-comercial', icon: 'user-check' },
+    { id: 'precios-venta', title: 'Precios de Venta', path: '/ventas/gestion/precios-venta', icon: 'dollar-sign' },
+    { id: 'kardex', title: 'Kardex Valorizado', path: '/inventarios/operativo/kardex', icon: 'layers' },
+    { id: 'stock-disponible', title: 'Stock Disponible', path: '/inventarios/reportes/stock-disponible', icon: 'box-check' },
+    { id: 'stock-fisico', title: 'Stock Físico', path: '/inventarios/reportes/stock-fisico', icon: 'clipboard-check' },
+    { id: 'lotes', title: 'Trazabilidad de Lotes', path: '/inventarios/reportes/lotes', icon: 'clock' },
+    { id: 'articulos', title: 'Artículos (SKU)', path: '/inventarios/gestion/articulos', icon: 'tag' },
+    { id: 'depositos', title: 'Depósitos y Almacenes', path: '/inventarios/gestion/depositos', icon: 'warehouse' },
+    { id: 'grupos', title: 'Grupos de Productos', path: '/inventarios/gestion/grupos', icon: 'grid' },
+    { id: 'planillas-cobranza', title: 'Planillas de Cobranza', path: '/cuentas-cobrar/operativo/planillas', icon: 'credit-card' },
+    { id: 'antiguedad-deuda', title: 'Antigüedad de Deuda', path: '/cuentas-cobrar/reportes/antiguedad-deuda', icon: 'calendar-alert' },
+  ];
+
+  // Favoritos reactivos con persistencia
+  protected readonly favoritePaths = signal<string[]>([
+    '/ventas/preventa/pedidos',
+    '/inventarios/operativo/kardex',
+    '/cuentas-cobrar/operativo/planillas',
+  ]);
+
+  protected readonly favoriteItems = computed(() => {
+    const paths = this.favoritePaths();
+    return this.navigableItems.filter(item => paths.includes(item.path));
+  });
+
+  isFavorite(path: string): boolean {
+    return this.favoritePaths().includes(path);
+  }
+
+  toggleFavorite(path: string, evt?: Event): void {
+    evt?.stopPropagation();
+    this.favoritePaths.update(favs => {
+      const exists = favs.includes(path);
+      const updated = exists ? favs.filter(p => p !== path) : [...favs, path];
+      try {
+        if (typeof localStorage !== 'undefined') {
+          localStorage.setItem('erp-favorite-paths', JSON.stringify(updated));
+        }
+      } catch {}
+      return updated;
+    });
   }
 
   toggleSidebar(): void {
@@ -364,7 +432,8 @@ export class Shell {
     }
   }
 
-  toggleNotifications(): void {
+  toggleNotifications(evt?: MouseEvent): void {
+    evt?.stopPropagation();
     this.notificationsOpen.update(open => !open);
   }
 
@@ -377,7 +446,6 @@ export class Shell {
   }
 
   openPermissions(): void {
-    this.closeSidebar();
     this.permissionsOpen.set(true);
   }
 
@@ -386,7 +454,6 @@ export class Shell {
   }
 
   openProfile(): void {
-    this.closeSidebar();
     this.profileOpen.set(true);
   }
 
@@ -395,7 +462,6 @@ export class Shell {
   }
 
   openAccount(): void {
-    this.closeSidebar();
     this.accountOpen.set(true);
   }
 
@@ -415,13 +481,34 @@ export class Shell {
     this.closeProfile();
   }
 
-  toggleBranchSelector(): void {
+  toggleBranchSelector(evt?: MouseEvent): void {
+    evt?.stopPropagation();
     this.branchSelectorOpen.update(v => !v);
   }
 
   selectBranch(branchName: string): void {
     this.branchContext.selectBranch(branchName);
     this.branchSelectorOpen.set(false);
+  }
+
+  @HostListener('document:click', ['$event'])
+  handleDocumentClick(evt: MouseEvent): void {
+    const target = evt.target as HTMLElement | null;
+    if (!target) return;
+
+    if (this.notificationsOpen()) {
+      const isInside = target.closest('#notifications-popover') || target.closest('#notifications-btn');
+      if (!isInside) {
+        this.closeNotifications();
+      }
+    }
+
+    if (this.branchSelectorOpen()) {
+      const isInside = target.closest('#branch-selector-popover') || target.closest('#branch-selector-btn');
+      if (!isInside) {
+        this.branchSelectorOpen.set(false);
+      }
+    }
   }
 
   dismissNotification(id: string): void {
