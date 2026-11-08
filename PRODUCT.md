@@ -9,6 +9,7 @@
 | Campo         | Valor                                          |
 | ------------- | ---------------------------------------------- |
 | Nombre        | ERP Base (Inspirado en CHESS ERP)              |
+| Versión       | 6.2.0                                          |
 | Framework     | Angular 21 (Reactivity: Signals, Control Flow) |
 | Estilos       | SCSS + Tailwind CSS v4                         |
 | PWA           | `@angular/service-worker` v21 + Web Manifest   |
@@ -24,8 +25,21 @@
 
 Registradas formalmente en `AGENTS.md`:
 1. **PROHIBIDO EL TEXTO EN BOTONES**: Todos los botones de acción usan exclusivamente **iconos optimizados** (SVG limpios, vectoriales, con `title` y `aria-label`). No se permite texto visible dentro de los botones a menos que el usuario lo solicite explícitamente.
-2. **Jerarquía Visual Corporativa**: Header sobrio con menú hamburguesa, marca + versión, pestaña activa, empresa a la derecha, chip de usuario y fila de botones circulares tipo icono.
+2. **Jerarquía Visual y Header Compacto**: Header angosto y de alta densidad (`h-11`, ~44px) con menú hamburguesa, marca + versión, pestaña activa, empresa a la derecha, chip de usuario y fila de botones circulares tipo icono.
 3. **Cero Mención a Demos**: Interfaz lista para clientes finales sin términos como "prueba", "mock" o "demo".
+
+---
+
+## 🔄 Sistema de Versionado, Control de Caché y Auditoría
+
+Implementación integral para erradicar cachés obsoletas y evitar "pantallas blancas":
+- **`scripts/generate-version.cjs`**: Script ejecutado automáticamente en `prebuild` que computa el SHA-256 de todo el código fuente y genera:
+  - `public/app-version.json` (servido estáticamente sin caché).
+  - `src/app/core/version/app-build.ts` (embebido en el bundle de Angular).
+- **`AppVersionService`**: Servicio reactivo que monitorea en segundo plano (cada 60s fuera de la zona Angular y al recuperar foco/red) si hay una nueva versión disponible mediante `fetch('app-version.json?ngsw-bypass=true&check=Date.now()')`.
+- **Actualización Segura sin Pérdida de Sesión**: Al aplicar una nueva versión, se activa el nuevo Service Worker (o se purgan los corruptos vía `recoverRegistration`) y se recarga la aplicación preservando la sesión y tokens del usuario.
+- **Registro Centralizado**: Historial de versiones y hashes en [`docs/VERSION_TRACKING.md`](file:///c:/Users/Erick/Documents/Proyectos/YamiDarknezz/erp-base/docs/VERSION_TRACKING.md).
+- **Guía de Referencia**: Documentada en [`docs/GUIA_SISTEMA_VERSIONADO_Y_CACHE.md`](file:///c:/Users/Erick/Documents/Proyectos/YamiDarknezz/erp-base/docs/GUIA_SISTEMA_VERSIONADO_Y_CACHE.md).
 
 ---
 
@@ -36,7 +50,7 @@ Configuración completa e integrada:
 - **Manifiesto**: `public/manifest.webmanifest` con iconos en `public/icons/` (192x192, 512x512 y SVG maskable), `display: standalone` y `theme_color: #2563eb`.
 - **Servicio de Instalación (`PwaInstallService`)**: Basado en **Signals**, detecta `beforeinstallprompt`, expone `canInstall` y ejecuta `install()`.
 - **Botón de Descarga PWA**: Ubicado en el header superior como botón de icono (descarga) para instalar la app en Windows/Android/macOS.
-- **Documentación**: Trasladada y mejorada en `docs/GUIA_CONFIGURACION_PWA.md`.
+- **Documentación**: Trasladada y mejorada en [`docs/GUIA_CONFIGURACION_PWA.md`](file:///c:/Users/Erick/Documents/Proyectos/YamiDarknezz/erp-base/docs/GUIA_CONFIGURACION_PWA.md).
 
 ---
 
@@ -83,7 +97,7 @@ Configuración centralizada en `src/tailwind.css` utilizando variables CSS nativ
 
 ### 2. Vista de Dashboard (`/dashboard`)
 Inspirada en el sistema CHESS ERP:
-- **Header Superior**:
+- **Header Superior (Angosto y Compacto `h-11`)**:
   - **Izquierda**: Botón hamburguesa (icono), Isotipo + Texto "CHESS 6.2.57", Pestaña activa en badge "DASHBOARD".
   - **Derecha**: Nombre de la empresa (`DISTRIBUIDORA GLOBAL S.A.C. - PE`), Chip de usuario (`admin` - `Administrador General`), y fila de botones circulares de acción tipo icono:
     - 🔔 **Notificaciones** con badge flotante y popover de alertas recientes.
@@ -93,6 +107,7 @@ Inspirada en el sistema CHESS ERP:
     - 🚪 **Cerrar Sesión** segura.
 - **Sidebar Retráctil**:
   - Desplegable al accionar la hamburguesa con backdrop desenfocado.
+  - Altura de cabecera alineada a `h-11`.
   - Módulos del ERP: Dashboard, Ventas y Facturación, Inventario, Compras, Logística, Finanzas, Reportes, Configuración.
   - Indicador de estado "Conectado al servidor central" y versión.
 - **Panel Central de Alertas Operacionales**:
@@ -105,17 +120,16 @@ Inspirada en el sistema CHESS ERP:
 
 ---
 
-## 📦 Skills de IA Instaladas (.agents/skills)
+## 📁 Organización de la Carpeta `docs/`
 
-- **Angular**: `angular-developer`, `reference-core`, `reference-signal-forms`, `reference-compiler-cli`, `adev-writing-guide`, `pr_review`
-- **TypeScript**: `typescript-advanced-types`
-- **Node.js**: `nodejs-backend-patterns`, `nodejs-best-practices`
-- **Vitest**: `vitest`
-- **Frontend & Accesibilidad**: `frontend-design`, `accessibility`, `seo`
+Toda la documentación técnica del proyecto se encuentra centralizada y ordenada:
+- [`docs/GUIA_CONFIGURACION_PWA.md`](file:///c:/Users/Erick/Documents/Proyectos/YamiDarknezz/erp-base/docs/GUIA_CONFIGURACION_PWA.md): Guía de Service Worker, PWA, Nginx y offline.
+- [`docs/GUIA_SISTEMA_VERSIONADO_Y_CACHE.md`](file:///c:/Users/Erick/Documents/Proyectos/YamiDarknezz/erp-base/docs/GUIA_SISTEMA_VERSIONADO_Y_CACHE.md): Arquitectura de control de caché, hashing SHA-256 y actualización en runtime.
+- [`docs/VERSION_TRACKING.md`](file:///c:/Users/Erick/Documents/Proyectos/YamiDarknezz/erp-base/docs/VERSION_TRACKING.md): Historial cronológico de builds y versiones desplegadas.
 
 ---
 
 ## 🛠️ Estado del Proyecto
 
-- **Build de producción**: `ng build` exitoso (0 errores, Service Worker generado, assets listos).
+- **Build de producción**: `ng build` exitoso con hook `prebuild` (0 errores, Service Worker generado, assets listos).
 - **Tests unitarios**: `ng test --watch=false` ejecutado con Vitest (100% pasando).

@@ -27,17 +27,19 @@ Este archivo contiene las directivas obligatorias para cualquier agente o desarr
 Inspirado en la cabecera corporativa de sistemas ERP de alto rendimiento (referencia CHESS ERP):
 
 ### Header Superior (TopBar)
-1. **Extremo Izquierdo**:
+1. **Dimensiones compactas**: Altura angosta y sobria (`h-11`, ~44px), optimizada para máxima densidad de información y espacio vertical.
+2. **Extremo Izquierdo**:
    - Botón hamburguesa (icono) para colapsar/expandir el sidebar.
-   - Isotipo / Logo del ERP + Identificador de versión (ej. `ERP BASE 6.2`).
+   - Isotipo / Logo del ERP + Identificador de versión (ej. `CHESS 6.2.57`).
    - Módulo o pestaña activa en mayúsculas sobrias (ej. `DASHBOARD`).
-2. **Extremo Derecho**:
+3. **Extremo Derecho**:
    - Razón social / Nombre de la empresa (ej. `DISTRIBUIDORA GLOBAL S.A.C. - PE` o configurable).
    - Chip de usuario con avatar, username y nombre completo estructurados en dos líneas compactas.
    - Fila de botones de acción rápida tipo icono circular (Notificaciones, Selector de tema, Soporte, Descarga PWA, Cerrar Sesión).
 
 ### Sidebar (Navegación Lateral)
 - Desplegable / colapsable al interactuar con el botón de hamburguesa.
+- Cabecera alineada en altura con el header (`h-11`).
 - Íconos representativos por cada módulo del sistema (Ventas, Inventario, Facturación, Compras, Reportes, Configuración).
 
 ### Área de Trabajo (Main Viewport)
@@ -47,7 +49,22 @@ Inspirado en la cabecera corporativa de sistemas ERP de alto rendimiento (refere
 
 ---
 
-## 🎨 3. Sistema de Temas y Calidad de Producción
+## 🔄 3. Sistema de Versionado, Control de Caché y Auditoría
+
+1. **Generación Automática de Build**:
+   - Cada compilación ejecuta `node scripts/generate-version.cjs` antes del build (`prebuild`).
+   - Computa un hash SHA-256 de las fuentes (`src`, `public`, `package.json`, configs).
+   - Genera `public/app-version.json` y `src/app/core/version/app-build.ts`.
+2. **Registro Centralizado**:
+   - Toda nueva versión o build debe quedar registrada en [`docs/VERSION_TRACKING.md`](file:///c:/Users/Erick/Documents/Proyectos/YamiDarknezz/erp-base/docs/VERSION_TRACKING.md).
+3. **Monitoreo en Runtime (`AppVersionService`)**:
+   - Consulta periódica fuera de Angular zone cada 60s con cabeceras `Cache-Control: no-cache, no-store` y `ngsw-bypass=true`.
+   - Si detecta versión nueva, despliega notificación flotante con botones de icono.
+   - Preserva la sesión del usuario (`sessionStorage` y `localStorage`) al actualizar; no cierra la sesión intempestivamente.
+
+---
+
+## 🎨 4. Sistema de Temas y Calidad de Producción
 
 1. **Tokens Centralizados**:
    - Toda propiedad visual de color debe derivar de las variables CSS de [`src/tailwind.css`](file:///c:/Users/Erick/Documents/Proyectos/YamiDarknezz/erp-base/src/tailwind.css) (`surface`, `surface-alt`, `on-surface`, `outline`, `primary`, `danger`, `warning`, `success`).
@@ -58,6 +75,6 @@ Inspirado en la cabecera corporativa de sistemas ERP de alto rendimiento (refere
 
 ---
 
-## 🧪 4. Verificación de Código
+## 🧪 5. Verificación de Código
 
 - Cada cambio debe verificar que `ng build` compila con 0 errores y que los tests unitarios (`ng test --watch=false`) se ejecutan y aprueban exitosamente.

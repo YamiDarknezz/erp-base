@@ -1,1 +1,57 @@
 <router-outlet />
+
+<!-- Notificación Flotante de Nueva Versión (Regla de Oro: Botones Solo Icono) -->
+@if (version.available() && !version.dismissed()) {
+  <aside
+    class="fixed bottom-5 right-5 z-50 max-w-sm rounded-xl bg-surface border border-primary/40 shadow-2xl p-4 flex items-center justify-between gap-3 animate-in fade-in slide-in-from-bottom-3 duration-200"
+    role="status"
+    aria-live="polite"
+  >
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
+        <svg class="w-5 h-5 animate-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
+        </svg>
+      </div>
+      <div class="text-xs">
+        <p class="font-bold text-on-surface">
+          Actualización disponible {{ version.latestVersion() ? 'v' + version.latestVersion() : '' }}
+        </p>
+        <p class="text-on-surface-variant text-[11px] leading-tight">
+          Nueva versión lista para aplicar.
+        </p>
+      </div>
+    </div>
+
+    <!-- Botones de Acción (ESTRICTAMENTE SOLO ICONOS) -->
+    <div class="flex items-center gap-1.5 shrink-0">
+      <!-- Botón Actualizar (Icono de Descarga / Recarga) -->
+      <button
+        type="button"
+        (click)="version.update()"
+        [disabled]="version.installing()"
+        title="Actualizar y recargar ahora"
+        aria-label="Actualizar y recargar ahora"
+        class="w-8 h-8 rounded-lg bg-primary text-on-primary flex items-center justify-center hover:bg-primary-hover transition-colors shadow-xs cursor-pointer disabled:opacity-50"
+      >
+        <svg class="w-4 h-4" [class.animate-spin]="version.installing()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="20 6 9 17 4 12" />
+        </svg>
+      </button>
+
+      <!-- Botón Posponer (Icono X) -->
+      <button
+        type="button"
+        (click)="version.dismissed.set(true)"
+        title="Posponer actualización"
+        aria-label="Posponer actualización"
+        class="w-8 h-8 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-muted transition-colors flex items-center justify-center cursor-pointer"
+      >
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+    </div>
+  </aside>
+}

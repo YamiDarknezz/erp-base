@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { AppVersionService } from './core/version/app-version.service';
 
 @Component({
   selector: 'app-root',
@@ -7,4 +8,10 @@ import { RouterOutlet } from '@angular/router';
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
-export class App {}
+export class App implements OnInit {
+  protected readonly version = inject(AppVersionService);
+
+  ngOnInit(): void {
+    this.version.start();
+  }
+}
