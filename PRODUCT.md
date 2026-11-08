@@ -14,6 +14,7 @@
 | Package Mgr   | pnpm 10.29.3           |
 | Node          | 24.19.0                |
 | Tests         | Vitest 4.x             |
+| CSS Framework | Tailwind CSS 4.3.5 (v4)|
 | SSR           | No (SPA)               |
 
 ---
@@ -89,5 +90,19 @@ erp-base/
 - [ ] Autenticación
 - [ ] Tema / design tokens
 - [ ] API / servicios
+
+---
+
+## 🎨 Tailwind CSS v4 (añadido)
+
+Instalado via `ng add tailwindcss`. Configuración generada:
+
+- `src/tailwind.css` — punto de entrada con `@import 'tailwindcss'`
+- `.postcssrc.json` — plugin `@tailwindcss/postcss`
+- `angular.json` — `tailwind.css` añadido al array de `styles`
+
+> **Nota:** Tailwind v4 NO usa `tailwind.config.js`. La configuración se maneja con CSS variables directamente.
+
+---
 
 > _Esperando indicaciones del usuario para definir el diseño._
