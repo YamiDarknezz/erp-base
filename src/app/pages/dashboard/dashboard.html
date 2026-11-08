@@ -13,31 +13,41 @@
     </svg>
   </div>
 
-  <!-- ── Panel de Alertas Operacionales ── -->
+  <!-- ── Panel de Alertas Operacionales (Estilo Apple Cards Frosted) ── -->
   <div class="relative z-10 p-3 sm:p-5 lg:p-6 max-w-7xl mx-auto w-full">
     
     <!-- Contenedor translúcido de Alertas -->
-    <div class="rounded-2xl backdrop-blur-md bg-white/40 dark:bg-slate-900/50 border border-white/60 dark:border-slate-800/80 p-4 lg:p-5 shadow-xl">
+    <div class="rounded-3xl backdrop-blur-xl bg-surface/70 border border-outline/60 p-5 lg:p-6 shadow-2xl">
       
       <!-- Título Centrado del Panel -->
-      <div class="text-center mb-4">
-        <h2 class="text-lg sm:text-xl font-bold tracking-tight text-slate-800 dark:text-white drop-shadow-xs">
-          Alertas
-        </h2>
+      <div class="flex items-center justify-between mb-4 pb-2 border-b border-outline/50">
+        <div class="flex items-center gap-2">
+          <div class="w-2.5 h-2.5 rounded-full bg-primary animate-pulse"></div>
+          <h2 class="text-sm sm:text-base font-bold tracking-tight text-on-surface uppercase">
+            Indicadores y Alertas Operacionales
+          </h2>
+        </div>
+        <span class="text-[10px] font-medium text-on-surface-muted">Monitoreo en tiempo real</span>
       </div>
 
-      <!-- Grid de Tarjetas de Alertas -->
+      <!-- Grid de Tarjetas de Alertas Estilo Apple Widget -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
         @for (alert of alerts(); track alert.id) {
           <div
-            class="rounded-xl p-3.5 flex flex-col justify-between relative shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg cursor-pointer"
-            [class.bg-amber-400]="alert.type === 'warning'"
-            [class.text-amber-950]="alert.type === 'warning'"
-            [class.bg-rose-600]="alert.type === 'danger'"
-            [class.text-white]="alert.type === 'danger'"
+            class="rounded-2xl p-4 flex flex-col justify-between relative shadow-sm border transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:scale-[0.98] cursor-pointer"
+            [class.bg-amber-500/10]="alert.type === 'warning'"
+            [class.border-amber-500/30]="alert.type === 'warning'"
+            [class.text-amber-900]="alert.type === 'warning'"
+            [class.dark:text-amber-200]="alert.type === 'warning'"
+            [class.hover:bg-amber-500/15]="alert.type === 'warning'"
+            [class.bg-rose-500/10]="alert.type === 'danger'"
+            [class.border-rose-500/30]="alert.type === 'danger'"
+            [class.text-rose-900]="alert.type === 'danger'"
+            [class.dark:text-rose-200]="alert.type === 'danger'"
+            [class.hover:bg-rose-500/15]="alert.type === 'danger'"
           >
             <!-- Icono de información -->
-            <div class="absolute top-2 right-2 opacity-70 hover:opacity-100 transition-opacity">
+            <div class="absolute top-3 right-3 opacity-60 hover:opacity-100 transition-opacity">
               <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="12" cy="12" r="10" />
                 <line x1="12" y1="16" x2="12" y2="12" />
@@ -47,43 +57,48 @@
 
             <!-- Métrica Grande + Descripción -->
             <div class="flex items-start gap-3 pr-3">
-              <div class="text-xl sm:text-2xl font-black tracking-tight shrink-0 min-w-10">
+              <div class="text-2xl sm:text-3xl font-black tracking-tight shrink-0 min-w-10 font-mono">
                 {{ alert.badge }}
               </div>
-              <p class="text-xs font-medium leading-snug">
+              <p class="text-xs font-semibold leading-snug pt-0.5">
                 {{ alert.title }}
               </p>
             </div>
 
-            <!-- Icono de estado -->
-            <div class="flex justify-end mt-2 opacity-90">
-              @if (alert.type === 'danger') {
-                <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                  <circle cx="12" cy="12" r="10" />
-                  <line x1="15" y1="9" x2="9" y2="15" />
-                  <line x1="9" y1="9" x2="15" y2="15" />
-                </svg>
-              } @else {
-                <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                  <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
-                  <line x1="12" y1="9" x2="12" y2="13" />
-                  <line x1="12" y1="17" x2="12.01" y2="17" />
-                </svg>
-              }
+            <!-- Icono de estado y badge de criticidad -->
+            <div class="flex items-center justify-between mt-3 pt-2 border-t border-current/15 text-[10px]">
+              <span class="font-medium opacity-80 uppercase tracking-wider text-[9.5px]">
+                {{ alert.type === 'danger' ? 'Crítico' : 'Atención' }}
+              </span>
+              <div class="flex items-center opacity-90">
+                @if (alert.type === 'danger') {
+                  <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="15" y1="9" x2="9" y2="15" />
+                    <line x1="9" y1="9" x2="15" y2="15" />
+                  </svg>
+                } @else {
+                  <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+                    <line x1="12" y1="9" x2="12" y2="13" />
+                    <line x1="12" y1="17" x2="12.01" y2="17" />
+                  </svg>
+                }
+              </div>
             </div>
           </div>
         }
       </div>
 
       <!-- Pie de Alertas: Timestamp + Botón de Actualizar (SOLO ICONO) -->
-      <div class="mt-4 pt-2.5 border-t border-slate-300/40 dark:border-slate-800/60 flex items-center justify-center gap-2 text-[11px] font-medium text-slate-700 dark:text-slate-300">
+      <div class="mt-4 pt-3 border-t border-outline/50 flex items-center justify-center gap-2 text-[11px] font-medium text-on-surface-variant">
         <span>Actualizado: {{ lastUpdated() }}</span>
         <button
           type="button"
           (click)="refreshAlerts()"
           title="Actualizar alertas operacionales"
           aria-label="Actualizar alertas"
-          class="w-6 h-6 rounded-full flex items-center justify-center text-slate-700 dark:text-slate-300 hover:bg-black/10 dark:hover:bg-white/10 transition-colors cursor-pointer"
+          class="w-6.5 h-6.5 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-muted/70 active:scale-90 transition-all cursor-pointer"
         >
           <svg
             class="w-3.5 h-3.5"

@@ -1,12 +1,12 @@
 @if (isOpen()) {
   <!-- Backdrop con cierre al clic fuera -->
-  <div class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-2 sm:p-4 animate-in fade-in duration-150">
+  <div class="fixed inset-0 z-50 bg-black/40 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 animate-in fade-in duration-150">
     
-    <!-- Contenedor Principal del Visor Modal -->
-    <div class="bg-surface rounded-xs border border-outline shadow-2xl w-full max-w-3xl max-h-[92vh] flex flex-col overflow-hidden text-on-surface">
+    <!-- Contenedor Principal del Visor Modal Estilo Apple -->
+    <div class="bg-surface/95 backdrop-blur-xl rounded-2xl border border-outline/70 shadow-2xl w-full max-w-3xl max-h-[92vh] flex flex-col overflow-hidden text-on-surface">
       
       <!-- Barra Superior de Herramientas del Visor (Botones Exclusivamente Iconos) -->
-      <div class="h-10 px-3 bg-surface-alt border-b border-outline flex items-center justify-between shrink-0 select-none">
+      <div class="h-11 px-4 bg-surface-alt/50 border-b border-outline/60 flex items-center justify-between shrink-0 select-none">
         <div class="flex items-center gap-2">
           <svg class="w-4 h-4 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
@@ -25,7 +25,7 @@
             (click)="printDocument()"
             title="Imprimir documento"
             aria-label="Imprimir documento"
-            class="w-7 h-7 rounded-xs bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center cursor-pointer transition-colors shadow-2xs"
+            class="w-7.5 h-7.5 rounded-full bg-blue-600 hover:bg-blue-700 active:scale-95 text-white flex items-center justify-center cursor-pointer transition-all shadow-xs"
           >
             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <polyline points="6 9 6 2 18 2 18 9" />
@@ -40,7 +40,7 @@
             (click)="downloadPdf()"
             title="Descargar archivo en PDF"
             aria-label="Descargar PDF"
-            class="w-7 h-7 rounded-xs bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center cursor-pointer transition-colors shadow-2xs"
+            class="w-7.5 h-7.5 rounded-full bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white flex items-center justify-center cursor-pointer transition-all shadow-xs"
           >
             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
@@ -55,7 +55,7 @@
             (click)="close()"
             title="Cerrar vista previa"
             aria-label="Cerrar vista previa"
-            class="w-7 h-7 rounded-xs border border-outline bg-surface hover:bg-surface-muted text-on-surface flex items-center justify-center cursor-pointer transition-colors shadow-2xs"
+            class="w-7.5 h-7.5 rounded-full border border-outline/80 bg-surface hover:bg-surface-muted active:scale-95 text-on-surface flex items-center justify-center cursor-pointer transition-all shadow-2xs"
           >
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
@@ -66,7 +66,7 @@
 
       <!-- Lienzo Imprimible A4 de Documento Fiscal -->
       <div class="flex-1 overflow-y-auto p-4 sm:p-6 bg-slate-100 dark:bg-slate-950/70">
-        <div class="bg-white text-slate-900 border border-slate-300 shadow-md p-6 max-w-2xl mx-auto rounded-xs text-[11px] leading-relaxed">
+        <div class="bg-white text-slate-900 border border-slate-200/80 shadow-xl p-6 max-w-2xl mx-auto rounded-xl text-[11px] leading-relaxed">
           
           <!-- Encabezado: Datos de la Empresa y Recuadro RUC -->
           <div class="flex flex-col sm:flex-row justify-between items-start gap-4 pb-4 border-b border-slate-300">

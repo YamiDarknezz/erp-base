@@ -3,7 +3,7 @@
   <!-- ═══════════════════════════════════════════════════════════ -->
   <!-- 1. TOP BAR / HEADER CORPORATIVO (Fijo, Angosto h-11)        -->
   <!-- ═══════════════════════════════════════════════════════════ -->
-  <header class="h-11 bg-surface border-b border-outline px-3 sm:px-4 flex items-center justify-between z-30 shrink-0 shadow-xs select-none">
+  <header class="h-11 sticky top-0 z-30 bg-surface/85 backdrop-blur-md border-b border-outline/70 px-3 sm:px-4 flex items-center justify-between shrink-0 select-none shadow-xs">
     
     <!-- ── Lado Izquierdo: Menú Hamburguesa + Logo ERP + Módulo Activo ── -->
     <div class="flex items-center gap-2 sm:gap-3">
@@ -13,7 +13,7 @@
         (click)="toggleSidebar()"
         title="Alternar menú lateral"
         aria-label="Alternar menú lateral"
-        class="w-7.5 h-7.5 rounded flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-muted transition-colors cursor-pointer"
+        class="w-7.5 h-7.5 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-muted/70 active:scale-95 transition-all cursor-pointer"
         [class.bg-surface-muted]="sidebarOpen()"
       >
         <svg class="w-4.5 h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -24,7 +24,7 @@
       </button>
 
       <!-- Logo / Marca del ERP (Componente Reutilizable Único) -->
-      <div class="flex items-center gap-2 cursor-pointer" (click)="navigateTo('/dashboard')">
+      <div class="flex items-center gap-2 cursor-pointer active:scale-95 transition-transform" (click)="navigateTo('/dashboard')">
         <app-erp-logo size="sm" customClass="text-primary dark:text-blue-400" />
         <div class="flex items-baseline gap-1">
           <span class="text-sm font-black tracking-tight text-primary dark:text-blue-400">ERP BASE</span>
@@ -33,8 +33,8 @@
       </div>
 
       <!-- Separador & Módulo Activo Dinámico (Ruta completa sobria sin caja roja) -->
-      <div class="hidden sm:flex items-center pl-2.5 sm:pl-3 border-l border-outline">
-        <span class="text-xs font-bold tracking-wide text-on-surface uppercase select-none">
+      <div class="hidden sm:flex items-center pl-2.5 sm:pl-3 border-l border-outline/70">
+        <span class="text-xs font-semibold tracking-wide text-on-surface uppercase select-none">
           {{ activeModuleTitle() }}
         </span>
       </div>
@@ -53,7 +53,7 @@
 
       <!-- Selector de Sede Activa (Con Cierre al Clic Fuera y Botón Exclusivamente de Icono) -->
       <div class="relative hidden sm:flex items-center">
-        <div class="flex items-center gap-1.5 px-2 py-1 rounded-xs bg-surface-muted/60 border border-outline text-[11px] font-medium text-on-surface">
+        <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-muted/50 border border-outline/70 text-[11px] font-medium text-on-surface shadow-2xs">
           <svg class="w-3.5 h-3.5 text-primary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M3 21h18M3 7v14M21 7v14M6 11h.01M6 15h.01M10 11h.01M10 15h.01M14 11h.01M14 15h.01M18 11h.01M18 15h.01M9 3h6a2 2 0 0 1 2 2v2H7V5a2 2 0 0 1 2-2z"/>
           </svg>
@@ -63,7 +63,7 @@
             (click)="toggleBranchSelector()"
             title="Cambiar sede o sucursal operativa"
             aria-label="Cambiar sede operativa"
-            class="w-5 h-5 rounded-xs flex items-center justify-center hover:bg-surface-alt text-on-surface-variant cursor-pointer transition-colors"
+            class="w-5 h-5 rounded-full flex items-center justify-center hover:bg-surface text-on-surface-variant cursor-pointer active:scale-90 transition-all"
           >
             <svg class="w-3 h-3 transition-transform duration-200" [class.rotate-180]="branchSelectorOpen()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <polyline points="6 9 12 15 18 9" />
@@ -73,17 +73,17 @@
 
         @if (branchSelectorOpen()) {
           <div class="fixed inset-0 z-40" (click)="branchSelectorOpen.set(false)"></div>
-          <div class="absolute right-0 top-full mt-1 w-64 rounded-xs bg-surface border border-outline shadow-xl z-50 p-1.5 animate-in fade-in duration-150">
-            <div class="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-primary border-b border-outline mb-1">
+          <div class="absolute right-0 top-full mt-1.5 w-64 rounded-2xl bg-surface/95 backdrop-blur-xl border border-outline/70 shadow-2xl z-50 p-2 animate-in fade-in zoom-in-95 duration-150">
+            <div class="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-primary border-b border-outline/60 mb-1">
               Sedes Operativas
             </div>
             @for (br of availableBranches(); track br.id) {
               <div
                 (click)="selectBranch(br.name)"
-                class="w-full text-left p-1.5 rounded-xs hover:bg-surface-muted transition-colors flex items-start gap-2 cursor-pointer select-none"
+                class="w-full text-left p-2 rounded-xl hover:bg-surface-muted/70 active:scale-[0.98] transition-all flex items-start gap-2.5 cursor-pointer select-none"
                 [class.bg-primary/10]="selectedBranch() === br.name"
               >
-                <div class="w-5 h-5 rounded-xs bg-primary/20 text-primary flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
+                <div class="w-5 h-5 rounded-lg bg-primary/15 text-primary flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
                   {{ br.code }}
                 </div>
                 <div class="flex-1 min-w-0">
@@ -97,21 +97,21 @@
       </div>
 
       <!-- Separador visual -->
-      <div class="hidden xl:block h-5 w-px bg-outline"></div>
+      <div class="hidden xl:block h-4 w-px bg-outline/70"></div>
 
-      <!-- Chip de Usuario Logueado -->
-      <div class="flex items-center gap-2 py-0.5">
-        <div class="w-7 h-7 rounded-full bg-primary/10 dark:bg-primary/20 border border-primary/30 text-primary flex items-center justify-center font-bold text-xs shrink-0">
+      <!-- Chip de Usuario Logueado (Estilo Pill Apple) -->
+      <div class="flex items-center gap-2 px-2 py-0.5 rounded-full bg-surface-muted/30 border border-outline/50 shadow-2xs">
+        <div class="w-6.5 h-6.5 rounded-full bg-primary/10 dark:bg-primary/25 border border-primary/20 text-primary flex items-center justify-center font-bold text-xs shrink-0">
           {{ userInitials() }}
         </div>
-        <div class="hidden lg:flex flex-col text-left leading-none">
+        <div class="hidden lg:flex flex-col text-left leading-none pr-1">
           <span class="text-[11px] font-bold text-on-surface">{{ userName() }}</span>
           <span class="text-[10px] text-on-surface-variant truncate max-w-[130px]">{{ userFullName() }}</span>
         </div>
       </div>
 
-      <!-- Fila de Acciones (ESTRICTAMENTE SOLO BOTONES DE ICONO) -->
-      <div class="flex items-center gap-1 pl-1.5 border-l border-outline">
+      <!-- Fila de Acciones (ESTRICTAMENTE SOLO BOTONES DE ICONO CON EFECTO TÁCTIL APPLE) -->
+      <div class="flex items-center gap-1 pl-1.5 border-l border-outline/70">
         
         <!-- Botón Búsqueda Global / Spotlight (SOLO ICONO) -->
         <button
@@ -119,7 +119,7 @@
           (click)="toggleSpotlight()"
           title="Búsqueda global en todo el ERP (Ctrl + K)"
           aria-label="Búsqueda global (Ctrl + K)"
-          class="w-7.5 h-7.5 rounded-full flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-surface-muted transition-colors cursor-pointer"
+          class="w-7.5 h-7.5 rounded-full flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-surface-muted/70 active:scale-95 transition-all cursor-pointer"
         >
           <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="11" cy="11" r="8" />
@@ -134,7 +134,7 @@
             (click)="toggleNotifications()"
             title="Centro de notificaciones"
             aria-label="Centro de notificaciones"
-            class="w-7.5 h-7.5 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-muted transition-colors relative cursor-pointer"
+            class="w-7.5 h-7.5 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-muted/70 active:scale-95 transition-all relative cursor-pointer"
           >
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
@@ -143,16 +143,16 @@
             <span class="absolute top-1 right-1 w-2 h-2 bg-rose-500 rounded-full ring-1.5 ring-surface"></span>
           </button>
 
-          <!-- Popover de Notificaciones con Cierre Automático al Hacer Clic Fuera -->
+          <!-- Popover de Notificaciones con Cierre Automático al Hacer Clic Fuera (Tarjeta Apple) -->
           @if (notificationsOpen()) {
             <!-- Backdrop transparente para cerrar al hacer clic en cualquier parte fuera -->
             <div class="fixed inset-0 z-40" (click)="closeNotifications()"></div>
 
-            <div class="absolute right-0 mt-1.5 w-80 sm:w-84 rounded-xl bg-surface border border-outline shadow-xl z-50 p-3.5 animate-in fade-in slide-in-from-top-2 duration-150">
-              <div class="flex items-center justify-between pb-2 border-b border-outline">
+            <div class="absolute right-0 mt-1.5 w-80 sm:w-84 rounded-2xl bg-surface/95 backdrop-blur-xl border border-outline/70 shadow-2xl z-50 p-3.5 animate-in fade-in zoom-in-95 duration-150">
+              <div class="flex items-center justify-between pb-2 border-b border-outline/60">
                 <div class="flex items-center gap-1.5">
                   <span class="text-[11px] font-bold text-on-surface uppercase tracking-wider">Centro de Notificaciones</span>
-                  <span class="text-[9px] font-mono px-1.5 py-0.2 rounded-xs bg-primary/10 text-primary font-bold">
+                  <span class="text-[9px] font-mono px-2 py-0.5 rounded-full bg-primary/10 text-primary font-bold">
                     {{ notifications().length }}
                   </span>
                 </div>
@@ -164,7 +164,7 @@
                       (click)="clearAllNotifications()"
                       title="Limpiar todas las notificaciones"
                       aria-label="Limpiar todas las notificaciones"
-                      class="w-5 h-5 rounded flex items-center justify-center text-on-surface-variant hover:text-danger cursor-pointer transition-colors"
+                      class="w-6 h-6 rounded-full flex items-center justify-center text-on-surface-variant hover:text-danger hover:bg-danger-soft active:scale-90 transition-all cursor-pointer"
                     >
                       <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <polyline points="3 6 5 6 21 6" />
@@ -178,7 +178,7 @@
                     (click)="closeNotifications()"
                     title="Cerrar notificaciones"
                     aria-label="Cerrar notificaciones"
-                    class="w-5 h-5 rounded flex items-center justify-center text-on-surface-variant hover:text-on-surface cursor-pointer"
+                    class="w-6 h-6 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-muted active:scale-90 transition-all cursor-pointer"
                   >
                     <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                       <line x1="18" y1="6" x2="6" y2="18" />
@@ -194,10 +194,10 @@
                   </div>
                 }
                 @for (item of notifications(); track item.id) {
-                  <div class="py-2 flex items-start justify-between gap-2 group">
-                    <div class="flex items-start gap-2 min-w-0">
+                  <div class="py-2.5 flex items-start justify-between gap-2 group px-1 rounded-lg hover:bg-surface-muted/50 transition-colors">
+                    <div class="flex items-start gap-2.5 min-w-0">
                       <div
-                        class="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0"
+                        class="w-2 h-2 rounded-full mt-1 shrink-0"
                         [class.bg-rose-500]="item.type === 'danger'"
                         [class.bg-amber-500]="item.type === 'warning'"
                         [class.bg-primary]="item.type === 'info'"
@@ -213,7 +213,7 @@
                       (click)="dismissNotification(item.id)"
                       title="Descartar notificación"
                       aria-label="Descartar notificación"
-                      class="w-4.5 h-4.5 rounded flex items-center justify-center text-on-surface-muted hover:text-danger opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer shrink-0 mt-0.5"
+                      class="w-5 h-5 rounded-full flex items-center justify-center text-on-surface-muted hover:text-danger active:scale-90 opacity-0 group-hover:opacity-100 transition-all cursor-pointer shrink-0 mt-0.5"
                     >
                       <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
@@ -232,7 +232,7 @@
           (click)="theme.toggle()"
           [title]="theme.isDark() ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'"
           [attr.aria-label]="theme.isDark() ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'"
-          class="w-7.5 h-7.5 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-muted transition-colors cursor-pointer"
+          class="w-7.5 h-7.5 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-muted/70 active:scale-95 transition-all cursor-pointer"
         >
           @if (theme.isDark()) {
             <svg class="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -260,7 +260,7 @@
             (click)="installPwa()"
             title="Instalar aplicación en el dispositivo"
             aria-label="Instalar aplicación"
-            class="w-7.5 h-7.5 rounded-full flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-primary-soft transition-colors cursor-pointer"
+            class="w-7.5 h-7.5 rounded-full flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-primary-soft active:scale-95 transition-all cursor-pointer"
           >
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
@@ -276,7 +276,7 @@
           (click)="logout()"
           title="Cerrar sesión segura"
           aria-label="Cerrar sesión"
-          class="w-7.5 h-7.5 rounded-full flex items-center justify-center text-on-surface-variant hover:text-danger hover:bg-danger-soft transition-colors cursor-pointer"
+          class="w-7.5 h-7.5 rounded-full flex items-center justify-center text-on-surface-variant hover:text-danger hover:bg-danger-soft active:scale-95 transition-all cursor-pointer"
         >
           <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
@@ -308,21 +308,21 @@
 
     <!-- Drawer Lateral Flotante (Deslizamiento rápido y fluido de izquierda a derecha) -->
     <aside
-      class="sidebar-overlay-drawer fixed top-11 left-0 bottom-0 w-72 bg-surface border-r border-outline shadow-2xl z-40 flex flex-col justify-between overflow-hidden select-none"
+      class="sidebar-overlay-drawer fixed top-11 left-0 bottom-0 w-72 bg-surface/95 backdrop-blur-xl border-r border-outline/70 shadow-2xl z-40 flex flex-col justify-between overflow-hidden select-none"
       [class.translate-x-0]="sidebarOpen()"
       [class.-translate-x-full]="!sidebarOpen()"
     >
         <!-- Contenido scrolleable -->
         <div class="flex-1 overflow-y-auto px-2.5 py-2.5 space-y-0.5">
           
-          <!-- Buscador Pill -->
+          <!-- Buscador Pill Apple -->
           <div class="mb-2 px-1">
             <div class="relative flex items-center">
               <input
                 type="text"
                 [(ngModel)]="searchQuery"
-                placeholder="Buscar..."
-                class="w-full text-xs pl-3 pr-7 py-1.5 rounded-full border border-outline bg-surface-alt text-on-surface placeholder:text-on-surface-muted focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all"
+                placeholder="Buscar módulo o acción..."
+                class="w-full text-xs pl-3 pr-7 py-1.5 rounded-full border border-outline/70 bg-surface-alt/70 text-on-surface placeholder:text-on-surface-muted focus:outline-none focus:ring-1 focus:ring-primary focus:bg-surface transition-all"
               />
               <svg class="w-3.5 h-3.5 text-on-surface-muted absolute right-3 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="11" cy="11" r="8" />
@@ -830,15 +830,15 @@
 
         </div>
 
-        <!-- Fila Inferior de Botones de Icono (Idéntica a la Captura) -->
-        <div class="h-10 px-3 border-t border-outline bg-surface-alt/70 flex items-center justify-around shrink-0">
+        <!-- Fila Inferior de Botones de Icono (Estilo Apple Compacto) -->
+        <div class="h-10 px-3 border-t border-outline/70 bg-surface-alt/70 backdrop-blur-xs flex items-center justify-around shrink-0">
           <!-- 👤 Perfil -->
           <button
             type="button"
             (click)="openAccount()"
             title="Mi perfil y sesión"
             aria-label="Mi perfil y sesión"
-            class="w-7 h-7 rounded flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-muted transition-colors cursor-pointer"
+            class="w-7.5 h-7.5 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-muted/70 active:scale-95 transition-all cursor-pointer"
           >
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
@@ -851,7 +851,7 @@
             (click)="openPermissions()"
             title="Seguridad y accesos por rol"
             aria-label="Seguridad y accesos por rol"
-            class="w-7 h-7 rounded flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-muted transition-colors cursor-pointer"
+            class="w-7.5 h-7.5 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-muted/70 active:scale-95 transition-all cursor-pointer"
           >
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
@@ -864,7 +864,7 @@
             (click)="openProfile()"
             title="Configuración de preferencias"
             aria-label="Configuración de preferencias"
-            class="w-7 h-7 rounded flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-muted transition-colors cursor-pointer"
+            class="w-7.5 h-7.5 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-muted/70 active:scale-95 transition-all cursor-pointer"
           >
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="12" r="3" />
@@ -878,7 +878,7 @@
             (click)="theme.toggle()"
             [title]="theme.isDark() ? 'Modo claro' : 'Modo oscuro'"
             [attr.aria-label]="theme.isDark() ? 'Modo claro' : 'Modo oscuro'"
-            class="w-7 h-7 rounded flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-muted transition-colors cursor-pointer"
+            class="w-7.5 h-7.5 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-muted/70 active:scale-95 transition-all cursor-pointer"
           >
             <span class="text-[11px] font-bold">Av</span>
           </button>
@@ -895,11 +895,11 @@
 
   <!-- ── MODAL 1: GESTIÓN DE PERMISOS Y ROLES DE USUARIO ── -->
   @if (permissionsOpen()) {
-    <div class="fixed inset-0 z-50 bg-black/45 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150">
-      <div class="bg-surface rounded-xs border border-outline shadow-2xl w-full max-w-xl overflow-hidden flex flex-col max-h-[90vh]">
+    <div class="fixed inset-0 z-50 bg-black/40 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-150">
+      <div class="bg-surface/95 backdrop-blur-xl rounded-2xl border border-outline/70 shadow-2xl w-full max-w-xl overflow-hidden flex flex-col max-h-[90vh]">
         
         <!-- Cabecera -->
-        <div class="h-10 px-3 bg-surface-alt border-b border-outline flex items-center justify-between shrink-0">
+        <div class="h-11 px-4 bg-surface-alt/50 border-b border-outline/60 flex items-center justify-between shrink-0">
           <div class="flex items-center gap-2">
             <svg class="w-4 h-4 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
@@ -911,7 +911,7 @@
             (click)="closePermissions()"
             title="Cerrar matriz de permisos"
             aria-label="Cerrar"
-            class="w-6 h-6 rounded flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-muted cursor-pointer transition-colors"
+            class="w-7 h-7 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-muted/70 active:scale-95 transition-all cursor-pointer"
           >
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
@@ -920,12 +920,12 @@
         </div>
 
         <!-- Selector de Rol -->
-        <div class="p-3 bg-surface border-b border-outline flex items-center justify-between gap-3 shrink-0">
+        <div class="p-3 bg-surface/50 border-b border-outline/60 flex items-center justify-between gap-3 shrink-0">
           <span class="text-xs font-semibold text-on-surface-variant">Rol de Usuario:</span>
           <select
             [ngModel]="selectedRole()"
             (ngModelChange)="onRoleChange($event)"
-            class="h-7 text-xs px-2 rounded-xs border border-outline bg-surface-alt text-on-surface focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
+            class="h-7.5 text-xs px-2.5 rounded-lg border border-outline/80 bg-surface text-on-surface focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer transition-all"
           >
             @for (role of rolesList(); track role) {
               <option [value]="role">{{ role }}</option>
@@ -935,50 +935,52 @@
 
         <!-- Matriz de Permisos -->
         <div class="flex-1 overflow-y-auto p-3">
-          <table class="w-full text-[11px] border-collapse border border-outline">
-            <thead>
-              <tr class="bg-surface-alt text-on-surface-variant border-b border-outline text-left">
-                <th class="p-2 font-semibold border-r border-outline">Submódulo</th>
-                <th class="p-2 font-semibold text-center border-r border-outline w-12">Ver</th>
-                <th class="p-2 font-semibold text-center border-r border-outline w-12">Crear</th>
-                <th class="p-2 font-semibold text-center border-r border-outline w-12">Editar</th>
-                <th class="p-2 font-semibold text-center border-r border-outline w-12">Anular</th>
-                <th class="p-2 font-semibold text-center w-14">Exportar</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (item of permissionsMatrix(); track item.modulo) {
-                <tr class="border-b border-outline hover:bg-surface-muted transition-colors">
-                  <td class="p-2 font-medium text-on-surface border-r border-outline">{{ item.modulo }}</td>
-                  <td class="p-2 text-center border-r border-outline">
-                    <input type="checkbox" [(ngModel)]="item.ver" class="w-3.5 h-3.5 rounded-xs border-outline text-primary focus:ring-0 cursor-pointer" />
-                  </td>
-                  <td class="p-2 text-center border-r border-outline">
-                    <input type="checkbox" [(ngModel)]="item.crear" class="w-3.5 h-3.5 rounded-xs border-outline text-primary focus:ring-0 cursor-pointer" />
-                  </td>
-                  <td class="p-2 text-center border-r border-outline">
-                    <input type="checkbox" [(ngModel)]="item.editar" class="w-3.5 h-3.5 rounded-xs border-outline text-primary focus:ring-0 cursor-pointer" />
-                  </td>
-                  <td class="p-2 text-center border-r border-outline">
-                    <input type="checkbox" [(ngModel)]="item.anular" class="w-3.5 h-3.5 rounded-xs border-outline text-primary focus:ring-0 cursor-pointer" />
-                  </td>
-                  <td class="p-2 text-center">
-                    <input type="checkbox" [(ngModel)]="item.exportar" class="w-3.5 h-3.5 rounded-xs border-outline text-primary focus:ring-0 cursor-pointer" />
-                  </td>
+          <div class="rounded-xl border border-outline/70 overflow-hidden shadow-2xs">
+            <table class="w-full text-[11px] border-collapse">
+              <thead>
+                <tr class="bg-surface-alt/70 text-on-surface-variant border-b border-outline/70 text-left">
+                  <th class="p-2.5 font-semibold border-r border-outline/70">Submódulo</th>
+                  <th class="p-2.5 font-semibold text-center border-r border-outline/70 w-12">Ver</th>
+                  <th class="p-2.5 font-semibold text-center border-r border-outline/70 w-12">Crear</th>
+                  <th class="p-2.5 font-semibold text-center border-r border-outline/70 w-12">Editar</th>
+                  <th class="p-2.5 font-semibold text-center border-r border-outline/70 w-12">Anular</th>
+                  <th class="p-2.5 font-semibold text-center w-14">Exportar</th>
                 </tr>
-              }
-            </tbody>
-          </table>
+              </thead>
+              <tbody class="divide-y divide-outline/50">
+                @for (item of permissionsMatrix(); track item.modulo) {
+                  <tr class="hover:bg-primary/[0.03] transition-colors">
+                    <td class="p-2 font-medium text-on-surface border-r border-outline/70">{{ item.modulo }}</td>
+                    <td class="p-2 text-center border-r border-outline/70">
+                      <input type="checkbox" [(ngModel)]="item.ver" class="w-3.5 h-3.5 rounded border-outline/80 text-primary focus:ring-0 cursor-pointer" />
+                    </td>
+                    <td class="p-2 text-center border-r border-outline/70">
+                      <input type="checkbox" [(ngModel)]="item.crear" class="w-3.5 h-3.5 rounded border-outline/80 text-primary focus:ring-0 cursor-pointer" />
+                    </td>
+                    <td class="p-2 text-center border-r border-outline/70">
+                      <input type="checkbox" [(ngModel)]="item.editar" class="w-3.5 h-3.5 rounded border-outline/80 text-primary focus:ring-0 cursor-pointer" />
+                    </td>
+                    <td class="p-2 text-center border-r border-outline/70">
+                      <input type="checkbox" [(ngModel)]="item.anular" class="w-3.5 h-3.5 rounded border-outline/80 text-primary focus:ring-0 cursor-pointer" />
+                    </td>
+                    <td class="p-2 text-center">
+                      <input type="checkbox" [(ngModel)]="item.exportar" class="w-3.5 h-3.5 rounded border-outline/80 text-primary focus:ring-0 cursor-pointer" />
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
         </div>
 
         <!-- Pie de Acciones (PROHIBIDO TEXTO: SOLO ICONOS CON ACCESIBILIDAD) -->
-        <div class="h-11 px-3 bg-surface-alt border-t border-outline flex items-center justify-end gap-2 shrink-0">
+        <div class="h-11 px-4 bg-surface-alt/50 border-t border-outline/60 flex items-center justify-end gap-2 shrink-0">
           <button
             type="button"
             (click)="closePermissions()"
             title="Cancelar y descartar cambios"
             aria-label="Cancelar"
-            class="w-8 h-8 rounded-xs border border-outline bg-surface hover:bg-surface-muted text-on-surface flex items-center justify-center cursor-pointer transition-colors shadow-2xs"
+            class="w-7.5 h-7.5 rounded-full border border-outline/80 bg-surface hover:bg-surface-muted text-on-surface flex items-center justify-center cursor-pointer active:scale-95 transition-all shadow-2xs"
           >
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
@@ -989,7 +991,7 @@
             (click)="savePermissions()"
             title="Guardar asignación de permisos"
             aria-label="Guardar permisos"
-            class="w-8 h-8 rounded-xs bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white flex items-center justify-center cursor-pointer transition-colors shadow-2xs"
+            class="w-7.5 h-7.5 rounded-full bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white flex items-center justify-center cursor-pointer active:scale-95 transition-all shadow-2xs"
           >
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
@@ -1005,11 +1007,11 @@
 
   <!-- ── MODAL 2: CONFIGURACIÓN DE PERFIL PERSONAL ── -->
   @if (profileOpen()) {
-    <div class="fixed inset-0 z-50 bg-black/45 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150">
-      <div class="bg-surface rounded-xs border border-outline shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[90vh]">
+    <div class="fixed inset-0 z-50 bg-black/40 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-150">
+      <div class="bg-surface/95 backdrop-blur-xl rounded-2xl border border-outline/70 shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[90vh]">
         
         <!-- Cabecera -->
-        <div class="h-10 px-3 bg-surface-alt border-b border-outline flex items-center justify-between shrink-0">
+        <div class="h-11 px-4 bg-surface-alt/50 border-b border-outline/60 flex items-center justify-between shrink-0">
           <div class="flex items-center gap-2">
             <svg class="w-4 h-4 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="12" r="3" />
@@ -1022,7 +1024,7 @@
             (click)="closeProfile()"
             title="Cerrar perfil"
             aria-label="Cerrar"
-            class="w-6 h-6 rounded flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-muted cursor-pointer transition-colors"
+            class="w-7 h-7 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-muted/70 active:scale-95 transition-all cursor-pointer"
           >
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
@@ -1038,7 +1040,7 @@
               type="text"
               [value]="userName()"
               readonly
-              class="w-full h-7 px-2.5 text-xs rounded-xs border border-outline bg-surface-muted text-on-surface-variant opacity-75 cursor-not-allowed"
+              class="w-full h-7.5 px-3 text-xs rounded-lg border border-outline/80 bg-surface-muted/60 text-on-surface-variant opacity-75 cursor-not-allowed"
             />
           </div>
 
@@ -1048,7 +1050,7 @@
               type="text"
               [value]="userFullName()"
               readonly
-              class="w-full h-7 px-2.5 text-xs rounded-xs border border-outline bg-surface-muted text-on-surface-variant opacity-75 cursor-not-allowed"
+              class="w-full h-7.5 px-3 text-xs rounded-lg border border-outline/80 bg-surface-muted/60 text-on-surface-variant opacity-75 cursor-not-allowed"
             />
           </div>
 
@@ -1058,18 +1060,18 @@
               type="email"
               [ngModel]="profileEmail()"
               (ngModelChange)="profileEmail.set($event)"
-              class="w-full h-7 px-2.5 text-xs rounded-xs border border-outline bg-surface text-on-surface focus:outline-none focus:ring-1 focus:ring-primary"
+              class="w-full h-7.5 px-3 text-xs rounded-lg border border-outline/80 bg-surface text-on-surface focus:outline-none focus:ring-1 focus:ring-primary transition-all"
             />
           </div>
 
-          <div class="pt-2 border-t border-outline">
+          <div class="pt-2 border-t border-outline/60">
             <label class="block text-[11px] font-semibold text-on-surface-variant mb-1">Contraseña Actual</label>
             <input
               type="password"
               [ngModel]="profileCurrentPassword()"
               (ngModelChange)="profileCurrentPassword.set($event)"
               placeholder="••••••••"
-              class="w-full h-7 px-2.5 text-xs rounded-xs border border-outline bg-surface text-on-surface focus:outline-none focus:ring-1 focus:ring-primary"
+              class="w-full h-7.5 px-3 text-xs rounded-lg border border-outline/80 bg-surface text-on-surface focus:outline-none focus:ring-1 focus:ring-primary transition-all"
             />
           </div>
 
@@ -1080,7 +1082,7 @@
               [ngModel]="profileNewPassword()"
               (ngModelChange)="profileNewPassword.set($event)"
               placeholder="Nueva clave..."
-              class="w-full h-7 px-2.5 text-xs rounded-xs border border-outline bg-surface text-on-surface focus:outline-none focus:ring-1 focus:ring-primary"
+              class="w-full h-7.5 px-3 text-xs rounded-lg border border-outline/80 bg-surface text-on-surface focus:outline-none focus:ring-1 focus:ring-primary transition-all"
             />
           </div>
 
@@ -1089,7 +1091,7 @@
             <select
               [ngModel]="profileTimeoutMinutes()"
               (ngModelChange)="profileTimeoutMinutes.set(+$event)"
-              class="w-full h-7 px-2 text-xs rounded-xs border border-outline bg-surface text-on-surface focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
+              class="w-full h-7.5 px-2.5 text-xs rounded-lg border border-outline/80 bg-surface text-on-surface focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer transition-all"
             >
               <option [value]="15">15 minutos de inactividad</option>
               <option [value]="30">30 minutos de inactividad</option>
@@ -1099,13 +1101,13 @@
         </div>
 
         <!-- Pie de Acciones (PROHIBIDO TEXTO: SOLO ICONOS) -->
-        <div class="h-11 px-3 bg-surface-alt border-t border-outline flex items-center justify-end gap-2 shrink-0">
+        <div class="h-11 px-4 bg-surface-alt/50 border-t border-outline/60 flex items-center justify-end gap-2 shrink-0">
           <button
             type="button"
             (click)="closeProfile()"
             title="Cancelar"
             aria-label="Cancelar"
-            class="w-8 h-8 rounded-xs border border-outline bg-surface hover:bg-surface-muted text-on-surface flex items-center justify-center cursor-pointer transition-colors shadow-2xs"
+            class="w-7.5 h-7.5 rounded-full border border-outline/80 bg-surface hover:bg-surface-muted text-on-surface flex items-center justify-center cursor-pointer active:scale-95 transition-all shadow-2xs"
           >
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
@@ -1116,7 +1118,7 @@
             (click)="saveProfile()"
             title="Guardar preferencias del perfil"
             aria-label="Guardar perfil"
-            class="w-8 h-8 rounded-xs bg-primary hover:bg-primary/90 active:bg-primary text-on-primary flex items-center justify-center cursor-pointer transition-colors shadow-2xs"
+            class="w-7.5 h-7.5 rounded-full bg-primary hover:bg-primary/90 active:bg-primary text-on-primary flex items-center justify-center cursor-pointer active:scale-95 transition-all shadow-2xs"
           >
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
@@ -1132,11 +1134,11 @@
 
   <!-- ── MODAL 3: FICHA DE CUENTA Y SESIÓN ACTIVA ── -->
   @if (accountOpen()) {
-    <div class="fixed inset-0 z-50 bg-black/45 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150">
-      <div class="bg-surface rounded-xs border border-outline shadow-2xl w-full max-w-sm overflow-hidden flex flex-col max-h-[90vh]">
+    <div class="fixed inset-0 z-50 bg-black/40 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-150">
+      <div class="bg-surface/95 backdrop-blur-xl rounded-2xl border border-outline/70 shadow-2xl w-full max-w-sm overflow-hidden flex flex-col max-h-[90vh]">
         
         <!-- Cabecera -->
-        <div class="h-10 px-3 bg-surface-alt border-b border-outline flex items-center justify-between shrink-0">
+        <div class="h-11 px-4 bg-surface-alt/50 border-b border-outline/60 flex items-center justify-between shrink-0">
           <div class="flex items-center gap-2">
             <svg class="w-4 h-4 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
@@ -1148,7 +1150,7 @@
             (click)="closeAccount()"
             title="Cerrar ficha"
             aria-label="Cerrar"
-            class="w-6 h-6 rounded flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-muted cursor-pointer transition-colors"
+            class="w-7 h-7 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-muted/70 active:scale-95 transition-all cursor-pointer"
           >
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
@@ -1157,9 +1159,9 @@
         </div>
 
         <!-- Contenido de la Ficha -->
-        <div class="p-4 space-y-3 text-xs">
-          <div class="flex items-center gap-3 pb-3 border-b border-outline">
-            <div class="w-10 h-10 rounded-full bg-primary/20 text-primary font-bold flex items-center justify-center text-sm">
+        <div class="p-4 space-y-3.5 text-xs">
+          <div class="flex items-center gap-3 pb-3 border-b border-outline/60">
+            <div class="w-11 h-11 rounded-full bg-primary/15 text-primary font-bold flex items-center justify-center text-sm shadow-xs">
               AG
             </div>
             <div>
@@ -1179,8 +1181,8 @@
             </div>
             <div class="flex items-center justify-between">
               <span class="text-on-surface-variant">Estado de Sesión:</span>
-              <span class="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-semibold">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Conectado
+              <span class="inline-flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-semibold">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Conectado
               </span>
             </div>
             <div class="flex items-center justify-between">
@@ -1195,14 +1197,14 @@
         </div>
 
         <!-- Pie de Acciones (PROHIBIDO TEXTO: SOLO ICONOS) -->
-        <div class="h-11 px-3 bg-surface-alt border-t border-outline flex items-center justify-between shrink-0">
+        <div class="h-11 px-4 bg-surface-alt/50 border-t border-outline/60 flex items-center justify-between shrink-0">
           <!-- Botón de Cerrar Sesión (Icono) -->
           <button
             type="button"
             (click)="logout()"
             title="Cerrar sesión activa"
             aria-label="Cerrar sesión"
-            class="w-8 h-8 rounded-xs border border-danger/30 bg-danger/10 hover:bg-danger text-danger hover:text-white flex items-center justify-center cursor-pointer transition-colors shadow-2xs"
+            class="w-7.5 h-7.5 rounded-full border border-danger/30 bg-danger/10 hover:bg-danger text-danger hover:text-white flex items-center justify-center cursor-pointer active:scale-95 transition-all shadow-2xs"
           >
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
@@ -1217,7 +1219,7 @@
             (click)="closeAccount()"
             title="Cerrar ficha"
             aria-label="Cerrar"
-            class="w-8 h-8 rounded-xs border border-outline bg-surface hover:bg-surface-muted text-on-surface flex items-center justify-center cursor-pointer transition-colors shadow-2xs"
+            class="w-7.5 h-7.5 rounded-full border border-outline/80 bg-surface hover:bg-surface-muted text-on-surface flex items-center justify-center cursor-pointer active:scale-95 transition-all shadow-2xs"
           >
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
@@ -1233,13 +1235,13 @@
   <!-- MODAL DE BÚSQUEDA GLOBAL / SPOTLIGHT (CTRL + K)             -->
   <!-- ═══════════════════════════════════════════════════════════ -->
   @if (spotlightOpen()) {
-    <div class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-start justify-center pt-16 sm:pt-24 p-3 animate-in fade-in duration-150">
+    <div class="fixed inset-0 z-50 bg-black/40 dark:bg-black/60 backdrop-blur-sm flex items-start justify-center pt-16 sm:pt-24 p-3 animate-in fade-in duration-150">
       <div class="fixed inset-0" (click)="closeSpotlight()"></div>
 
-      <div class="relative bg-surface rounded-xs border border-outline shadow-2xl w-full max-w-xl overflow-hidden text-on-surface z-10 animate-in zoom-in-95 duration-150">
+      <div class="relative bg-surface/90 backdrop-blur-2xl rounded-2xl border border-outline/60 shadow-2xl w-full max-w-xl overflow-hidden text-on-surface z-10 animate-in zoom-in-95 duration-150">
         
-        <!-- Input de Búsqueda -->
-        <div class="h-11 px-3 border-b border-outline flex items-center gap-2.5 bg-surface-alt">
+        <!-- Input de Búsqueda Estilo Spotlight Apple -->
+        <div class="h-12 px-3.5 border-b border-outline/60 flex items-center gap-2.5 bg-surface-alt/40">
           <svg class="w-4 h-4 text-primary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="11" cy="11" r="8" />
             <line x1="21" y1="21" x2="16.65" y2="16.65" />
@@ -1251,7 +1253,7 @@
             placeholder="Buscar módulo, comprobante, SKU, cliente o reporte..."
             class="w-full bg-transparent text-xs text-on-surface placeholder:text-on-surface-muted focus:outline-hidden font-medium"
           />
-          <span class="text-[9px] font-mono px-1.5 py-0.5 rounded-xs bg-surface-muted border border-outline text-on-surface-variant shrink-0">
+          <span class="text-[9px] font-mono px-2 py-0.5 rounded-full bg-surface-muted/70 border border-outline/60 text-on-surface-variant shrink-0">
             ESC
           </span>
           <button
@@ -1259,7 +1261,7 @@
             (click)="closeSpotlight()"
             title="Cerrar búsqueda global"
             aria-label="Cerrar búsqueda global"
-            class="w-6 h-6 rounded-xs flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-muted cursor-pointer transition-colors"
+            class="w-6 h-6 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-muted active:scale-90 cursor-pointer transition-all"
           >
             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
@@ -1267,8 +1269,8 @@
           </button>
         </div>
 
-        <!-- Lista de Resultados -->
-        <div class="max-h-80 overflow-y-auto p-1.5 space-y-0.5 text-xs">
+        <!-- Lista de Resultados Spotlight -->
+        <div class="max-h-80 overflow-y-auto p-2 space-y-1 text-xs">
           @if (filteredSpotlightItems().length === 0) {
             <div class="p-6 text-center text-on-surface-muted text-xs">
               No se encontraron coincidencias para "{{ spotlightQuery() }}"
@@ -1277,10 +1279,10 @@
             @for (item of filteredSpotlightItems(); track item.path) {
               <div
                 (click)="selectSpotlightItem(item.path)"
-                class="px-2.5 py-2 rounded-xs hover:bg-surface-muted cursor-pointer transition-colors flex items-center justify-between group"
+                class="px-3 py-2 rounded-xl hover:bg-primary/10 cursor-pointer active:scale-[0.99] transition-all flex items-center justify-between group"
               >
                 <div class="flex items-center gap-2.5 min-w-0">
-                  <div class="w-6 h-6 rounded-xs bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                  <div class="w-6 h-6 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
                     <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                       <polyline points="9 18 15 12 9 6" />
                     </svg>
@@ -1299,9 +1301,9 @@
         </div>
 
         <!-- Barra Inferior de Atajos -->
-        <div class="h-7 px-3 bg-surface-alt/70 border-t border-outline flex items-center justify-between text-[10px] text-on-surface-muted">
+        <div class="h-8 px-3.5 bg-surface-alt/50 border-t border-outline/60 flex items-center justify-between text-[10px] text-on-surface-muted">
           <span>Navegación global rápida</span>
-          <span>Presione <kbd class="font-mono font-bold text-primary">Enter</kbd> para navegar</span>
+          <span>Presione <kbd class="font-mono font-bold text-primary px-1.5 py-0.5 rounded-full bg-primary/10">Enter</kbd> para navegar</span>
         </div>
 
       </div>

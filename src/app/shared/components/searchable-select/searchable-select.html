@@ -1,6 +1,6 @@
 <div class="relative w-full select-none text-on-surface">
   
-  <!-- Disparador del selector personalizado (Sin usar <select> nativo) -->
+  <!-- Disparador del selector personalizado (Sin usar <select> nativo - Estilo Apple) -->
   <div
     (click)="toggleOpen()"
     [class.opacity-50]="disabled()"
@@ -9,7 +9,7 @@
     [class.ring-1]="isOpen()"
     [class.ring-primary]="isOpen()"
     [class.border-primary]="isOpen()"
-    class="w-full h-7 px-2 bg-surface border border-outline rounded-xs flex items-center justify-between gap-1.5 transition-all text-xs"
+    class="w-full h-7.5 px-2.5 bg-surface border border-outline/80 rounded-lg flex items-center justify-between gap-1.5 transition-all text-xs hover:border-primary/50 shadow-2xs"
   >
     <!-- Contenido seleccionado o placeholder -->
     <div class="flex-1 truncate flex items-center gap-1.5">
@@ -19,7 +19,7 @@
           <span class="text-[10px] text-on-surface-muted truncate">({{ opt.sublabel }})</span>
         }
         @if (opt.badge) {
-          <span class="text-[9px] px-1 py-0.2 rounded-xs bg-primary/10 text-primary font-mono shrink-0">
+          <span class="text-[9px] px-2 py-0.2 rounded-full bg-primary/10 text-primary font-mono font-semibold shrink-0">
             {{ opt.badge }}
           </span>
         }
@@ -36,7 +36,7 @@
           (click)="clearSelection($event)"
           title="Limpiar selección"
           aria-label="Limpiar selección"
-          class="w-4 h-4 rounded-xs flex items-center justify-center text-on-surface-muted hover:text-on-surface hover:bg-surface-muted cursor-pointer transition-colors"
+          class="w-4.5 h-4.5 rounded-full flex items-center justify-center text-on-surface-muted hover:text-on-surface hover:bg-surface-muted active:scale-90 cursor-pointer transition-all"
         >
           <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
@@ -52,16 +52,16 @@
     </div>
   </div>
 
-  <!-- Popup Flotante con Buscador Integrado y Cierre al Clic Fuera -->
+  <!-- Popup Flotante con Buscador Integrado y Cierre al Clic Fuera (Frosted Glass Apple) -->
   @if (isOpen()) {
     <!-- Backdrop invisible para click-outside automático -->
     <div class="fixed inset-0 z-40" (click)="close()"></div>
 
     <!-- Contenedor del desplegable -->
-    <div class="absolute left-0 right-0 top-full mt-1 bg-surface border border-outline rounded-xs shadow-xl z-50 overflow-hidden flex flex-col animate-in fade-in duration-100 min-w-[240px]">
+    <div class="absolute left-0 right-0 top-full mt-1.5 bg-surface/95 backdrop-blur-xl border border-outline/70 rounded-xl shadow-2xl z-50 overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-100 min-w-[240px]">
       
       <!-- Buscador en tiempo real dentro del desplegable -->
-      <div class="p-1.5 bg-surface-alt border-b border-outline flex items-center gap-1.5 shrink-0">
+      <div class="p-1.5 bg-surface-alt/60 border-b border-outline/70 flex items-center gap-1.5 shrink-0">
         <svg class="w-3 h-3 text-on-surface-muted shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
         </svg>
@@ -71,7 +71,7 @@
           [(ngModel)]="searchQuery"
           (click)="$event.stopPropagation()"
           [placeholder]="searchPlaceholder()"
-          class="w-full h-6 text-[11px] px-1.5 bg-surface border border-outline rounded-xs text-on-surface placeholder:text-on-surface-muted focus:outline-none focus:ring-1 focus:ring-primary"
+          class="w-full h-6.5 text-[11px] px-2 bg-surface border border-outline/70 rounded-lg text-on-surface placeholder:text-on-surface-muted focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs"
         />
         @if (searchQuery()) {
           <button
@@ -79,7 +79,7 @@
             (click)="searchQuery.set('')"
             title="Borrar término de búsqueda"
             aria-label="Borrar término"
-            class="w-4 h-4 rounded flex items-center justify-center text-on-surface-muted hover:text-on-surface cursor-pointer"
+            class="w-4.5 h-4.5 rounded-full flex items-center justify-center text-on-surface-muted hover:text-on-surface active:scale-90 cursor-pointer transition-all"
           >
             <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
@@ -89,11 +89,11 @@
       </div>
 
       <!-- Lista de Opciones Filtradas -->
-      <div class="max-h-52 overflow-y-auto p-1 divide-y divide-outline/30">
+      <div class="max-h-52 overflow-y-auto p-1.5 space-y-0.5">
         @for (opt of filteredOptions(); track opt.value) {
           <div
             (click)="selectOption(opt)"
-            class="px-2 py-1.5 rounded-xs flex items-center justify-between gap-2 hover:bg-surface-muted cursor-pointer transition-colors text-xs"
+            class="px-2.5 py-1.5 rounded-lg flex items-center justify-between gap-2 hover:bg-surface-muted/70 active:scale-[0.99] cursor-pointer transition-all text-xs"
             [class.bg-primary/10]="opt.value === value()"
             [class.text-primary]="opt.value === value()"
             [class.font-semibold]="opt.value === value()"
@@ -105,9 +105,9 @@
               }
             </div>
 
-            <div class="flex items-center gap-1 shrink-0">
+            <div class="flex items-center gap-1.5 shrink-0">
               @if (opt.badge) {
-                <span class="text-[9px] px-1 py-0.2 rounded-xs bg-surface-alt border border-outline text-on-surface-variant font-mono">
+                <span class="text-[9px] px-2 py-0.2 rounded-full bg-surface-alt border border-outline/70 text-on-surface-variant font-mono">
                   {{ opt.badge }}
                 </span>
               }
