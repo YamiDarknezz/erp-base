@@ -1,0 +1,10 @@
+<app-data-grid
+  [columns]="columns"
+  [data]="personal()"
+  [actions]="actions"
+  newButtonTitle="Registrar nuevo asesor comercial"
+  searchPlaceholder="Buscar por código, nombre o zona..."
+  storageKey="gestion-personal-comercial"
+  (onNew)="handleNew()"
+  (onAction)="handleAction($event)"
+/>

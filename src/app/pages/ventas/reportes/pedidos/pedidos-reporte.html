@@ -1,0 +1,9 @@
+<app-data-grid
+  [columns]="columns"
+  [data]="pedidos()"
+  [actions]="actions"
+  [showNewButton]="false"
+  searchPlaceholder="Buscar por pedido, cliente o vendedor..."
+  storageKey="reportes-pedidos-efectividad"
+  (onAction)="handleAction($event)"
+/>

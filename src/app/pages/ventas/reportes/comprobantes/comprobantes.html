@@ -1,0 +1,9 @@
+<app-data-grid
+  [columns]="columns"
+  [data]="comprobantes()"
+  [actions]="actions"
+  [showNewButton]="false"
+  searchPlaceholder="Buscar por serie, número, cliente o RUC..."
+  storageKey="reportes-comprobantes-venta"
+  (onAction)="handleAction($event)"
+/>

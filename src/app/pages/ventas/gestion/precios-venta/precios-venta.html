@@ -1,0 +1,10 @@
+<app-data-grid
+  [columns]="columns"
+  [data]="precios()"
+  [actions]="actions"
+  newButtonTitle="Crear nueva lista o condición de precio"
+  searchPlaceholder="Buscar por lista, SKU o categoría..."
+  storageKey="gestion-precios-venta"
+  (onNew)="handleNew()"
+  (onAction)="handleAction($event)"
+/>

@@ -1,5 +1,5 @@
 import { Component, signal, ChangeDetectionStrategy } from '@angular/core';
-import { DataGrid, GridColumn, GridAction } from '../../../shared/components/data-grid/data-grid';
+import { DataGrid, GridColumn, GridAction } from '../../../../shared/components/data-grid/data-grid';
 
 export interface ProveedorCliente {
   codigo: string;
@@ -16,13 +16,13 @@ export interface ProveedorCliente {
 }
 
 @Component({
-  selector: 'app-gestion',
+  selector: 'app-clientes',
   imports: [DataGrid],
-  templateUrl: './gestion.html',
-  styleUrl: './gestion.scss',
+  templateUrl: './clientes.html',
+  styleUrl: './clientes.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Gestion {
+export class Clientes {
   protected readonly columns: GridColumn[] = [
     { field: 'codigo', header: 'CÓDIGO', width: '70px', align: 'right', type: 'number' },
     { field: 'razonSocial', header: 'RAZÓN SOCIAL', minWidth: '220px' },

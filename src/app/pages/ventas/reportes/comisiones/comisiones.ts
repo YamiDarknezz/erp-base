@@ -1,5 +1,5 @@
 import { Component, signal, ChangeDetectionStrategy } from '@angular/core';
-import { DataGrid, GridColumn, GridAction } from '../../../shared/components/data-grid/data-grid';
+import { DataGrid, GridColumn, GridAction } from '../../../../shared/components/data-grid/data-grid';
 
 export interface ReporteComision {
   id: string;
@@ -10,13 +10,13 @@ export interface ReporteComision {
 }
 
 @Component({
-  selector: 'app-reportes',
+  selector: 'app-comisiones',
   imports: [DataGrid],
-  templateUrl: './reportes.html',
-  styleUrl: './reportes.scss',
+  templateUrl: './comisiones.html',
+  styleUrl: './comisiones.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Reportes {
+export class Comisiones {
   protected readonly columns: GridColumn[] = [
     { field: 'asesor', header: 'ASESOR COMERCIAL', minWidth: '220px' },
     { field: 'ventas', header: 'VENTAS ACUMULADAS (S/)', width: '180px', align: 'right', type: 'currency' },

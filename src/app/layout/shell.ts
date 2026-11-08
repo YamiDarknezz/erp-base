@@ -69,18 +69,22 @@ export class Shell {
 
   protected readonly activeModuleTitle = computed(() => {
     const url = this.currentUrl();
-    if (url.includes('/gestion/articulos')) return 'GESTIÓN \\ ARTÍCULOS (SKU)';
-    if (url.includes('/gestion/depositos')) return 'GESTIÓN \\ DEPÓSITOS Y ALMACENES';
-    if (url.includes('/gestion/grupos')) return 'GESTIÓN \\ GRUPOS DE PRODUCTOS';
-    if (url.includes('/reportes/stock-disponible')) return 'REPORTES \\ STOCK DISPONIBLE';
-    if (url.includes('/reportes/stock-fisico')) return 'REPORTES \\ STOCK FÍSICO Y CONCILIACIÓN';
-    if (url.includes('/reportes/lotes')) return 'REPORTES \\ TRAZABILIDAD DE LOTES';
-    if (url.includes('/ventas/ordenes-pedido')) return 'VENTAS \\ PREVENTA \\ ÓRDENES DE PEDIDO';
-    if (url.includes('/ventas/pedidos')) return 'VENTAS \\ PREVENTA \\ PEDIDOS';
+    if (url.includes('/ventas/preventa/ordenes-pedido') || url.includes('/ventas/ordenes-pedido')) return 'VENTAS \\ PREVENTA \\ ÓRDENES DE PEDIDO';
+    if (url.includes('/ventas/preventa/pedidos') || url.includes('/ventas/pedidos')) return 'VENTAS \\ PREVENTA \\ PEDIDOS';
     if (url.includes('/ventas/facturacion')) return 'VENTAS \\ FACTURACIÓN';
-    if (url.includes('/inventarios')) return 'INVENTARIOS \\ CONTROL DE EXISTENCIAS';
-    if (url.includes('/ventas/reportes')) return 'VENTAS \\ REPORTES Y COMISIONES';
-    if (url.includes('/ventas/gestion')) return 'VENTAS \\ GESTIÓN MAESTRO';
+    if (url.includes('/ventas/gestion/clientes') || url.includes('/ventas/gestion')) return 'VENTAS \\ GESTIÓN \\ CLIENTES Y PROVEEDORES';
+    if (url.includes('/ventas/gestion/personal-comercial')) return 'VENTAS \\ GESTIÓN \\ PERSONAL COMERCIAL';
+    if (url.includes('/ventas/gestion/precios-venta')) return 'VENTAS \\ GESTIÓN \\ PRECIOS DE VENTA';
+    if (url.includes('/ventas/reportes/comprobantes')) return 'VENTAS \\ REPORTES \\ COMPROBANTES DE VENTA';
+    if (url.includes('/ventas/reportes/pedidos')) return 'VENTAS \\ REPORTES \\ PEDIDOS Y EFECTIVIDAD';
+    if (url.includes('/ventas/reportes/comisiones') || url.includes('/ventas/reportes')) return 'VENTAS \\ REPORTES \\ COMISIONES';
+    if (url.includes('/inventarios/articulos') || url.includes('/gestion/articulos')) return 'INVENTARIOS \\ ARTÍCULOS (SKU)';
+    if (url.includes('/inventarios/depositos') || url.includes('/gestion/depositos')) return 'INVENTARIOS \\ DEPÓSITOS Y ALMACENES';
+    if (url.includes('/inventarios/grupos') || url.includes('/gestion/grupos')) return 'INVENTARIOS \\ GRUPOS DE PRODUCTOS';
+    if (url.includes('/inventarios/kardex') || url === '/inventarios') return 'INVENTARIOS \\ KARDEX Y EXISTENCIAS';
+    if (url.includes('/inventarios/stock-disponible') || url.includes('/reportes/stock-disponible')) return 'INVENTARIOS \\ REPORTES \\ STOCK DISPONIBLE';
+    if (url.includes('/inventarios/stock-fisico') || url.includes('/reportes/stock-fisico')) return 'INVENTARIOS \\ REPORTES \\ STOCK FÍSICO';
+    if (url.includes('/inventarios/lotes') || url.includes('/reportes/lotes')) return 'INVENTARIOS \\ REPORTES \\ TRAZABILIDAD DE LOTES';
     return 'DASHBOARD';
   });
 
@@ -178,9 +182,9 @@ export class Shell {
           label: 'Preventa',
           iconType: 'flow',
           items: [
-            { id: 'op1', label: 'Órdenes de Pedido', path: '/ventas/ordenes-pedido', isFavorite: true },
-            { id: 'op2', label: 'Pedidos', path: '/ventas/pedidos', isFavorite: true },
-            { id: 'op3', label: 'Controles y Ajustes', path: '/ventas/pedidos', isFavorite: false },
+            { id: 'op1', label: 'Órdenes de Pedido', path: '/ventas/preventa/ordenes-pedido', isFavorite: true },
+            { id: 'op2', label: 'Pedidos', path: '/ventas/preventa/pedidos', isFavorite: true },
+            { id: 'op3', label: 'Controles y Ajustes', path: '/ventas/preventa/pedidos', isFavorite: false },
           ],
         },
         {
@@ -193,17 +197,16 @@ export class Shell {
           id: 'trade',
           label: 'Trade Spend',
           iconType: 'flow',
-          path: '/ventas/pedidos',
+          path: '/ventas/preventa/pedidos',
         },
         {
           id: 'reportes',
           label: 'Reportes',
           iconType: 'report',
           items: [
-            { id: 'rep1', label: 'Stock Disponible', path: '/reportes/stock-disponible', isFavorite: true },
-            { id: 'rep2', label: 'Stock Físico', path: '/reportes/stock-fisico', isFavorite: false },
-            { id: 'rep3', label: 'Trazabilidad de Lotes', path: '/reportes/lotes', isFavorite: false },
-            { id: 'rep4', label: 'Comisiones de Ventas', path: '/ventas/reportes', isFavorite: false },
+            { id: 'rep1', label: 'Comprobantes de Venta', path: '/ventas/reportes/comprobantes', isFavorite: true },
+            { id: 'rep2', label: 'Pedidos y Efectividad', path: '/ventas/reportes/pedidos', isFavorite: false },
+            { id: 'rep3', label: 'Comisiones de Ventas', path: '/ventas/reportes/comisiones', isFavorite: false },
           ],
         },
         {
@@ -211,10 +214,9 @@ export class Shell {
           label: 'Gestión',
           iconType: 'gear',
           items: [
-            { id: 'ges1', label: 'Artículos (SKU)', path: '/gestion/articulos', isFavorite: true },
-            { id: 'ges2', label: 'Depósitos y Almacenes', path: '/gestion/depositos', isFavorite: false },
-            { id: 'ges3', label: 'Grupos de Productos', path: '/gestion/grupos', isFavorite: false },
-            { id: 'ges4', label: 'Proveedores / Clientes', path: '/ventas/gestion', isFavorite: true },
+            { id: 'ges1', label: 'Clientes y Proveedores', path: '/ventas/gestion/clientes', isFavorite: true },
+            { id: 'ges2', label: 'Personal Comercial', path: '/ventas/gestion/personal-comercial', isFavorite: false },
+            { id: 'ges3', label: 'Precios de Venta', path: '/ventas/gestion/precios-venta', isFavorite: false },
           ],
         },
       ],
@@ -241,10 +243,15 @@ export class Shell {
       id: 'inventarios',
       label: 'Inventarios',
       icon: 'box',
-      path: '/inventarios',
+      path: '/inventarios/kardex',
       groups: [
-        { id: 'kardex', label: 'Kardex Valorizado', iconType: 'report', path: '/inventarios' },
-        { id: 'stock', label: 'Stock por Depósito', iconType: 'gear', path: '/inventarios' },
+        { id: 'kardex', label: 'Kardex Valorizado', iconType: 'report', path: '/inventarios/kardex' },
+        { id: 'articulos', label: 'Artículos (SKU)', iconType: 'gear', path: '/inventarios/articulos' },
+        { id: 'depositos', label: 'Depósitos y Almacenes', iconType: 'flow', path: '/inventarios/depositos' },
+        { id: 'grupos', label: 'Grupos de Productos', iconType: 'flow', path: '/inventarios/grupos' },
+        { id: 'stock-disp', label: 'Stock Disponible', iconType: 'report', path: '/inventarios/stock-disponible' },
+        { id: 'stock-fis', label: 'Stock Físico', iconType: 'report', path: '/inventarios/stock-fisico' },
+        { id: 'lotes', label: 'Trazabilidad de Lotes', iconType: 'flow', path: '/inventarios/lotes' },
       ],
     },
     {

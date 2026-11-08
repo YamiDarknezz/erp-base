@@ -18,54 +18,110 @@ export const routes: Routes = [
         path: 'dashboard',
         loadComponent: () => import('./pages/dashboard/dashboard').then(m => m.Dashboard),
       },
+
+      // ── MÓDULO VENTAS: PREVENTA ──
       {
-        path: 'ventas/ordenes-pedido',
-        loadComponent: () => import('./pages/ventas/ordenes-pedido/ordenes-pedido').then(m => m.OrdenesPedido),
+        path: 'ventas/preventa/ordenes-pedido',
+        loadComponent: () =>
+          import('./pages/ventas/preventa/ordenes-pedido/ordenes-pedido').then(m => m.OrdenesPedido),
       },
+      { path: 'ventas/ordenes-pedido', redirectTo: 'ventas/preventa/ordenes-pedido', pathMatch: 'full' },
       {
-        path: 'ventas/pedidos',
-        loadComponent: () => import('./pages/ventas/pedidos/pedidos').then(m => m.Pedidos),
+        path: 'ventas/preventa/pedidos',
+        loadComponent: () =>
+          import('./pages/ventas/preventa/pedidos/pedidos').then(m => m.Pedidos),
       },
+      { path: 'ventas/pedidos', redirectTo: 'ventas/preventa/pedidos', pathMatch: 'full' },
+
+      // ── MÓDULO VENTAS: FACTURACIÓN ──
       {
         path: 'ventas/facturacion',
-        loadComponent: () => import('./pages/ventas/facturacion/facturacion').then(m => m.Facturacion),
+        loadComponent: () =>
+          import('./pages/ventas/facturacion/facturacion').then(m => m.Facturacion),
+      },
+
+      // ── MÓDULO VENTAS: GESTIÓN DE CATÁLOGOS ──
+      {
+        path: 'ventas/gestion/clientes',
+        loadComponent: () =>
+          import('./pages/ventas/gestion/clientes/clientes').then(m => m.Clientes),
+      },
+      { path: 'ventas/gestion', redirectTo: 'ventas/gestion/clientes', pathMatch: 'full' },
+      {
+        path: 'ventas/gestion/personal-comercial',
+        loadComponent: () =>
+          import('./pages/ventas/gestion/personal-comercial/personal-comercial').then(
+            m => m.PersonalComercial,
+          ),
       },
       {
-        path: 'inventarios',
-        loadComponent: () => import('./pages/inventarios/inventarios').then(m => m.Inventarios),
+        path: 'ventas/gestion/precios-venta',
+        loadComponent: () =>
+          import('./pages/ventas/gestion/precios-venta/precios-venta').then(m => m.PreciosVenta),
+      },
+
+      // ── MÓDULO VENTAS: REPORTES ──
+      {
+        path: 'ventas/reportes/comprobantes',
+        loadComponent: () =>
+          import('./pages/ventas/reportes/comprobantes/comprobantes').then(m => m.Comprobantes),
       },
       {
-        path: 'ventas/reportes',
-        loadComponent: () => import('./pages/ventas/reportes/reportes').then(m => m.Reportes),
+        path: 'ventas/reportes/pedidos',
+        loadComponent: () =>
+          import('./pages/ventas/reportes/pedidos/pedidos-reporte').then(m => m.PedidosReporte),
       },
       {
-        path: 'ventas/gestion',
-        loadComponent: () => import('./pages/ventas/gestion/gestion').then(m => m.Gestion),
+        path: 'ventas/reportes/comisiones',
+        loadComponent: () =>
+          import('./pages/ventas/reportes/comisiones/comisiones').then(m => m.Comisiones),
+      },
+      { path: 'ventas/reportes', redirectTo: 'ventas/reportes/comisiones', pathMatch: 'full' },
+
+      // ── MÓDULO INVENTARIOS: OPERATIVO Y REPORTES ──
+      { path: 'inventarios', redirectTo: 'inventarios/kardex', pathMatch: 'full' },
+      {
+        path: 'inventarios/kardex',
+        loadComponent: () => import('./pages/inventarios/kardex/kardex').then(m => m.Kardex),
       },
       {
-        path: 'gestion/articulos',
-        loadComponent: () => import('./pages/gestion/articulos/articulos').then(m => m.Articulos),
+        path: 'inventarios/articulos',
+        loadComponent: () =>
+          import('./pages/inventarios/articulos/articulos').then(m => m.Articulos),
       },
+      { path: 'gestion/articulos', redirectTo: 'inventarios/articulos', pathMatch: 'full' },
       {
-        path: 'gestion/depositos',
-        loadComponent: () => import('./pages/gestion/depositos/depositos').then(m => m.Depositos),
+        path: 'inventarios/depositos',
+        loadComponent: () =>
+          import('./pages/inventarios/depositos/depositos').then(m => m.Depositos),
       },
+      { path: 'gestion/depositos', redirectTo: 'inventarios/depositos', pathMatch: 'full' },
       {
-        path: 'gestion/grupos',
-        loadComponent: () => import('./pages/gestion/grupos/grupos').then(m => m.Grupos),
+        path: 'inventarios/grupos',
+        loadComponent: () =>
+          import('./pages/inventarios/grupos/grupos').then(m => m.Grupos),
       },
+      { path: 'gestion/grupos', redirectTo: 'inventarios/grupos', pathMatch: 'full' },
       {
-        path: 'reportes/stock-disponible',
-        loadComponent: () => import('./pages/reportes/stock-disponible/stock-disponible').then(m => m.StockDisponible),
+        path: 'inventarios/stock-disponible',
+        loadComponent: () =>
+          import('./pages/inventarios/stock-disponible/stock-disponible').then(
+            m => m.StockDisponible,
+          ),
       },
+      { path: 'reportes/stock-disponible', redirectTo: 'inventarios/stock-disponible', pathMatch: 'full' },
       {
-        path: 'reportes/stock-fisico',
-        loadComponent: () => import('./pages/reportes/stock-fisico/stock-fisico').then(m => m.StockFisico),
+        path: 'inventarios/stock-fisico',
+        loadComponent: () =>
+          import('./pages/inventarios/stock-fisico/stock-fisico').then(m => m.StockFisico),
       },
+      { path: 'reportes/stock-fisico', redirectTo: 'inventarios/stock-fisico', pathMatch: 'full' },
       {
-        path: 'reportes/lotes',
-        loadComponent: () => import('./pages/reportes/lotes/lotes').then(m => m.Lotes),
+        path: 'inventarios/lotes',
+        loadComponent: () =>
+          import('./pages/inventarios/lotes/lotes').then(m => m.Lotes),
       },
+      { path: 'reportes/lotes', redirectTo: 'inventarios/lotes', pathMatch: 'full' },
     ],
   },
   { path: '**', redirectTo: 'login' },
