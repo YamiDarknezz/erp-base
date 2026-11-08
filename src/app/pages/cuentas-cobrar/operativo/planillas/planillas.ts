@@ -1,17 +1,7 @@
-import { Component, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { DataGrid, GridColumn, GridAction } from '../../../../shared/components/data-grid/data-grid';
-
-export interface PlanillaCobranza {
-  id: string;
-  numero: string;
-  fecha: string;
-  cobrador: string;
-  zona: string;
-  documentosCobradas: number;
-  totalRecaudado: number;
-  bancoDestino: string;
-  estado: 'Liquidada' | 'En Proceso' | 'Pendiente';
-}
+import { CollectionService } from '../../../../core/services/collection.service';
+import { CollectionSheetEntity } from '../../../../core/data/collections.seed';
 
 @Component({
   selector: 'app-planillas',
@@ -22,6 +12,10 @@ export interface PlanillaCobranza {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Planillas {
+  private readonly collectionService = inject(CollectionService);
+
+  protected readonly planillas = this.collectionService.collectionSheets;
+
   protected readonly columns: GridColumn[] = [
     { field: 'numero', header: 'N° PLANILLA', width: '130px', align: 'left' },
     { field: 'fecha', header: 'FECHA LIQUIDACIÓN', width: '120px', align: 'center', type: 'date' },
@@ -57,69 +51,11 @@ export class Planillas {
     { id: 'edit', icon: 'edit', title: 'Ajustar recibos y amortizaciones', color: 'emerald' },
   ];
 
-  protected readonly planillas = signal<PlanillaCobranza[]>([
-    {
-      id: '1',
-      numero: 'PLC-2026-00381',
-      fecha: '08/11/2026',
-      cobrador: 'Marcos Benítez Salazar',
-      zona: 'Lima Este / Ate',
-      documentosCobradas: 14,
-      totalRecaudado: 48920.50,
-      bancoDestino: 'BCP Cta Corriente Soles',
-      estado: 'Liquidada',
-    },
-    {
-      id: '2',
-      numero: 'PLC-2026-00382',
-      fecha: '08/11/2026',
-      cobrador: 'Raúl Espinoza Peña',
-      zona: 'Callao Centro / Ventanilla',
-      documentosCobradas: 9,
-      totalRecaudado: 23410.00,
-      bancoDestino: 'BBVA Continental Soles',
-      estado: 'En Proceso',
-    },
-    {
-      id: '3',
-      numero: 'PLC-2026-00383',
-      fecha: '07/11/2026',
-      cobrador: 'Christian Villegas Ruiz',
-      zona: 'Lima Sur / Chorrillos',
-      documentosCobradas: 22,
-      totalRecaudado: 67180.25,
-      bancoDestino: 'Interbank Recaudaciones',
-      estado: 'Liquidada',
-    },
-    {
-      id: '4',
-      numero: 'PLC-2026-00384',
-      fecha: '07/11/2026',
-      cobrador: 'Marcos Benítez Salazar',
-      zona: 'San Juan de Lurigancho',
-      documentosCobradas: 6,
-      totalRecaudado: 12850.00,
-      bancoDestino: 'Scotiabank Empresas',
-      estado: 'Pendiente',
-    },
-    {
-      id: '5',
-      numero: 'PLC-2026-00385',
-      fecha: '06/11/2026',
-      cobrador: 'Raúl Espinoza Peña',
-      zona: 'Lima Norte / Los Olivos',
-      documentosCobradas: 18,
-      totalRecaudado: 54300.80,
-      bancoDestino: 'BCP Cta Corriente Soles',
-      estado: 'Liquidada',
-    },
-  ]);
-
   protected handleNew(): void {
     console.info('Generar nueva planilla de cobranza');
   }
 
-  protected handleAction(evt: { actionId: string; item: PlanillaCobranza }): void {
+  protected handleAction(evt: { actionId: string; item: CollectionSheetEntity }): void {
     console.info(`Acción ${evt.actionId} ejecutada para planilla:`, evt.item.numero);
   }
 }

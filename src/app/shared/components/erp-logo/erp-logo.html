@@ -1,26 +1,45 @@
-<svg
-  class="shrink-0 transition-transform"
-  [class.w-5]="size() === 'xs'"
-  [class.h-5]="size() === 'xs'"
-  [class.w-6]="size() === 'sm'"
-  [class.h-6]="size() === 'sm'"
-  [class.w-8]="size() === 'md'"
-  [class.h-8]="size() === 'md'"
-  [class.w-10]="size() === 'lg'"
-  [class.h-10]="size() === 'lg'"
-  [class.w-12]="size() === 'xl'"
-  [class.h-12]="size() === 'xl'"
-  [class]="customClass()"
-  viewBox="0 0 40 40"
-  fill="none"
-  xmlns="http://www.w3.org/2000/svg"
-  aria-hidden="true"
->
-  <rect x="2" y="2" width="16" height="16" rx="3" fill="currentColor" />
-  <rect x="22" y="2" width="16" height="7" rx="2" fill="currentColor" opacity="0.75" />
-  <rect x="22" y="13" width="16" height="5" rx="2" fill="currentColor" opacity="0.45" />
-  <rect x="2" y="22" width="16" height="5" rx="2" fill="currentColor" opacity="0.45" />
-  <rect x="2" y="31" width="7" height="7" rx="2" fill="currentColor" opacity="0.75" />
-  <rect x="13" y="31" width="5" height="7" rx="2" fill="currentColor" opacity="0.45" />
-  <rect x="22" y="22" width="16" height="16" rx="3" fill="currentColor" opacity="0.65" />
-</svg>
+@if (effectiveLogoUrl()) {
+  <img
+    [src]="effectiveLogoUrl()"
+    alt="Logo Institucional"
+    class="shrink-0 object-contain transition-transform"
+    [class.w-5]="size() === 'xs'"
+    [class.h-5]="size() === 'xs'"
+    [class.w-6]="size() === 'sm'"
+    [class.h-6]="size() === 'sm'"
+    [class.w-8]="size() === 'md'"
+    [class.h-8]="size() === 'md'"
+    [class.w-10]="size() === 'lg'"
+    [class.h-10]="size() === 'lg'"
+    [class.w-12]="size() === 'xl'"
+    [class.h-12]="size() === 'xl'"
+    [class]="customClass()"
+  />
+} @else {
+  <svg
+    class="shrink-0 transition-transform"
+    [class.w-5]="size() === 'xs'"
+    [class.h-5]="size() === 'xs'"
+    [class.w-6]="size() === 'sm'"
+    [class.h-6]="size() === 'sm'"
+    [class.w-8]="size() === 'md'"
+    [class.h-8]="size() === 'md'"
+    [class.w-10]="size() === 'lg'"
+    [class.h-10]="size() === 'lg'"
+    [class.w-12]="size() === 'xl'"
+    [class.h-12]="size() === 'xl'"
+    [class]="customClass()"
+    viewBox="0 0 40 40"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+  >
+    <rect x="2" y="2" width="16" height="16" rx="3" fill="currentColor" />
+    <rect x="22" y="2" width="16" height="7" rx="2" fill="currentColor" opacity="0.75" />
+    <rect x="22" y="13" width="16" height="5" rx="2" fill="currentColor" opacity="0.45" />
+    <rect x="2" y="22" width="16" height="5" rx="2" fill="currentColor" opacity="0.45" />
+    <rect x="2" y="31" width="7" height="7" rx="2" fill="currentColor" opacity="0.75" />
+    <rect x="13" y="31" width="5" height="7" rx="2" fill="currentColor" opacity="0.45" />
+    <rect x="22" y="22" width="16" height="16" rx="3" fill="currentColor" opacity="0.65" />
+  </svg>
+}

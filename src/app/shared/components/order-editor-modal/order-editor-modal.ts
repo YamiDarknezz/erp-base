@@ -1,6 +1,8 @@
-import { Component, computed, input, output, signal } from '@angular/core';
+import { Component, computed, inject, input, output, signal } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { SearchableSelect, SelectOption } from '../searchable-select/searchable-select';
+import { ClientService } from '../../../core/services/client.service';
+import { ProductService } from '../../../core/services/product.service';
 
 export interface OrderLineItem {
   id: number;
@@ -33,39 +35,16 @@ export interface CreatedOrderPayload {
   styleUrl: './order-editor-modal.scss',
 })
 export class OrderEditorModal {
+  private readonly clientService = inject(ClientService);
+  private readonly productService = inject(ProductService);
+
   readonly isOpen = input<boolean>(false);
   readonly closed = output<void>();
   readonly saved = output<CreatedOrderPayload>();
 
-  readonly clientOptions = signal<SelectOption[]>([
-    { value: '20501234567', label: 'CORPORACION LOGISTICA DEL CENTRO SAC', sublabel: 'RUC 20501234567 — San Isidro, Lima', badge: 'VIP' },
-    { value: '20100039207', label: 'RANSA COMERCIAL SA', sublabel: 'RUC 20100039207 — Callao, Lima', badge: 'Logística' },
-    { value: '20508778920', label: 'INVERSIONES QUISSEL SRL', sublabel: 'RUC 20508778920 — Ate Vitarte, Lima' },
-    { value: '20539721870', label: 'PROTEKTOR SEGURIDAD INTEGRAL S.A.C.', sublabel: 'RUC 20539721870 — Miraflores' },
-    { value: '20353607783', label: 'MERCANTIL INCA S.A.', sublabel: 'RUC 20353607783 — Salaverry, Lima' },
-    { value: '20451583060', label: 'BODEGAS DON LUIS S.A.C.', sublabel: 'RUC 20451583060 — Chorrillos, Lima' },
-    { value: '20100128056', label: 'SAGA FALABELLA S.A.', sublabel: 'RUC 20100128056 — San Isidro, Lima' },
-    { value: '20467533026', label: 'AMERICA MOVIL PERU S.A.C.', sublabel: 'RUC 20467533026 — La Victoria, Lima' },
-  ]);
-
-  readonly skuCatalog = [
-    { sku: 'BEB-001', descripcion: 'INCA KOLA PET 500ML RETORNABLE PACK X24', unidad: 'CJA', precio: 38.50 },
-    { sku: 'BEB-002', descripcion: 'COCA COLA REGULAR 1.5L PACK X12', unidad: 'CJA', precio: 52.00 },
-    { sku: 'BEB-003', descripcion: 'AGUA SAN LUIS SIN GAS 2.5L X6', unidad: 'FAR', precio: 19.80 },
-    { sku: 'ARR-101', descripcion: 'ARROZ EXTRA PAISANA BOLSA 5KG', unidad: 'BLS', precio: 22.50 },
-    { sku: 'ACE-201', descripcion: 'ACEITE VEGETAL PRIMOR CLÁSICO 1L CAJA X12', unidad: 'CJA', precio: 88.00 },
-    { sku: 'LAC-301', descripcion: 'LECHE GLORIA ETIQUETA AZUL 400G PLANCHA X24', unidad: 'PLA', precio: 94.00 },
-    { sku: 'CER-401', descripcion: 'CERVEZA CRISTAL RETORNABLE 650ML X12', unidad: 'CJA', precio: 49.50 },
-  ];
-
-  readonly skuOptions = computed<SelectOption[]>(() => {
-    return this.skuCatalog.map((item) => ({
-      value: item.sku,
-      label: `[${item.sku}] ${item.descripcion}`,
-      sublabel: `Unid: ${item.unidad} | Ref: S/ ${item.precio.toFixed(2)}`,
-      badge: item.unidad,
-    }));
-  });
+  // Catálogos reactivos provistos desde servicios centralizados
+  readonly clientOptions = this.clientService.clientSelectOptions;
+  readonly skuOptions = this.productService.skuOptions;
 
   readonly paymentTermOptions: SelectOption[] = [
     { value: 'CONTADO', label: 'CONTADO CONTRA ENTREGA' },
@@ -126,16 +105,21 @@ export class OrderEditorModal {
 
   addLine(): void {
     this.lineCounter += 1;
-    const defaultSku = this.skuCatalog[0];
+    const defaultProduct = this.productService.products()[0];
+    const defaultSku = defaultProduct?.sku || 'BEB-001';
+    const defaultDesc = defaultProduct?.descripcion || 'INCA KOLA PET 500ML RETORNABLE PACK X24';
+    const defaultUnid = defaultProduct?.unidad || 'CJA';
+    const defaultPrice = defaultProduct?.precioUnitario || 38.50;
+
     this.lines.update((prev) => [
       ...prev,
       {
         id: this.lineCounter,
-        sku: defaultSku.sku,
-        descripcion: defaultSku.descripcion,
-        unidad: defaultSku.unidad,
+        sku: defaultSku,
+        descripcion: defaultDesc,
+        unidad: defaultUnid,
         cantidad: 1,
-        precioUnitario: defaultSku.precio,
+        precioUnitario: defaultPrice,
       },
     ]);
   }
@@ -166,7 +150,7 @@ export class OrderEditorModal {
   }
 
   onSkuChanged(lineId: number, sku: string): void {
-    const found = this.skuCatalog.find((x) => x.sku === sku);
+    const found = this.productService.findBySku(sku);
     if (!found) return;
 
     this.lines.update((prev) =>
@@ -177,7 +161,7 @@ export class OrderEditorModal {
               sku: found.sku,
               descripcion: found.descripcion,
               unidad: found.unidad,
-              precioUnitario: found.precio,
+              precioUnitario: found.precioUnitario,
             }
           : it
       )
@@ -185,7 +169,8 @@ export class OrderEditorModal {
   }
 
   resetForm(): void {
-    this.selectedClientId.set('20501234567');
+    const firstClient = this.clientService.clients()[0];
+    this.selectedClientId.set(firstClient ? firstClient.ruc : '20501234567');
     this.paymentTerm.set('CREDITO_30');
     this.warehouse.set('ALM_CENTRAL');
     this.currency.set('PEN');

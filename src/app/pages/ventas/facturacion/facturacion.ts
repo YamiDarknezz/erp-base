@@ -1,19 +1,9 @@
-import { Component, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, signal, inject, ChangeDetectionStrategy } from '@angular/core';
 import { DataGrid, GridColumn, GridAction } from '../../../shared/components/data-grid/data-grid';
 import { OrderEditorModal, CreatedOrderPayload } from '../../../shared/components/order-editor-modal/order-editor-modal';
 import { DocumentViewerModal, FiscalDocumentData } from '../../../shared/components/document-viewer/document-viewer';
-
-export interface Factura {
-  id: string;
-  serieNumero: string;
-  cliente: string;
-  ruc: string;
-  fechaEmision: string;
-  monto: number;
-  igv: number;
-  total: number;
-  estadoEnvio: 'Aceptado' | 'Pendiente' | 'Rechazado';
-}
+import { InvoiceService } from '../../../core/services/invoice.service';
+import { InvoiceEntity } from '../../../core/data/invoices.seed';
 
 @Component({
   selector: 'app-facturacion',
@@ -24,9 +14,13 @@ export interface Factura {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Facturacion {
+  private readonly invoiceService = inject(InvoiceService);
+
   protected readonly isEditorOpen = signal<boolean>(false);
   protected readonly isViewerOpen = signal<boolean>(false);
   protected readonly selectedDocument = signal<FiscalDocumentData | null>(null);
+
+  protected readonly facturas = this.invoiceService.invoices;
 
   protected readonly columns: GridColumn[] = [
     { field: 'serieNumero', header: 'COMPROBANTE', width: '130px', align: 'left' },
@@ -63,37 +57,16 @@ export class Facturacion {
     { id: 'xml', icon: 'check', title: 'Descargar comprobante XML firmado SUNAT', color: 'emerald' },
   ];
 
-  protected readonly facturas = signal<Factura[]>([
-    { id: '1', serieNumero: 'F001-0004521', cliente: 'SUPERMERCADOS METRO S.A.', ruc: '20100070970', fechaEmision: '07/11/2026', monto: 4110.59, igv: 739.91, total: 4850.50, estadoEnvio: 'Aceptado' },
-    { id: '2', serieNumero: 'F001-0004522', cliente: 'DISTRIBUIDORA NORTE E.I.R.L.', ruc: '20489632514', fechaEmision: '07/11/2026', monto: 10508.47, igv: 1891.53, total: 12400.00, estadoEnvio: 'Pendiente' },
-    { id: '3', serieNumero: 'B001-0012890', cliente: 'TIENDAS TAMBO SAC', ruc: '20563458921', fechaEmision: '06/11/2026', monto: 2712.50, igv: 488.25, total: 3200.75, estadoEnvio: 'Aceptado' },
-    { id: '4', serieNumero: 'F001-0004523', cliente: 'BODEGAS UNIDAS LIMA', ruc: '20601239845', fechaEmision: '06/11/2026', monto: 1601.69, igv: 288.31, total: 1890.00, estadoEnvio: 'Aceptado' },
-    { id: '5', serieNumero: 'F001-0004524', cliente: 'COMERCIAL EL SOL S.R.L.', ruc: '20512897456', fechaEmision: '05/11/2026', monto: 6483.22, igv: 1166.98, total: 7650.20, estadoEnvio: 'Rechazado' },
-  ]);
-
   protected handleNew(): void {
     this.isEditorOpen.set(true);
   }
 
   protected onOrderSaved(payload: CreatedOrderPayload): void {
-    const nextNum = `F001-000${4525 + this.facturas().length}`;
-    const newFactura: Factura = {
-      id: String(Date.now()),
-      serieNumero: nextNum,
-      cliente: payload.clienteNombre,
-      ruc: payload.documentoIdentidad,
-      fechaEmision: payload.fechaEmision,
-      monto: payload.subtotal,
-      igv: payload.igv,
-      total: payload.total,
-      estadoEnvio: 'Aceptado',
-    };
-
-    this.facturas.update((prev) => [newFactura, ...prev]);
+    const created = this.invoiceService.issueInvoice(payload);
 
     this.selectedDocument.set({
       tipoDocumento: 'FACTURA ELECTRÓNICA',
-      numero: nextNum,
+      numero: created.serieNumero,
       cliente: payload.clienteNombre,
       documentoIdentidad: payload.documentoIdentidad,
       direccion: 'Av. Las Begonias 441, San Isidro, Lima',
@@ -113,7 +86,7 @@ export class Facturacion {
     this.isViewerOpen.set(true);
   }
 
-  protected handleAction(evt: { actionId: string; item: Factura }): void {
+  protected handleAction(evt: { actionId: string; item: InvoiceEntity }): void {
     if (evt.actionId === 'view' || evt.actionId === 'print') {
       this.selectedDocument.set({
         tipoDocumento: evt.item.serieNumero.startsWith('B') ? 'BOLETA DE VENTA ELECTRÓNICA' : 'FACTURA ELECTRÓNICA',

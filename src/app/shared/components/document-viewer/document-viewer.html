@@ -74,16 +74,16 @@
             <div class="space-y-1 max-w-sm">
               <div class="flex items-center gap-2 mb-2">
                 <app-erp-logo size="md" customClass="text-blue-700" />
-                <span class="text-base font-black tracking-tight text-blue-900">DISTRIBUIDORA GLOBAL S.A.C.</span>
+                <span class="text-base font-black tracking-tight text-blue-900">{{ companyConfig.name() }}</span>
               </div>
-              <p class="text-[10px] text-slate-600">DISTRIBUCIÓN MAYORISTA DE CONSUMO MASIVO</p>
-              <p class="text-[10px] text-slate-600">Av. Víctor Andrés Belaúnde 147, San Isidro - Lima, Perú</p>
-              <p class="text-[10px] text-slate-600">Central: (01) 710-4000 | Email: ventas&#64;globalerp.com</p>
+              <p class="text-[10px] text-slate-600">{{ companyConfig.tradeName() }}</p>
+              <p class="text-[10px] text-slate-600">{{ companyConfig.address() }}</p>
+              <p class="text-[10px] text-slate-600">Central: {{ companyConfig.phone() }} | Email: {{ companyConfig.email() }}</p>
             </div>
 
             <!-- Recuadro Fiscal RUC -->
             <div class="border-2 border-blue-900 rounded-xs p-3 text-center min-w-[210px] bg-blue-50/50 shrink-0">
-              <p class="font-bold text-xs tracking-wider text-slate-800">R.U.C. 20501234567</p>
+              <p class="font-bold text-xs tracking-wider text-slate-800">R.U.C. {{ companyConfig.ruc() }}</p>
               <p class="font-black text-sm my-1 text-blue-900 tracking-wide uppercase">{{ document()?.tipoDocumento || 'FACTURA ELECTRÓNICA' }}</p>
               <p class="font-mono font-bold text-xs text-rose-700">{{ document()?.numero || 'F001-0004812' }}</p>
             </div>
@@ -158,7 +158,7 @@
               <div class="space-y-0.5 text-[9px] text-slate-600 max-w-xs">
                 <p class="font-semibold text-slate-800">Código Hash: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855</p>
                 <p>Representación impresa autorizada de la Factura Electrónica.</p>
-                <p>Consulte su validez en: <span class="font-mono text-blue-700">consulta.globalerp.com</span></p>
+                <p>Consulte su validez en: <span class="font-mono text-blue-700">{{ companyConfig.website() }}</span></p>
               </div>
             </div>
 

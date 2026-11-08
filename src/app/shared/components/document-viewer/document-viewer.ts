@@ -1,6 +1,7 @@
-import { Component, computed, input, output } from '@angular/core';
+import { Component, computed, inject, input, output } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { ErpLogo } from '../erp-logo/erp-logo';
+import { CompanyConfigService } from '../../../core/config/company-config.service';
 
 export interface FiscalDocumentItem {
   sku: string;
@@ -31,6 +32,8 @@ export interface FiscalDocumentData {
   styleUrl: './document-viewer.scss',
 })
 export class DocumentViewerModal {
+  protected readonly companyConfig = inject(CompanyConfigService);
+
   readonly isOpen = input<boolean>(false);
   readonly document = input<FiscalDocumentData | null>(null);
   readonly items = computed<FiscalDocumentItem[]>(() => {
@@ -56,9 +59,8 @@ export class DocumentViewerModal {
   }
 
   downloadPdf(): void {
-    // Simulación limpia de descarga de PDF oficial
     const docNum = this.document()?.numero || 'documento';
-    const blob = new Blob([`COMPROBANTE FISCAL ${docNum}`], { type: 'text/plain;charset=utf-8' });
+    const blob = new Blob([`COMPROBANTE FISCAL ${docNum} - ${this.companyConfig.name()}`], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;

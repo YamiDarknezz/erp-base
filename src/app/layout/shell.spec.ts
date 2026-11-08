@@ -82,4 +82,18 @@ describe('Shell', () => {
     component.closeSpotlight();
     expect(component['spotlightOpen']()).toBe(false);
   });
+
+  it('should dismiss and clear notifications', () => {
+    const fixture = TestBed.createComponent(Shell);
+    const component = fixture.componentInstance;
+    const initialCount = component['notifications']().length;
+    expect(initialCount).toBeGreaterThan(0);
+
+    const firstId = component['notifications']()[0].id;
+    component.dismissNotification(firstId);
+    expect(component['notifications']().length).toBe(initialCount - 1);
+
+    component.clearAllNotifications();
+    expect(component['notifications']().length).toBe(0);
+  });
 });

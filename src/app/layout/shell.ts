@@ -7,6 +7,10 @@ import { ThemeService } from '../core/theme/theme.service';
 import { PwaInstallService } from '../core/pwa/pwa-install.service';
 import { APP_BUILD } from '../core/version/app-build';
 import { ErpLogo } from '../shared/components/erp-logo/erp-logo';
+import { CompanyConfigService } from '../core/config/company-config.service';
+import { UserContextService } from '../core/context/user-context.service';
+import { BranchContextService } from '../core/context/branch-context.service';
+import { NotificationService, NotificationItem } from '../core/notifications/notification.service';
 
 export interface SubMenuItem {
   id: string;
@@ -33,13 +37,6 @@ export interface NavSection {
   groups?: MenuGroup[];
 }
 
-export interface NotificationItem {
-  id: string;
-  title: string;
-  time: string;
-  type: 'danger' | 'warning' | 'info';
-}
-
 @Component({
   selector: 'app-shell',
   imports: [RouterOutlet, FormsModule, ErpLogo],
@@ -52,6 +49,10 @@ export class Shell {
   private readonly router = inject(Router);
   protected readonly theme = inject(ThemeService);
   protected readonly pwa = inject(PwaInstallService);
+  protected readonly companyConfig = inject(CompanyConfigService);
+  protected readonly userContext = inject(UserContextService);
+  protected readonly branchContext = inject(BranchContextService);
+  protected readonly notificationService = inject(NotificationService);
 
   // App Build & Version
   protected readonly appVersion = signal(APP_BUILD.version || '0.0.2');
@@ -91,19 +92,16 @@ export class Shell {
     return 'DASHBOARD';
   });
 
-  // Corporate Profile Data
-  protected readonly companyName = signal('DISTRIBUIDORA GLOBAL S.A.C. - PE');
-  protected readonly userName = signal('admin');
-  protected readonly userFullName = signal('Administrador General');
+  // Centralized Corporate Brand, User Profile & Branch State
+  protected readonly companyName = this.companyConfig.name;
+  protected readonly userName = this.userContext.username;
+  protected readonly userFullName = this.userContext.fullName;
+  protected readonly userInitials = this.userContext.initials;
 
   // Multi-Branch Active Sede Selector
-  protected readonly selectedBranch = signal('SEDE CENTRAL LIMA');
+  protected readonly selectedBranch = this.branchContext.activeBranchName;
   protected readonly branchSelectorOpen = signal(false);
-  protected readonly availableBranches = signal([
-    { id: 'lima', name: 'SEDE CENTRAL LIMA', code: '001', address: 'Av. Víctor Andrés Belaúnde 147, San Isidro' },
-    { id: 'callao', name: 'ALMACÉN PRINCIPAL CALLAO', code: '002', address: 'Av. Argentina N° 2440, Callao' },
-    { id: 'norte', name: 'SUCURSAL NORTE CHICLAYO', code: '003', address: 'Av. Salaverry 850, Chiclayo' },
-  ]);
+  protected readonly availableBranches = this.branchContext.branches;
 
   // Global Search / Spotlight (Ctrl + K)
   protected readonly spotlightOpen = signal(false);
@@ -150,55 +148,19 @@ export class Shell {
   protected readonly accountOpen = signal(false);
 
   // User Roles & Permissions Matrix
-  protected readonly selectedRole = signal('Vendedor');
-  protected readonly rolesList = signal(['Vendedor', 'Jefe de Almacén', 'Contador General', 'Supervisor Comercial']);
-  protected readonly permissionsMatrix = signal([
-    { modulo: 'Preventa (Órdenes y Pedidos)', ver: true, crear: true, editar: true, anular: false, exportar: true },
-    { modulo: 'Facturación Electrónica', ver: true, crear: false, editar: false, anular: false, exportar: true },
-    { modulo: 'Control de Inventarios', ver: true, crear: false, editar: false, anular: false, exportar: true },
-    { modulo: 'Reportes de Stock y Lotes', ver: true, crear: false, editar: false, anular: false, exportar: true },
-    { modulo: 'Gestión de Catálogos (SKU/Clientes)', ver: true, crear: true, editar: true, anular: false, exportar: false },
-  ]);
+  protected readonly selectedRole = this.userContext.selectedRole;
+  protected readonly rolesList = this.userContext.roles;
+  protected readonly permissionsMatrix = this.userContext.permissions;
 
   // Personal Profile fields
-  protected readonly profileEmail = signal('admin@globalerp.com');
+  protected readonly profileEmail = signal(this.userContext.email());
   protected readonly profileCurrentPassword = signal('');
   protected readonly profileNewPassword = signal('');
-  protected readonly profileTimeoutMinutes = signal(30);
+  protected readonly profileTimeoutMinutes = signal(this.userContext.timeoutMinutes());
 
-  // Generic ERP Operational Notifications
-  protected readonly notifications = signal<NotificationItem[]>([
-    {
-      id: 'n1',
-      title: 'Cierre de turno operativo N° 01 conciliado exitosamente',
-      time: 'Hace 8 minutos',
-      type: 'info',
-    },
-    {
-      id: 'n2',
-      title: 'Actualización general de listas de precios mayoristas completada',
-      time: 'Hace 20 minutos',
-      type: 'info',
-    },
-    {
-      id: 'n3',
-      title: 'Límite de crédito superado para cliente comercial CLI-00102',
-      time: 'Hace 45 minutos',
-      type: 'warning',
-    },
-    {
-      id: 'n4',
-      title: 'Sincronización periódica de existencias con Depósito Central finalizada',
-      time: 'Hoy 08:30 a. m.',
-      type: 'info',
-    },
-    {
-      id: 'n5',
-      title: 'Alerta de reposición: 4 SKUs alcanzaron el punto de reorden',
-      time: 'Hoy 07:15 a. m.',
-      type: 'danger',
-    },
-  ]);
+  // Centralized ERP Operational Notifications
+  protected readonly notifications = this.notificationService.notifications;
+  protected readonly unreadNotificationsCount = this.notificationService.unreadCount;
 
   // Sidebar Sections matching screenshot structure
   protected readonly sections = signal<NavSection[]>([
@@ -440,6 +402,10 @@ export class Shell {
   }
 
   saveProfile(): void {
+    this.userContext.updateProfile({
+      email: this.profileEmail(),
+      timeoutMinutes: this.profileTimeoutMinutes(),
+    });
     this.closeProfile();
   }
 
@@ -448,8 +414,20 @@ export class Shell {
   }
 
   selectBranch(branchName: string): void {
-    this.selectedBranch.set(branchName);
+    this.branchContext.selectBranch(branchName);
     this.branchSelectorOpen.set(false);
+  }
+
+  dismissNotification(id: string): void {
+    this.notificationService.dismiss(id);
+  }
+
+  clearAllNotifications(): void {
+    this.notificationService.clearAll();
+  }
+
+  onRoleChange(role: string): void {
+    this.userContext.selectRole(role);
   }
 
   toggleSpotlight(): void {

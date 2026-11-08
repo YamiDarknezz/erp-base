@@ -1,6 +1,6 @@
 {
   "name": "erp-base",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "scripts": {
     "ng": "ng",
     "prestart": "node scripts/generate-version.cjs",
