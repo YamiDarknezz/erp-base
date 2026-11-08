@@ -7,6 +7,10 @@ import { ThemeService } from '../core/theme/theme.service';
 import { PwaInstallService } from '../core/pwa/pwa-install.service';
 import { APP_BUILD } from '../core/version/app-build';
 import { ErpLogo } from '../shared/components/erp-logo/erp-logo';
+import { ConfirmDialog } from '../shared/components/confirm-dialog/confirm-dialog';
+import { Toast } from '../shared/components/toast/toast';
+import { ConfirmDialogService } from '../core/dialog/confirm-dialog.service';
+import { ToastService } from '../core/notifications/toast.service';
 import { CompanyConfigService } from '../core/config/company-config.service';
 import { UserContextService } from '../core/context/user-context.service';
 import { BranchContextService } from '../core/context/branch-context.service';
@@ -39,7 +43,7 @@ export interface NavSection {
 
 @Component({
   selector: 'app-shell',
-  imports: [RouterOutlet, FormsModule, ErpLogo],
+  imports: [RouterOutlet, FormsModule, ErpLogo, ConfirmDialog, Toast],
   templateUrl: './shell.html',
   styleUrl: './shell.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -53,6 +57,8 @@ export class Shell {
   protected readonly userContext = inject(UserContextService);
   protected readonly branchContext = inject(BranchContextService);
   protected readonly notificationService = inject(NotificationService);
+  protected readonly confirmDialog = inject(ConfirmDialogService);
+  protected readonly toast = inject(ToastService);
 
   // App Build & Version
   protected readonly appVersion = signal(APP_BUILD.version || '0.0.2');
@@ -465,8 +471,19 @@ export class Shell {
     if (this.accountOpen()) this.closeAccount();
   }
 
-  logout(): void {
-    this.auth.logout();
-    this.router.navigate(['/login']);
+  async logout(): Promise<void> {
+    const ok = await this.confirmDialog.confirm({
+      title: 'Cerrar Sesión',
+      message: '¿Está seguro de que desea salir del sistema ERP? Deberá ingresar sus credenciales nuevamente.',
+      confirmText: 'Cerrar Sesión',
+      cancelText: 'Cancelar',
+      tone: 'danger',
+    });
+    if (ok) {
+      if (this.accountOpen()) this.closeAccount();
+      this.toast.info('Sesión finalizada correctamente');
+      this.auth.logout();
+      this.router.navigate(['/login']);
+    }
   }
 }

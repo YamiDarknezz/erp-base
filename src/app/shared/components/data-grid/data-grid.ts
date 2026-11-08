@@ -7,6 +7,10 @@ import {
   effect,
   ChangeDetectionStrategy,
   HostListener,
+  AfterViewInit,
+  OnDestroy,
+  ViewChild,
+  ElementRef,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DecimalPipe } from '@angular/common';
@@ -38,7 +42,7 @@ export interface GridAction {
   styleUrl: './data-grid.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DataGrid {
+export class DataGrid implements AfterViewInit, OnDestroy {
   // Inputs
   readonly columns = input.required<GridColumn[]>();
   readonly data = input.required<any[]>();
@@ -48,6 +52,11 @@ export class DataGrid {
   readonly newButtonTitle = input('Nuevo registro');
   readonly searchPlaceholder = input('Buscar...');
   readonly storageKey = input<string>('erp-grid-config');
+  readonly responsiveRows = input(true);
+  readonly defaultPageSize = input(12);
+  readonly minRows = input(4);
+  readonly maxRows = input(50);
+  readonly rowHeight = input(26);
 
   // Outputs
   readonly onNew = output<void>();
@@ -61,12 +70,21 @@ export class DataGrid {
   protected readonly isConfigOpen = signal(false);
   protected readonly columnsState = signal<GridColumn[]>([]);
 
+  // Pagination & Dynamic Viewport State
+  protected readonly pageSize = signal(12);
+  protected readonly currentPage = signal(1);
+
+  @ViewChild('tableContainer') private tableContainerRef?: ElementRef<HTMLElement>;
+  private resizeObserver?: ResizeObserver;
+  private resizeTimeout?: ReturnType<typeof setTimeout>;
+
   // Column Resizing State
   private resizingCol: string | null = null;
   private startX = 0;
   private startWidth = 0;
 
   constructor() {
+    // Configuración inicial de columnas y persistencia
     effect(() => {
       const rawCols = this.columns();
       const key = this.storageKey();
@@ -93,11 +111,81 @@ export class DataGrid {
 
       this.columnsState.set(state);
     });
+
+    // Resetear a página 1 al cambiar filtros o término de búsqueda
+    effect(() => {
+      this.searchQuery();
+      this.incluirAnulados();
+      this.currentPage.set(1);
+    });
+  }
+
+  ngAfterViewInit(): void {
+    if (typeof window !== 'undefined' && this.responsiveRows()) {
+      // Cálculo inicial de filas disponibles
+      requestAnimationFrame(() => {
+        this.recalculatePageSize();
+
+        if (typeof ResizeObserver !== 'undefined' && this.tableContainerRef?.nativeElement) {
+          this.resizeObserver = new ResizeObserver(() => {
+            if (this.resizeTimeout) clearTimeout(this.resizeTimeout);
+            this.resizeTimeout = setTimeout(() => this.recalculatePageSize(), 80);
+          });
+          this.resizeObserver.observe(this.tableContainerRef.nativeElement);
+        }
+      });
+    } else {
+      this.pageSize.set(this.defaultPageSize());
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.resizeObserver?.disconnect();
+    if (this.resizeTimeout) clearTimeout(this.resizeTimeout);
+  }
+
+  @HostListener('window:resize')
+  onWindowResize(): void {
+    if (this.responsiveRows()) {
+      if (this.resizeTimeout) clearTimeout(this.resizeTimeout);
+      this.resizeTimeout = setTimeout(() => this.recalculatePageSize(), 100);
+    }
+  }
+
+  /**
+   * Calcula el número de filas que caben exactamente en el viewport del contenedor
+   * garantizando que el cuadro sea 100% responsivo sin scrollbars parásitos.
+   */
+  public recalculatePageSize(): void {
+    if (typeof window === 'undefined') return;
+    const el = this.tableContainerRef?.nativeElement;
+    if (!el || el.clientHeight < 50) return;
+
+    const theadEl = el.querySelector('thead') as HTMLElement | null;
+    const theadH = theadEl ? theadEl.offsetHeight : 28;
+
+    const isMobile = window.innerWidth < 1024;
+    const hasHScroll = isMobile || (el.scrollWidth > el.clientWidth + 1);
+    const hScrollOffset = hasHScroll ? 10 : 0;
+
+    const rowH = this.rowHeight();
+    const availableH = Math.max(0, el.clientHeight - theadH - hScrollOffset - 2);
+    const computedRows = Math.floor(availableH / rowH);
+    const clamped = Math.max(this.minRows(), Math.min(this.maxRows(), computedRows));
+
+    if (clamped !== this.pageSize()) {
+      const oldSize = this.pageSize();
+      const currentFirstIndex = (this.currentPage() - 1) * oldSize;
+      this.pageSize.set(clamped);
+      const newPage = Math.max(1, Math.floor(currentFirstIndex / clamped) + 1);
+      this.currentPage.set(Math.min(newPage, this.totalPages()));
+    }
   }
 
   protected onResizeStart(event: MouseEvent, field: string): void {
     event.preventDefault();
     event.stopPropagation();
+
     this.resizingCol = field;
     this.startX = event.clientX;
 
@@ -151,6 +239,49 @@ export class DataGrid {
       });
     });
   });
+
+  protected readonly totalFiltered = computed(() => this.filteredData().length);
+
+  protected readonly totalPages = computed(() => {
+    return Math.max(1, Math.ceil(this.totalFiltered() / this.pageSize()));
+  });
+
+  protected readonly paginatedData = computed(() => {
+    const total = this.totalFiltered();
+    if (total === 0) return [];
+
+    const page = Math.min(this.currentPage(), this.totalPages());
+    const size = this.pageSize();
+    const start = (page - 1) * size;
+    return this.filteredData().slice(start, start + size);
+  });
+
+  protected readonly showingRange = computed(() => {
+    const total = this.totalFiltered();
+    if (total === 0) return '0 de 0';
+
+    const page = Math.min(this.currentPage(), this.totalPages());
+    const size = this.pageSize();
+    const start = (page - 1) * size + 1;
+    const end = Math.min(page * size, total);
+    return `${start} - ${end} de ${total}`;
+  });
+
+  protected goToFirstPage(): void {
+    this.currentPage.set(1);
+  }
+
+  protected goToPrevPage(): void {
+    this.currentPage.update(p => Math.max(1, p - 1));
+  }
+
+  protected goToNextPage(): void {
+    this.currentPage.update(p => Math.min(this.totalPages(), p + 1));
+  }
+
+  protected goToLastPage(): void {
+    this.currentPage.set(this.totalPages());
+  }
 
   protected toggleConfig(): void {
     this.isConfigOpen.update(v => !v);

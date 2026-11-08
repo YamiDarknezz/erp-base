@@ -4,6 +4,8 @@ import { OrderEditorModal, CreatedOrderPayload } from '../../../../shared/compon
 import { DocumentViewerModal, FiscalDocumentData } from '../../../../shared/components/document-viewer/document-viewer';
 import { SalesService } from '../../../../core/services/sales.service';
 import { OrderEntity } from '../../../../core/data/orders.seed';
+import { ConfirmDialogService } from '../../../../core/dialog/confirm-dialog.service';
+import { ToastService } from '../../../../core/notifications/toast.service';
 
 @Component({
   selector: 'app-pedidos',
@@ -15,6 +17,8 @@ import { OrderEntity } from '../../../../core/data/orders.seed';
 })
 export class Pedidos {
   private readonly salesService = inject(SalesService);
+  private readonly confirmDialog = inject(ConfirmDialogService);
+  private readonly toast = inject(ToastService);
 
   protected readonly isEditorOpen = signal<boolean>(false);
   protected readonly isViewerOpen = signal<boolean>(false);
@@ -64,6 +68,7 @@ export class Pedidos {
 
   protected onOrderSaved(payload: CreatedOrderPayload): void {
     const created = this.salesService.createOrder(payload);
+    this.toast.success(`Pedido ${created.codigo} registrado exitosamente`);
 
     this.selectedDocument.set({
       tipoDocumento: 'ORDEN DE PEDIDO FISCAL',
@@ -87,7 +92,7 @@ export class Pedidos {
     this.isViewerOpen.set(true);
   }
 
-  protected handleAction(evt: { actionId: string; item: OrderEntity }): void {
+  protected async handleAction(evt: { actionId: string; item: OrderEntity }): Promise<void> {
     if (evt.actionId === 'print' || evt.actionId === 'view') {
       this.selectedDocument.set({
         tipoDocumento: 'ORDEN DE PEDIDO FISCAL',
@@ -106,7 +111,17 @@ export class Pedidos {
       });
       this.isViewerOpen.set(true);
     } else if (evt.actionId === 'delete') {
-      this.salesService.cancelOrder(evt.item.id);
+      const ok = await this.confirmDialog.confirm({
+        title: 'Anular Pedido Comercial',
+        message: `¿Está seguro de que desea anular el pedido ${evt.item.codigo} de ${evt.item.cliente}? Esta acción cambiará el estado a Anulado.`,
+        confirmText: 'Anular Pedido',
+        cancelText: 'Cancelar',
+        tone: 'danger',
+      });
+      if (ok) {
+        this.salesService.cancelOrder(evt.item.id);
+        this.toast.warning(`Pedido ${evt.item.codigo} anulado exitosamente`);
+      }
     }
   }
 }

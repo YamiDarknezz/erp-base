@@ -1,4 +1,4 @@
-<div class="w-full h-full relative flex flex-col justify-between overflow-hidden erp-ambient-bg select-none">
+<div class="w-full h-full relative flex flex-col justify-between overflow-y-auto erp-ambient-bg select-none">
 
   <!-- Ondas decorativas de fondo -->
   <div class="absolute inset-0 pointer-events-none opacity-40 dark:opacity-30">
@@ -17,17 +17,17 @@
   <div class="relative z-10 p-3 sm:p-5 lg:p-6 max-w-7xl mx-auto w-full">
     
     <!-- Contenedor translúcido de Alertas -->
-    <div class="rounded-3xl backdrop-blur-xl bg-surface/70 border border-outline/60 p-5 lg:p-6 shadow-2xl">
+    <div class="rounded-3xl backdrop-blur-xl bg-surface/70 border border-outline/60 p-3.5 sm:p-5 lg:p-6 shadow-2xl">
       
-      <!-- Título Centrado del Panel -->
-      <div class="flex items-center justify-between mb-4 pb-2 border-b border-outline/50">
+      <!-- Título del Panel -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 pb-2 border-b border-outline/50 gap-1">
         <div class="flex items-center gap-2">
-          <div class="w-2.5 h-2.5 rounded-full bg-primary animate-pulse"></div>
-          <h2 class="text-sm sm:text-base font-bold tracking-tight text-on-surface uppercase">
+          <div class="w-2.5 h-2.5 rounded-full bg-primary animate-pulse shrink-0"></div>
+          <h2 class="text-xs sm:text-sm md:text-base font-bold tracking-tight text-on-surface uppercase">
             Indicadores y Alertas Operacionales
           </h2>
         </div>
-        <span class="text-[10px] font-medium text-on-surface-muted">Monitoreo en tiempo real</span>
+        <span class="text-[10px] font-medium text-on-surface-muted self-end sm:self-auto">Monitoreo en tiempo real</span>
       </div>
 
       <!-- Grid de Tarjetas de Alertas Estilo Apple Widget -->

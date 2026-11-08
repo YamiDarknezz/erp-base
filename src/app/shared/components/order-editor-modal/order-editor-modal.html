@@ -177,9 +177,9 @@
             </button>
           </div>
 
-          <!-- Tabla de Detalle -->
-          <div class="border border-outline/70 rounded-xl overflow-hidden bg-surface shadow-2xs">
-            <table class="w-full border-collapse text-[11px]">
+          <!-- Tabla de Detalle con scroll horizontal en móviles -->
+          <div class="border border-outline/70 rounded-xl overflow-x-auto bg-surface shadow-2xs">
+            <table class="w-full min-w-[580px] sm:min-w-full border-collapse text-[11px]">
               <thead>
                 <tr class="h-7 bg-surface-alt/70 border-b border-outline/70 text-[10px] font-bold uppercase text-on-surface-variant">
                   <th class="w-8 px-1 text-center border-r border-outline/70">#</th>
@@ -266,7 +266,7 @@
 
         <!-- RESUMEN DE TOTALES CON IGV -->
         <div class="flex justify-end pt-2">
-          <div class="w-72 bg-surface-alt/50 border border-outline/70 rounded-xl p-3 space-y-1.5 text-[11px] shadow-xs">
+          <div class="w-full sm:w-72 bg-surface-alt/50 border border-outline/70 rounded-xl p-3 space-y-1.5 text-[11px] shadow-xs">
             <div class="flex justify-between items-center text-on-surface-variant">
               <span>Subtotal Neto:</span>
               <span class="font-mono font-medium">S/ {{ subtotalTotal() | number:'1.2-2' }}</span>

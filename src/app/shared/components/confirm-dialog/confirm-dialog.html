@@ -1,0 +1,97 @@
+@if (confirmService.isOpen()) {
+  <!-- Backdrop con cierre al clic fuera -->
+  <div
+    class="fixed inset-0 z-55 bg-black/45 dark:bg-black/65 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-150 select-none"
+    (click)="confirmService.onCancel()"
+  >
+    <!-- Contenedor del Popup Modal Estilo Apple -->
+    <div
+      class="bg-surface/95 backdrop-blur-2xl rounded-2xl border border-outline/70 shadow-2xl w-full max-w-sm overflow-hidden text-on-surface p-5 animate-in zoom-in-95 duration-150 space-y-4"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="flex items-start gap-3.5">
+        <!-- Icono con tono visual (Danger, Warning, Info) -->
+        <div
+          class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 mt-0.5 shadow-2xs"
+          [class.bg-rose-500/15]="tone() === 'danger'"
+          [class.text-rose-600]="tone() === 'danger'"
+          [class.dark:text-rose-400]="tone() === 'danger'"
+          [class.bg-amber-500/15]="tone() === 'warning'"
+          [class.text-amber-600]="tone() === 'warning'"
+          [class.dark:text-amber-400]="tone() === 'warning'"
+          [class.bg-primary/15]="tone() === 'info'"
+          [class.text-primary]="tone() === 'info'"
+        >
+          @switch (tone()) {
+            @case ('danger') {
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="15" y1="9" x2="9" y2="15" />
+                <line x1="9" y1="9" x2="15" y2="15" />
+              </svg>
+            }
+            @case ('warning') {
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+                <line x1="12" y1="9" x2="12" y2="13" />
+                <line x1="12" y1="17" x2="12.01" y2="17" />
+              </svg>
+            }
+            @default {
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="16" x2="12" y2="12" />
+                <line x1="12" y1="8" x2="12.01" y2="8" />
+              </svg>
+            }
+          }
+        </div>
+
+        <!-- Título y Mensaje -->
+        <div class="space-y-1 min-w-0 flex-1">
+          <h3 class="text-sm font-bold text-on-surface leading-snug">
+            {{ options()?.title || 'Confirmación de Operación' }}
+          </h3>
+          <p class="text-xs text-on-surface-variant leading-relaxed">
+            {{ options()?.message || '¿Está seguro de proceder con esta acción?' }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Fila de Acciones (ESTRICTAMENTE SOLO BOTONES DE ICONO - REGLA 1) -->
+      <div class="pt-3 border-t border-outline/60 flex items-center justify-end gap-2">
+        <!-- ✕ Cancelar (SOLO ICONO) -->
+        <button
+          type="button"
+          (click)="confirmService.onCancel()"
+          [title]="options()?.cancelTitle || options()?.cancelText || 'Cancelar y descartar'"
+          [attr.aria-label]="options()?.cancelTitle || options()?.cancelText || 'Cancelar'"
+          class="w-8 h-8 rounded-full border border-outline/80 bg-surface hover:bg-surface-muted active:scale-95 text-on-surface flex items-center justify-center cursor-pointer transition-all shadow-2xs"
+        >
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+
+        <!-- ✓ Confirmar (SOLO ICONO) -->
+        <button
+          type="button"
+          (click)="confirmService.onConfirm()"
+          [title]="options()?.confirmTitle || options()?.confirmText || 'Confirmar acción'"
+          [attr.aria-label]="options()?.confirmTitle || options()?.confirmText || 'Confirmar'"
+          class="w-8 h-8 rounded-full flex items-center justify-center cursor-pointer active:scale-95 text-white transition-all shadow-xs"
+          [class.bg-rose-600]="tone() === 'danger'"
+          [class.hover:bg-rose-700]="tone() === 'danger'"
+          [class.bg-amber-600]="tone() === 'warning'"
+          [class.hover:bg-amber-700]="tone() === 'warning'"
+          [class.bg-primary]="tone() === 'info'"
+          [class.hover:bg-primary-hover]="tone() === 'info'"
+        >
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+}
