@@ -1,0 +1,39 @@
+# ==============================================================================
+# Docker Compose de Producción — ERP Base (Angular 21 + Nginx)
+#
+# Se ejecuta en el VPS bajo Traefik en: /home/yami/data/deploy/erp-base/
+# ==============================================================================
+
+services:
+  erp-base:
+    build:
+      context: /home/yami/data/repos/erp-base
+      dockerfile: Dockerfile
+    container_name: erp-base
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.erp.rule=Host(`${ERP_DOMAIN:-erp.darknezz.dev}`)"
+      - "traefik.http.routers.erp.entrypoints=websecure"
+      - "traefik.http.routers.erp.tls.certresolver=letsencrypt"
+      - "traefik.http.services.erp.loadbalancer.server.port=80"
+      - "traefik.http.routers.erp.middlewares=ratelimit-http"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://0.0.0.0:80/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  proxy:
+    external: true

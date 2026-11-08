@@ -1,0 +1,98 @@
+# ==============================================================================
+# Integración Continua y Despliegue Automatizado (CI/CD) — ERP Base
+#
+# Flujo de ejecución:
+#   1. frontend  -> Instala dependencias con pnpm, ejecuta las pruebas unitarias
+#                   (Vitest), compila el build de Angular PWA en modo producción,
+#                   construye la imagen Docker, valida la configuración de Nginx
+#                   y ejecuta smoke test del contenedor.
+#   2. desplegar -> Solo en ramas productivas (master / main) y únicamente si el
+#                   job frontend pasó al 100%: conecta vía SSH al VPS Oracle,
+#                   sincroniza el commit validado y ejecuta scripts/desplegar.sh
+#                   con verificación de salud y rollback automático.
+# ==============================================================================
+
+name: CI
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/master' && github.ref != 'refs/heads/main' }}
+
+permissions:
+  contents: read
+
+jobs:
+  # ────────────────────────────────────────────────────────────────────────────
+  frontend:
+    name: Frontend (Angular 21 + Vitest + Docker)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar código fuente
+        uses: actions/checkout@v4
+
+      - name: Instalar pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.29.3
+
+      - name: Configurar Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Instalar dependencias
+        run: pnpm install --frozen-lockfile
+
+      - name: Pruebas unitarias
+        run: pnpm test -- --watch=false
+
+      - name: Build de producción
+        run: pnpm run build
+
+      - name: Construir imagen Docker de producción
+        run: docker build -t erp-base:ci .
+
+      - name: Validar configuración de Nginx
+        run: docker run --rm erp-base:ci nginx -t
+
+      - name: Smoke test de contenedor en CI
+        run: |
+          docker run -d --name erp-test erp-base:ci
+          sleep 2
+          docker exec erp-test wget -qO- http://127.0.0.1/health
+          docker exec erp-test wget -qO- http://127.0.0.1/ > /dev/null
+          docker stop erp-test
+
+  # ────────────────────────────────────────────────────────────────────────────
+  desplegar:
+    name: Desplegar en el VPS (Oracle Cloud)
+    needs: [frontend]
+    if: (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main') && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Conexión SSH y despliegue automatizado
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.DEPLOY_KEY }}
+          command_timeout: 20m
+          script: |
+            set -e
+
+            # Asegurar existencia del repositorio clonado en el VPS
+            cd $HOME/data/repos/erp-base
+            git fetch --quiet origin
+            git reset --hard ${{ github.sha }}
+
+            bash scripts/desplegar.sh ${{ github.sha }}
