@@ -1,0 +1,187 @@
+<div class="p-4 sm:p-6 space-y-4 max-w-7xl mx-auto w-full">
+
+  <!-- Header de Sección + Métricas Rápidas -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+    <div>
+      <h1 class="text-xl font-bold text-on-surface">Gestión de Pedidos de Venta</h1>
+      <p class="text-xs text-on-surface-variant">Control comercial y seguimiento de estados de pedidos</p>
+    </div>
+
+    <!-- Acciones Rápidas (SOLO BOTONES DE ICONO) -->
+    <div class="flex items-center gap-1.5 self-start sm:self-auto">
+      <button
+        type="button"
+        title="Crear nuevo pedido"
+        aria-label="Crear nuevo pedido"
+        class="w-8 h-8 rounded-lg bg-primary text-on-primary flex items-center justify-center hover:bg-primary-hover transition-colors shadow-xs cursor-pointer"
+      >
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+        </svg>
+      </button>
+
+      <button
+        type="button"
+        title="Exportar a Excel"
+        aria-label="Exportar a Excel"
+        class="w-8 h-8 rounded-lg border border-outline bg-surface text-on-surface-variant hover:text-on-surface hover:bg-surface-muted transition-colors flex items-center justify-center cursor-pointer"
+      >
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+          <polyline points="7 10 12 15 17 10" />
+          <line x1="12" y1="15" x2="12" y2="3" />
+        </svg>
+      </button>
+
+      <button
+        type="button"
+        title="Recargar listado"
+        aria-label="Recargar listado"
+        class="w-8 h-8 rounded-lg border border-outline bg-surface text-on-surface-variant hover:text-on-surface hover:bg-surface-muted transition-colors flex items-center justify-center cursor-pointer"
+      >
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Barra de Filtros -->
+  <div class="rounded-xl bg-surface border border-outline p-3 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-xs">
+    <!-- Buscador -->
+    <div class="relative w-full sm:w-80">
+      <input
+        type="text"
+        [(ngModel)]="searchQuery"
+        placeholder="Buscar por código, cliente o vendedor..."
+        class="w-full text-xs pl-8 pr-3 py-1.5 rounded-lg border border-outline bg-surface-alt text-on-surface placeholder:text-on-surface-muted focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"
+      />
+      <svg class="w-3.5 h-3.5 text-on-surface-muted absolute left-2.5 top-2.5 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+      </svg>
+    </div>
+
+    <!-- Selector de Estado -->
+    <div class="flex items-center gap-1.5 w-full sm:w-auto">
+      <span class="text-xs text-on-surface-variant whitespace-nowrap">Estado:</span>
+      <select
+        [(ngModel)]="statusFilter"
+        class="text-xs px-2.5 py-1.5 rounded-lg border border-outline bg-surface text-on-surface focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
+      >
+        <option value="Todos">Todos</option>
+        <option value="Pendiente">Pendiente</option>
+        <option value="Aprobado">Aprobado</option>
+        <option value="Facturado">Facturado</option>
+        <option value="Anulado">Anulado</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Tabla de Pedidos -->
+  <div class="rounded-xl bg-surface border border-outline shadow-xs overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse text-xs">
+        <thead>
+          <tr class="bg-surface-alt border-b border-outline text-on-surface-variant uppercase text-[10px] tracking-wider">
+            <th class="py-2.5 px-4 font-bold">Código</th>
+            <th class="py-2.5 px-4 font-bold">Cliente</th>
+            <th class="py-2.5 px-4 font-bold">Vendedor</th>
+            <th class="py-2.5 px-4 font-bold">Fecha</th>
+            <th class="py-2.5 px-4 font-bold text-right">Total</th>
+            <th class="py-2.5 px-4 font-bold text-center">Estado</th>
+            <th class="py-2.5 px-4 font-bold text-center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-outline/60">
+          @for (p of filteredPedidos(); track p.id) {
+            <tr class="hover:bg-surface-muted/60 transition-colors">
+              <td class="py-2.5 px-4 font-mono font-bold text-primary">{{ p.codigo }}</td>
+              <td class="py-2.5 px-4 font-medium text-on-surface">{{ p.cliente }}</td>
+              <td class="py-2.5 px-4 text-on-surface-variant">{{ p.vendedor }}</td>
+              <td class="py-2.5 px-4 text-on-surface-muted whitespace-nowrap">{{ p.fecha }}</td>
+              <td class="py-2.5 px-4 font-bold text-right text-on-surface whitespace-nowrap">
+                S/ {{ p.total | number:'1.2-2' }}
+              </td>
+              <td class="py-2.5 px-4 text-center">
+                <span
+                  class="px-2 py-0.5 rounded-full text-[10px] font-bold"
+                  [class.bg-amber-100]="p.estado === 'Pendiente'"
+                  [class.text-amber-800]="p.estado === 'Pendiente'"
+                  [class.dark:bg-amber-950]="p.estado === 'Pendiente'"
+                  [class.dark:text-amber-300]="p.estado === 'Pendiente'"
+                  [class.bg-emerald-100]="p.estado === 'Aprobado'"
+                  [class.text-emerald-800]="p.estado === 'Aprobado'"
+                  [class.dark:bg-emerald-950]="p.estado === 'Aprobado'"
+                  [class.dark:text-emerald-300]="p.estado === 'Aprobado'"
+                  [class.bg-blue-100]="p.estado === 'Facturado'"
+                  [class.text-blue-800]="p.estado === 'Facturado'"
+                  [class.dark:bg-blue-950]="p.estado === 'Facturado'"
+                  [class.dark:text-blue-300]="p.estado === 'Facturado'"
+                  [class.bg-slate-100]="p.estado === 'Anulado'"
+                  [class.text-slate-600]="p.estado === 'Anulado'"
+                  [class.dark:bg-slate-800]="p.estado === 'Anulado'"
+                  [class.dark:text-slate-400]="p.estado === 'Anulado'"
+                >
+                  {{ p.estado }}
+                </span>
+              </td>
+              <td class="py-2.5 px-4 text-center">
+                <!-- Botones de Acción (SOLO ICONOS) -->
+                <div class="flex items-center justify-center gap-1">
+                  <button
+                    type="button"
+                    title="Ver detalle"
+                    aria-label="Ver detalle"
+                    class="w-6 h-6 rounded flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-surface-muted transition-colors cursor-pointer"
+                  >
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    title="Imprimir comprobante"
+                    aria-label="Imprimir comprobante"
+                    class="w-6 h-6 rounded flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-muted transition-colors cursor-pointer"
+                  >
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="6 9 6 2 18 2 18 9" /><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><rect x="6" y="14" width="12" height="8" />
+                    </svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Paginación / Resumen -->
+    <div class="px-4 py-2.5 border-t border-outline flex items-center justify-between text-[11px] text-on-surface-variant bg-surface-alt/50">
+      <span>Mostrando {{ filteredPedidos().length }} pedidos</span>
+      <div class="flex items-center gap-1">
+        <button
+          type="button"
+          title="Página anterior"
+          aria-label="Página anterior"
+          class="w-6 h-6 rounded flex items-center justify-center border border-outline hover:bg-surface-muted cursor-pointer"
+        >
+          <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+        </button>
+        <button
+          type="button"
+          title="Página siguiente"
+          aria-label="Página siguiente"
+          class="w-6 h-6 rounded flex items-center justify-center border border-outline hover:bg-surface-muted cursor-pointer"
+        >
+          <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>

@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
 import { ThemeService } from '../../core/theme/theme.service';
+import { PwaInstallService } from '../../core/pwa/pwa-install.service';
 
 @Component({
   selector: 'app-login',
@@ -14,6 +15,7 @@ export class Login {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
   protected readonly theme = inject(ThemeService);
+  protected readonly pwa = inject(PwaInstallService);
 
   protected username = '';
   protected password = '';

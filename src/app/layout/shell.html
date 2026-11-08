@@ -1,0 +1,538 @@
+<div class="h-screen flex flex-col bg-surface-alt text-on-surface overflow-hidden">
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- 1. TOP BAR / HEADER CORPORATIVO (Fijo, Angosto h-11)        -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <header class="h-11 bg-surface border-b border-outline px-3 sm:px-4 flex items-center justify-between z-30 shrink-0 shadow-xs select-none">
+    
+    <!-- ── Lado Izquierdo: Menú Hamburguesa + Logo ERP + Módulo Activo ── -->
+    <div class="flex items-center gap-2 sm:gap-3">
+      <!-- Botón Hamburguesa (SOLO ICONO) -->
+      <button
+        type="button"
+        (click)="toggleSidebar()"
+        title="Alternar menú lateral"
+        aria-label="Alternar menú lateral"
+        class="w-7.5 h-7.5 rounded flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-muted transition-colors cursor-pointer"
+        [class.bg-surface-muted]="sidebarOpen()"
+      >
+        <svg class="w-4.5 h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <line x1="3" y1="12" x2="21" y2="12" />
+          <line x1="3" y1="18" x2="21" y2="18" />
+        </svg>
+      </button>
+
+      <!-- Logo / Marca del ERP (Placeholder Genérico) -->
+      <div class="flex items-center gap-1.5 cursor-pointer" (click)="navigateTo('/dashboard')">
+        <div class="w-6 h-6 rounded bg-primary flex items-center justify-center text-on-primary font-black text-xs tracking-tighter shadow-xs">
+          E
+        </div>
+        <div class="flex items-baseline gap-1">
+          <span class="text-sm font-black tracking-tight text-primary dark:text-blue-400">ERP BASE</span>
+          <span class="text-[9px] font-semibold text-primary/70 dark:text-blue-300 tracking-tight">v{{ appVersion() }}</span>
+        </div>
+      </div>
+
+      <!-- Separador & Módulo Activo Dinámico -->
+      <div class="hidden md:flex items-center pl-2.5 border-l border-outline">
+        <span class="px-2 py-0.5 text-[10px] font-bold tracking-wider text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/40 rounded border border-rose-200 dark:border-rose-900/60 uppercase">
+          {{ activeModuleTitle() }}
+        </span>
+      </div>
+    </div>
+
+    <!-- ── Lado Derecho: Empresa + Usuario + Botones de Acción (Iconos) ── -->
+    <div class="flex items-center gap-2 sm:gap-3">
+      
+      <!-- Nombre de la Empresa -->
+      <div class="hidden xl:flex items-center gap-1.5 text-[11px] font-semibold text-on-surface-variant tracking-wide">
+        <svg class="w-3.5 h-3.5 text-on-surface-muted shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 21h18M3 7v14M21 7v14M6 11h.01M6 15h.01M10 11h.01M10 15h.01M14 11h.01M14 15h.01M18 11h.01M18 15h.01M9 3h6a2 2 0 0 1 2 2v2H7V5a2 2 0 0 1 2-2z"/>
+        </svg>
+        <span class="truncate max-w-[260px]" [title]="companyName()">{{ companyName() }}</span>
+      </div>
+
+      <!-- Separador visual -->
+      <div class="hidden xl:block h-5 w-px bg-outline"></div>
+
+      <!-- Chip de Usuario Logueado -->
+      <div class="flex items-center gap-2 py-0.5">
+        <div class="w-7 h-7 rounded-full bg-primary/10 dark:bg-primary/20 border border-primary/30 text-primary flex items-center justify-center font-bold text-xs shrink-0">
+          AD
+        </div>
+        <div class="hidden lg:flex flex-col text-left leading-none">
+          <span class="text-[11px] font-bold text-on-surface">{{ userName() }}</span>
+          <span class="text-[10px] text-on-surface-variant truncate max-w-[130px]">{{ userFullName() }}</span>
+        </div>
+      </div>
+
+      <!-- Fila de Acciones (ESTRICTAMENTE SOLO BOTONES DE ICONO) -->
+      <div class="flex items-center gap-1 pl-1.5 border-l border-outline">
+        
+        <!-- Botón Notificaciones (SOLO ICONO CON BADGE) -->
+        <div class="relative">
+          <button
+            type="button"
+            (click)="toggleNotifications()"
+            title="Centro de notificaciones"
+            aria-label="Centro de notificaciones"
+            class="w-7.5 h-7.5 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-muted transition-colors relative cursor-pointer"
+          >
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+              <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+            </svg>
+            <span class="absolute top-1 right-1 w-2 h-2 bg-rose-500 rounded-full ring-1.5 ring-surface"></span>
+          </button>
+
+          <!-- Popover de Notificaciones -->
+          @if (notificationsOpen()) {
+            <div class="absolute right-0 mt-1.5 w-80 sm:w-84 rounded-xl bg-surface border border-outline shadow-xl z-50 p-3.5 animate-in fade-in slide-in-from-top-2 duration-150">
+              <div class="flex items-center justify-between pb-2 border-b border-outline">
+                <span class="text-[11px] font-bold text-on-surface uppercase tracking-wider">Centro de Notificaciones</span>
+                <button
+                  type="button"
+                  (click)="closeNotifications()"
+                  title="Cerrar notificaciones"
+                  aria-label="Cerrar notificaciones"
+                  class="w-5 h-5 rounded flex items-center justify-center text-on-surface-variant hover:text-on-surface cursor-pointer"
+                >
+                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
+              </div>
+              <div class="divide-y divide-outline/50 max-h-60 overflow-y-auto mt-1.5">
+                @for (item of notifications(); track item.id) {
+                  <div class="py-2 flex items-start gap-2">
+                    <div
+                      class="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0"
+                      [class.bg-rose-500]="item.type === 'danger'"
+                      [class.bg-amber-500]="item.type === 'warning'"
+                      [class.bg-primary]="item.type === 'info'"
+                    ></div>
+                    <div>
+                      <p class="text-xs font-medium text-on-surface">{{ item.title }}</p>
+                      <span class="text-[10px] text-on-surface-muted">{{ item.time }}</span>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Botón Selector de Tema Claro / Oscuro (SOLO ICONO) -->
+        <button
+          type="button"
+          (click)="theme.toggle()"
+          [title]="theme.isDark() ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'"
+          [attr.aria-label]="theme.isDark() ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'"
+          class="w-7.5 h-7.5 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-muted transition-colors cursor-pointer"
+        >
+          @if (theme.isDark()) {
+            <svg class="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="5" />
+              <line x1="12" y1="1" x2="12" y2="3" />
+              <line x1="12" y1="21" x2="12" y2="23" />
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+              <line x1="1" y1="12" x2="3" y2="12" />
+              <line x1="21" y1="12" x2="23" y2="12" />
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+            </svg>
+          } @else {
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+            </svg>
+          }
+        </button>
+
+        <!-- Botón Instalar PWA (SOLO SI NO ESTÁ INSTALADO - DESAPARECE SI YA SE INSTALÓ) -->
+        @if (!pwa.isInstalled()) {
+          <button
+            type="button"
+            (click)="installPwa()"
+            title="Instalar aplicación en el dispositivo"
+            aria-label="Instalar aplicación"
+            class="w-7.5 h-7.5 rounded-full flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-primary-soft transition-colors cursor-pointer"
+          >
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+          </button>
+        }
+
+        <!-- Botón Cerrar Sesión (SOLO ICONO) -->
+        <button
+          type="button"
+          (click)="logout()"
+          title="Cerrar sesión segura"
+          aria-label="Cerrar sesión"
+          class="w-7.5 h-7.5 rounded-full flex items-center justify-center text-on-surface-variant hover:text-danger hover:bg-danger-soft transition-colors cursor-pointer"
+        >
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+            <polyline points="16 17 21 12 16 7" />
+            <line x1="21" y1="12" x2="9" y2="12" />
+          </svg>
+        </button>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- 2. CONTENEDOR PRINCIPAL: ESPACIO DE TRABAJO Y SIDEBAR       -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <div class="flex-1 relative overflow-hidden flex">
+
+    <!-- ── SIDEBAR FLOTANTE / OVERLAY (POR ENCIMA SIN EMPUJAR) ── -->
+    @if (sidebarOpen()) {
+      <!-- Backdrop transparente para cerrar al hacer clic afuera sin oscurecer agresivamente -->
+      <div
+        (click)="closeSidebar()"
+        class="fixed inset-0 top-11 z-35 bg-black/15 dark:bg-black/35 backdrop-blur-[0.5px] transition-opacity"
+      ></div>
+
+      <!-- Drawer Lateral Flotante (Exacto al Screenshot de Referencia) -->
+      <aside
+        class="fixed top-11 left-0 bottom-0 w-72 bg-surface border-r border-outline shadow-2xl z-40 flex flex-col justify-between overflow-hidden animate-in slide-in-from-left duration-150 select-none"
+      >
+        <!-- Contenido scrolleable -->
+        <div class="flex-1 overflow-y-auto px-2.5 py-2.5 space-y-0.5">
+          
+          <!-- Buscador Pill -->
+          <div class="mb-2 px-1">
+            <div class="relative flex items-center">
+              <input
+                type="text"
+                [(ngModel)]="searchQuery"
+                placeholder="Buscar..."
+                class="w-full text-xs pl-3 pr-7 py-1.5 rounded-full border border-outline bg-surface-alt text-on-surface placeholder:text-on-surface-muted focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all"
+              />
+              <svg class="w-3.5 h-3.5 text-on-surface-muted absolute right-3 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+            </div>
+          </div>
+
+          <!-- 1. Favoritos -->
+          <div
+            (click)="navigateTo('/dashboard')"
+            class="flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-on-surface-variant hover:text-on-surface hover:bg-surface-muted cursor-pointer transition-colors"
+          >
+            <svg class="w-4 h-4 text-primary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+            </svg>
+            <span>Favoritos</span>
+          </div>
+
+          <!-- 2. Seteos Iniciales -->
+          <div>
+            <div
+              (click)="toggleSection('seteos')"
+              class="flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-semibold text-on-surface-variant hover:text-on-surface hover:bg-surface-muted cursor-pointer transition-colors"
+            >
+              <div class="flex items-center gap-2.5">
+                <svg class="w-4 h-4 text-primary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="4" y1="21" x2="4" y2="14" /><line x1="4" y1="10" x2="4" y2="3" />
+                  <line x1="12" y1="21" x2="12" y2="12" /><line x1="12" y1="8" x2="12" y2="3" />
+                  <line x1="20" y1="21" x2="20" y2="16" /><line x1="20" y1="12" x2="20" y2="3" />
+                  <line x1="1" y1="14" x2="7" y2="14" /><line x1="9" y1="8" x2="15" y2="8" /><line x1="17" y1="16" x2="23" y2="16" />
+                </svg>
+                <span>Seteos Iniciales</span>
+              </div>
+              <svg class="w-3.5 h-3.5 text-primary transition-transform duration-200" [class.rotate-180]="expandedSection() === 'seteos'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </div>
+          </div>
+
+          <!-- 3. Ventas (Expandido con diseño idéntico al screenshot) -->
+          <div>
+            <!-- Header Ventas -->
+            <div
+              (click)="toggleSection('ventas')"
+              class="flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-colors"
+              [class.bg-slate-200]="expandedSection() === 'ventas' && !theme.isDark()"
+              [class.text-slate-900]="expandedSection() === 'ventas' && !theme.isDark()"
+              [class.bg-slate-800]="expandedSection() === 'ventas' && theme.isDark()"
+              [class.text-white]="expandedSection() === 'ventas' && theme.isDark()"
+              [class.text-on-surface-variant]="expandedSection() !== 'ventas'"
+            >
+              <div class="flex items-center gap-2.5">
+                <svg class="w-4 h-4 text-primary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" />
+                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+                </svg>
+                <span class="font-bold">Ventas</span>
+              </div>
+              <svg class="w-3.5 h-3.5 text-primary transition-transform duration-200" [class.rotate-180]="expandedSection() === 'ventas'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </div>
+
+            <!-- Subitems de Ventas -->
+            @if (expandedSection() === 'ventas') {
+              <div class="space-y-0.5 mt-0.5 animate-in fade-in duration-100">
+                
+                <!-- 3.1 Indicadores -->
+                <div
+                  (click)="navigateTo('/dashboard')"
+                  class="flex items-center justify-between pl-7 pr-2.5 py-1.5 rounded-md text-xs font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-muted cursor-pointer transition-colors"
+                >
+                  <div class="flex items-center gap-2">
+                    <svg class="w-3.5 h-3.5 text-primary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+                      <polyline points="17 6 23 6 23 12" />
+                    </svg>
+                    <span>Indicadores</span>
+                  </div>
+                  <svg class="w-3.5 h-3.5 text-primary opacity-60 hover:opacity-100" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                  </svg>
+                </div>
+
+                <!-- 3.2 Preventa (Operativo con icono flecha ⤵ y subitems) -->
+                <div>
+                  <div
+                    (click)="toggleGroup('preventa')"
+                    class="flex items-center justify-between pl-6 pr-2.5 py-1.5 rounded-md text-xs font-semibold cursor-pointer transition-colors"
+                    [class.bg-slate-200/70]="expandedGroup() === 'preventa' && !theme.isDark()"
+                    [class.bg-slate-800/80]="expandedGroup() === 'preventa' && theme.isDark()"
+                    [class.text-on-surface]="expandedGroup() === 'preventa'"
+                    [class.text-on-surface-variant]="expandedGroup() !== 'preventa'"
+                  >
+                    <div class="flex items-center gap-2">
+                      <svg class="w-3.5 h-3.5 text-primary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="19 14 12 21 5 14" /><line x1="12" y1="3" x2="12" y2="21" />
+                      </svg>
+                      <span>Preventa</span>
+                    </div>
+                    <svg class="w-3.5 h-3.5 text-primary transition-transform duration-200" [class.rotate-180]="expandedGroup() === 'preventa'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                  </div>
+
+                  <!-- Sub-opciones de Preventa (Órdenes de Pedido, Pedidos, Controles y Ajustes) -->
+                  @if (expandedGroup() === 'preventa') {
+                    <div class="space-y-0.5 ml-4 pl-4 border-l border-primary/30 mt-0.5 py-0.5">
+                      <div
+                        (click)="navigateTo('/ventas/ordenes-pedido')"
+                        class="flex items-center justify-between pr-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
+                        [class.text-primary]="currentUrl().includes('/ventas/ordenes-pedido')"
+                        [class.font-bold]="currentUrl().includes('/ventas/ordenes-pedido')"
+                      >
+                        <div class="flex items-center gap-2">
+                          <svg class="w-3.5 h-3.5 text-primary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="9 18 15 12 9 6" />
+                          </svg>
+                          <span>Órdenes de Pedido</span>
+                        </div>
+                        <svg class="w-3 h-3 text-primary opacity-50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                        </svg>
+                      </div>
+
+                      <div
+                        (click)="navigateTo('/ventas/pedidos')"
+                        class="flex items-center justify-between pr-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
+                        [class.text-primary]="currentUrl().includes('/ventas/pedidos')"
+                        [class.font-bold]="currentUrl().includes('/ventas/pedidos')"
+                      >
+                        <div class="flex items-center gap-2">
+                          <svg class="w-3.5 h-3.5 text-primary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="9 18 15 12 9 6" />
+                          </svg>
+                          <span>Pedidos</span>
+                        </div>
+                        <svg class="w-3 h-3 text-primary opacity-50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                        </svg>
+                      </div>
+
+                      <div
+                        (click)="navigateTo('/ventas/pedidos')"
+                        class="flex items-center justify-between pr-2 py-1.5 rounded text-xs text-on-surface-variant hover:text-primary hover:bg-surface-muted cursor-pointer transition-colors"
+                      >
+                        <div class="flex items-center gap-2">
+                          <svg class="w-3.5 h-3.5 text-primary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="9 18 15 12 9 6" />
+                          </svg>
+                          <span>Controles y Ajustes</span>
+                        </div>
+                        <svg class="w-3 h-3 text-primary opacity-50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                        </svg>
+                      </div>
+                    </div>
+                  }
+                </div>
+
+                <!-- 3.3 Facturación (Icono ⤵) -->
+                <div
+                  (click)="navigateTo('/ventas/facturacion')"
+                  class="flex items-center justify-between pl-6 pr-2.5 py-1.5 rounded-md text-xs font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-muted cursor-pointer transition-colors"
+                  [class.text-primary]="currentUrl().includes('/ventas/facturacion')"
+                  [class.font-bold]="currentUrl().includes('/ventas/facturacion')"
+                >
+                  <div class="flex items-center gap-2">
+                    <svg class="w-3.5 h-3.5 text-primary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="19 14 12 21 5 14" /><line x1="12" y1="3" x2="12" y2="21" />
+                    </svg>
+                    <span>Facturación</span>
+                  </div>
+                  <svg class="w-3.5 h-3.5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6 9 12 15 18 9" />
+                  </svg>
+                </div>
+
+                <!-- 3.4 Trade Spend (Icono ⤵) -->
+                <div
+                  (click)="navigateTo('/ventas/pedidos')"
+                  class="flex items-center justify-between pl-6 pr-2.5 py-1.5 rounded-md text-xs font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-muted cursor-pointer transition-colors"
+                >
+                  <div class="flex items-center gap-2">
+                    <svg class="w-3.5 h-3.5 text-primary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="19 14 12 21 5 14" /><line x1="12" y1="3" x2="12" y2="21" />
+                    </svg>
+                    <span>Trade Spend</span>
+                  </div>
+                  <svg class="w-3.5 h-3.5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6 9 12 15 18 9" />
+                  </svg>
+                </div>
+
+                <!-- 3.5 Reportes (Icono Documento 📋) -->
+                <div
+                  (click)="navigateTo('/ventas/reportes')"
+                  class="flex items-center justify-between pl-6 pr-2.5 py-1.5 rounded-md text-xs font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-muted cursor-pointer transition-colors"
+                  [class.text-primary]="currentUrl().includes('/ventas/reportes')"
+                  [class.font-bold]="currentUrl().includes('/ventas/reportes')"
+                >
+                  <div class="flex items-center gap-2">
+                    <svg class="w-3.5 h-3.5 text-primary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                      <polyline points="14 2 14 8 20 8" />
+                      <line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" />
+                    </svg>
+                    <span>Reportes</span>
+                  </div>
+                  <svg class="w-3.5 h-3.5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6 9 12 15 18 9" />
+                  </svg>
+                </div>
+
+                <!-- 3.6 Gestión (Icono Engranaje ⚙️) -->
+                <div
+                  (click)="navigateTo('/ventas/gestion')"
+                  class="flex items-center justify-between pl-6 pr-2.5 py-1.5 rounded-md text-xs font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-muted cursor-pointer transition-colors"
+                  [class.text-primary]="currentUrl().includes('/ventas/gestion')"
+                  [class.font-bold]="currentUrl().includes('/ventas/gestion')"
+                >
+                  <div class="flex items-center gap-2">
+                    <svg class="w-3.5 h-3.5 text-primary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="12" r="3" />
+                      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                    </svg>
+                    <span>Gestión</span>
+                  </div>
+                  <svg class="w-3.5 h-3.5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6 9 12 15 18 9" />
+                  </svg>
+                </div>
+
+              </div>
+            }
+          </div>
+
+          <!-- 4. Inventarios -->
+          <div
+            (click)="navigateTo('/inventarios')"
+            class="flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-semibold text-on-surface-variant hover:text-on-surface hover:bg-surface-muted cursor-pointer transition-colors"
+            [class.text-primary]="currentUrl().includes('/inventarios')"
+            [class.font-bold]="currentUrl().includes('/inventarios')"
+          >
+            <div class="flex items-center gap-2.5">
+              <svg class="w-4 h-4 text-primary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+              </svg>
+              <span>Inventarios</span>
+            </div>
+            <svg class="w-3.5 h-3.5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </div>
+
+        </div>
+
+        <!-- Fila Inferior de Botones de Icono (Idéntica a la Captura) -->
+        <div class="h-10 px-3 border-t border-outline bg-surface-alt/70 flex items-center justify-around shrink-0">
+          <!-- 👤 Perfil -->
+          <button
+            type="button"
+            title="Mi perfil"
+            aria-label="Mi perfil"
+            class="w-7 h-7 rounded flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-muted transition-colors cursor-pointer"
+          >
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
+            </svg>
+          </button>
+
+          <!-- 🛡️ Seguridad -->
+          <button
+            type="button"
+            title="Seguridad y accesos"
+            aria-label="Seguridad y accesos"
+            class="w-7 h-7 rounded flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-muted transition-colors cursor-pointer"
+          >
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </svg>
+          </button>
+
+          <!-- ⚙️ Configuración -->
+          <button
+            type="button"
+            title="Configuración de preferencias"
+            aria-label="Configuración de preferencias"
+            class="w-7 h-7 rounded flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-muted transition-colors cursor-pointer"
+          >
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3" />
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+            </svg>
+          </button>
+
+          <!-- 🌓 Tema -->
+          <button
+            type="button"
+            (click)="theme.toggle()"
+            [title]="theme.isDark() ? 'Modo claro' : 'Modo oscuro'"
+            [attr.aria-label]="theme.isDark() ? 'Modo claro' : 'Modo oscuro'"
+            class="w-7 h-7 rounded flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-muted transition-colors cursor-pointer"
+          >
+            <span class="text-[11px] font-bold">Av</span>
+          </button>
+        </div>
+
+      </aside>
+    }
+
+    <!-- ── ESPACIO DE TRABAJO PRINCIPAL (NO AFECTADO NI EMPUJADO POR EL SIDEBAR) ── -->
+    <main class="flex-1 w-full h-full overflow-y-auto">
+      <router-outlet />
+    </main>
+
+  </div>
+
+</div>

@@ -1,77 +1,61 @@
 import { Injectable, signal } from '@angular/core';
 
 interface BeforeInstallPromptEvent extends Event {
-  prompt: () => Promise<void>;
+  prompt(): Promise<void>;
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed'; platform: string }>;
 }
 
 @Injectable({ providedIn: 'root' })
 export class PwaInstallService {
   private deferredPrompt: BeforeInstallPromptEvent | null = null;
-  private readonly installable = signal<boolean>(false);
-  private readonly installed = signal<boolean>(false);
-  private readonly notification = signal<string | null>(null);
-
-  readonly canInstall = this.installable.asReadonly();
-  readonly isInstalled = this.installed.asReadonly();
-  readonly message = this.notification.asReadonly();
+  readonly canInstall = signal(false);
+  readonly isInstalled = signal(false);
 
   constructor() {
-    if (typeof window !== 'undefined') {
-      window.addEventListener('beforeinstallprompt', (e: Event) => {
-        e.preventDefault();
-        this.deferredPrompt = e as BeforeInstallPromptEvent;
-        this.installable.set(true);
-      });
+    this.initPwaListeners();
+  }
 
-      window.addEventListener('appinstalled', () => {
-        this.installable.set(false);
-        this.installed.set(true);
-        this.deferredPrompt = null;
-        this.showTemporaryMessage('¡Aplicación PWA instalada exitosamente!');
-      });
+  private initPwaListeners(): void {
+    if (typeof window === 'undefined') return;
 
-      if (window.matchMedia('(display-mode: standalone)').matches) {
-        this.installed.set(true);
-      }
+    window.addEventListener('beforeinstallprompt', (e: Event) => {
+      e.preventDefault();
+      this.deferredPrompt = e as BeforeInstallPromptEvent;
+      this.canInstall.set(true);
+    });
+
+    window.addEventListener('appinstalled', () => {
+      this.deferredPrompt = null;
+      this.canInstall.set(false);
+      this.isInstalled.set(true);
+    });
+
+    // Detectar si ya se ejecuta en modo standalone PWA
+    const nav = window.navigator as Navigator & { standalone?: boolean };
+    const isStandalone =
+      (typeof window.matchMedia === 'function' && window.matchMedia('(display-mode: standalone)').matches) ||
+      nav?.standalone === true;
+    if (isStandalone) {
+      this.isInstalled.set(true);
     }
   }
 
   async install(): Promise<boolean> {
-    if (this.installed()) {
-      this.showTemporaryMessage('La aplicación ya se encuentra instalada en este dispositivo.');
-      return false;
-    }
+    const promptEvent = this.deferredPrompt;
+    if (!promptEvent) return false;
 
-    if (!this.deferredPrompt) {
-      this.showTemporaryMessage('Para instalar la aplicación, utilice el icono de instalación en la barra de direcciones de su navegador.');
-      return false;
-    }
-
+    this.deferredPrompt = null;
+    this.canInstall.set(false);
     try {
-      await this.deferredPrompt.prompt();
-      const choice = await this.deferredPrompt.userChoice;
-      if (choice.outcome === 'accepted') {
-        this.installable.set(false);
-        this.deferredPrompt = null;
-        return true;
+      await promptEvent.prompt();
+      const choice = await promptEvent.userChoice;
+      const accepted = choice.outcome === 'accepted';
+      if (accepted) {
+        this.isInstalled.set(true);
       }
-    } catch (err) {
-      console.error('Error durante la instalación PWA:', err);
+      return accepted;
+    } catch {
+      return false;
     }
-    return false;
-  }
-
-  private showTemporaryMessage(msg: string): void {
-    this.notification.set(msg);
-    setTimeout(() => {
-      if (this.notification() === msg) {
-        this.notification.set(null);
-      }
-    }, 4500);
-  }
-
-  clearMessage(): void {
-    this.notification.set(null);
   }
 }

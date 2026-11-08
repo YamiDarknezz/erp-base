@@ -12,8 +12,12 @@ export class ThemeService {
   constructor() {
     effect(() => {
       const t = this.theme();
-      document.documentElement.classList.toggle('dark', t === 'dark');
-      localStorage.setItem('erp-theme', t);
+      if (typeof document !== 'undefined') {
+        document.documentElement.classList.toggle('dark', t === 'dark');
+      }
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem('erp-theme', t);
+      }
     });
   }
 
@@ -26,8 +30,17 @@ export class ThemeService {
   }
 
   private getInitialTheme(): Theme {
-    const stored = localStorage.getItem('erp-theme') as Theme | null;
-    if (stored) return stored;
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    try {
+      if (typeof localStorage !== 'undefined') {
+        const stored = localStorage.getItem('erp-theme') as Theme | null;
+        if (stored) return stored;
+      }
+      if (typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+    } catch {
+      // Fallback in case of SSR or restricted storage
+    }
+    return 'light';
   }
 }

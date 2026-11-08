@@ -9,6 +9,9 @@ Este archivo registra el historial cronológico de versiones, hashes de compilac
 | Versión | Build ID | Fecha / Hora (UTC) | Descripción del Cambio | Estado |
 | :--- | :--- | :--- | :--- | :--- |
 <!-- VERSION_ENTRIES -->
+| v0.0.1 | `7e23e3e5ef3e` | 2026-11-08T01:20:27.247Z | Build generado automáticamente | Activo |
+| v0.0.1 | `dacb3beacee9` | 2026-11-08T01:18:46.867Z | Build generado automáticamente | Activo |
+| v0.0.1 | `2d50f88075ad` | 2026-11-08T01:17:44.803Z | Build generado automáticamente | Activo |
 | v0.0.1 | `930dab546ef5` | 2026-11-08T01:05:11.544Z | Inicio v0.0.1: Sidebar bajo header con submenús (Operativo, Reportes, Gestión), PWA connect y limpieza placeholder | Activo |
 | v6.2.0 | `cdcc2e3e5a84` | 2026-11-08T00:54:40.691Z | Sistema de versionado automatizado, header compacto y control de caché | Activo |
 | v1.0.0 | `init-pwa-01` | 2026-11-08T00:40:00.000Z | Implementación de PWA, Shell Dashboard y Auth | Deprecado |
