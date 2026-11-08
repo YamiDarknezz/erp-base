@@ -6,6 +6,7 @@ import {
   computed,
   effect,
   ChangeDetectionStrategy,
+  HostListener,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DecimalPipe } from '@angular/common';
@@ -171,6 +172,13 @@ export class DataGrid {
     const raw = this.columns().map(c => ({ ...c, visible: c.visible !== false }));
     this.persistConfig(raw);
     this.columnsState.set(raw);
+  }
+
+  @HostListener('document:keydown.escape')
+  handleEscape(): void {
+    if (this.isConfigOpen()) {
+      this.closeConfig();
+    }
   }
 
   private persistConfig(cols: GridColumn[]): void {

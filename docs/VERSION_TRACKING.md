@@ -9,6 +9,7 @@ Este archivo registra el historial cronológico de versiones, hashes de compilac
 | Versión | Build ID | Fecha / Hora (UTC) | Descripción del Cambio | Estado |
 | :--- | :--- | :--- | :--- | :--- |
 <!-- VERSION_ENTRIES -->
+| v0.0.7 | `b012720b2946` | 2026-11-08T05:14:08.384Z | Cierre automático al hacer clic fuera (click-outside) en popover de notificaciones y panel de columnas/filtros en DataGrid con soporte Escape; e isotipo vectorizado institucional del ERP unificado mediante componente ErpLogo en Header, Login y favicon de pestaña | Activo |
 | v0.0.6 | `7a0f187a5989` | 2026-11-08T05:05:13.450Z | Reestructuración estricta de carpetas por dominio empresarial: eliminación total de carpetas y componentes sueltos en pages, jerarquía modular completa en ventas (preventa, facturación, gestión y reportes con todos sus subcomponentes) e inventarios (kardex, artículos, depósitos, grupos y reportes de stock y lotes) | Activo |
 | v0.0.5 | `57207332864c` | 2026-11-08T04:52:11.529Z | Modales interactivos de gestión de permisos por roles, configuración de perfil y ficha de cuenta, redimensionamiento interactivo de columnas en DataGrid con persistencia, navegación completa en Gestión y Reportes, y diferenciación visual de botones de acción vs filtros pasivos | Activo |
 | v0.0.4 | `ee809df251e9` | 2026-11-08T04:49:31.980Z | Build generado automáticamente | Activo |

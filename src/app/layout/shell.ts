@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, signal, computed, ChangeDetectionStrategy, HostListener } from '@angular/core';
 import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { filter } from 'rxjs/operators';
@@ -6,6 +6,7 @@ import { AuthService } from '../core/auth/auth.service';
 import { ThemeService } from '../core/theme/theme.service';
 import { PwaInstallService } from '../core/pwa/pwa-install.service';
 import { APP_BUILD } from '../core/version/app-build';
+import { ErpLogo } from '../shared/components/erp-logo/erp-logo';
 
 export interface SubMenuItem {
   id: string;
@@ -41,7 +42,7 @@ export interface NotificationItem {
 
 @Component({
   selector: 'app-shell',
-  imports: [RouterOutlet, FormsModule],
+  imports: [RouterOutlet, FormsModule, ErpLogo],
   templateUrl: './shell.html',
   styleUrl: './shell.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -371,6 +372,15 @@ export class Shell {
 
   saveProfile(): void {
     this.closeProfile();
+  }
+
+  @HostListener('document:keydown.escape')
+  handleEscape(): void {
+    if (this.notificationsOpen()) this.closeNotifications();
+    if (this.sidebarOpen()) this.closeSidebar();
+    if (this.permissionsOpen()) this.closePermissions();
+    if (this.profileOpen()) this.closeProfile();
+    if (this.accountOpen()) this.closeAccount();
   }
 
   logout(): void {

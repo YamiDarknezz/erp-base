@@ -4,10 +4,11 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
 import { ThemeService } from '../../core/theme/theme.service';
 import { PwaInstallService } from '../../core/pwa/pwa-install.service';
+import { ErpLogo } from '../../shared/components/erp-logo/erp-logo';
 
 @Component({
   selector: 'app-login',
-  imports: [FormsModule],
+  imports: [FormsModule, ErpLogo],
   templateUrl: './login.html',
   styleUrl: './login.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

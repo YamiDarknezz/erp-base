@@ -264,6 +264,9 @@
 
       <!-- ── PANEL LATERAL FLOTANTE: CONFIGURACIÓN REAL DE COLUMNAS ── -->
       @if (isConfigOpen()) {
+        <!-- Backdrop transparente para cerrar automáticamente al hacer clic en cualquier parte fuera -->
+        <div class="fixed inset-0 z-20" (click)="closeConfig()"></div>
+
         <div class="absolute inset-y-0 right-0 w-64 bg-surface border-l border-outline shadow-2xl z-30 flex flex-col animate-in slide-in-from-right duration-150">
           <!-- Cabecera del Panel -->
           <div class="h-9 px-3 bg-surface-alt border-b border-outline flex items-center justify-between">

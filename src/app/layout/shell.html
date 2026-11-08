@@ -23,11 +23,9 @@
         </svg>
       </button>
 
-      <!-- Logo / Marca del ERP (Placeholder Genérico) -->
-      <div class="flex items-center gap-1.5 cursor-pointer" (click)="navigateTo('/dashboard')">
-        <div class="w-6 h-6 rounded bg-primary flex items-center justify-center text-on-primary font-black text-xs tracking-tighter shadow-xs">
-          E
-        </div>
+      <!-- Logo / Marca del ERP (Componente Reutilizable Único) -->
+      <div class="flex items-center gap-2 cursor-pointer" (click)="navigateTo('/dashboard')">
+        <app-erp-logo size="sm" customClass="text-primary dark:text-blue-400" />
         <div class="flex items-baseline gap-1">
           <span class="text-sm font-black tracking-tight text-primary dark:text-blue-400">ERP BASE</span>
           <span class="text-[9px] font-semibold text-primary/70 dark:text-blue-300 tracking-tight">v{{ appVersion() }}</span>
@@ -86,8 +84,11 @@
             <span class="absolute top-1 right-1 w-2 h-2 bg-rose-500 rounded-full ring-1.5 ring-surface"></span>
           </button>
 
-          <!-- Popover de Notificaciones -->
+          <!-- Popover de Notificaciones con Cierre Automático al Hacer Clic Fuera -->
           @if (notificationsOpen()) {
+            <!-- Backdrop transparente para cerrar al hacer clic en cualquier parte fuera -->
+            <div class="fixed inset-0 z-40" (click)="closeNotifications()"></div>
+
             <div class="absolute right-0 mt-1.5 w-80 sm:w-84 rounded-xl bg-surface border border-outline shadow-xl z-50 p-3.5 animate-in fade-in slide-in-from-top-2 duration-150">
               <div class="flex items-center justify-between pb-2 border-b border-outline">
                 <span class="text-[11px] font-bold text-on-surface uppercase tracking-wider">Centro de Notificaciones</span>
