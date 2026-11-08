@@ -1,5 +1,7 @@
 import { Component, signal, ChangeDetectionStrategy } from '@angular/core';
 import { DataGrid, GridColumn, GridAction } from '../../../../shared/components/data-grid/data-grid';
+import { OrderEditorModal, CreatedOrderPayload } from '../../../../shared/components/order-editor-modal/order-editor-modal';
+import { DocumentViewerModal, FiscalDocumentData } from '../../../../shared/components/document-viewer/document-viewer';
 
 export interface Pedido {
   id: string;
@@ -13,12 +15,17 @@ export interface Pedido {
 
 @Component({
   selector: 'app-pedidos',
-  imports: [DataGrid],
+  standalone: true,
+  imports: [DataGrid, OrderEditorModal, DocumentViewerModal],
   templateUrl: './pedidos.html',
   styleUrl: './pedidos.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Pedidos {
+  protected readonly isEditorOpen = signal<boolean>(false);
+  protected readonly isViewerOpen = signal<boolean>(false);
+  protected readonly selectedDocument = signal<FiscalDocumentData | null>(null);
+
   protected readonly columns: GridColumn[] = [
     { field: 'codigo', header: 'N° PEDIDO', width: '120px', align: 'left' },
     { field: 'cliente', header: 'CLIENTE', minWidth: '240px' },
@@ -49,9 +56,9 @@ export class Pedidos {
   ];
 
   protected readonly actions: GridAction[] = [
-    { id: 'view', icon: 'view', title: 'Ver detalle del pedido', color: 'primary' },
+    { id: 'view', icon: 'view', title: 'Ver comprobante en visor', color: 'primary' },
     { id: 'edit', icon: 'edit', title: 'Editar pedido comercial', color: 'emerald' },
-    { id: 'print', icon: 'print', title: 'Imprimir nota de pedido', color: 'blue' },
+    { id: 'print', icon: 'print', title: 'Imprimir orden fiscal', color: 'blue' },
     { id: 'delete', icon: 'delete', title: 'Anular pedido', color: 'rose' },
   ];
 
@@ -65,10 +72,67 @@ export class Pedidos {
   ]);
 
   protected handleNew(): void {
-    console.info('Crear nuevo pedido');
+    this.isEditorOpen.set(true);
   }
 
-  protected handleAction(evt: { actionId: string; item: any }): void {
-    console.info(`Acción ${evt.actionId} ejecutada para pedido:`, evt.item.codigo);
+  protected onOrderSaved(payload: CreatedOrderPayload): void {
+    const nextCode = `PED-2026-0${897 + this.pedidos().length}`;
+    const newPedido: Pedido = {
+      id: String(Date.now()),
+      codigo: nextCode,
+      cliente: payload.clienteNombre,
+      vendedor: 'Carlos Mendoza Salazar',
+      fecha: payload.fechaEmision,
+      total: payload.total,
+      estado: 'Aprobado',
+    };
+
+    this.pedidos.update((prev) => [newPedido, ...prev]);
+
+    this.selectedDocument.set({
+      tipoDocumento: 'ORDEN DE PEDIDO FISCAL',
+      numero: nextCode,
+      cliente: payload.clienteNombre,
+      documentoIdentidad: payload.documentoIdentidad,
+      direccion: 'Av. Industrial N° 450, Urb. Vulcano, Lima',
+      fechaEmision: payload.fechaEmision,
+      condicionPago: payload.condicionPago,
+      moneda: payload.moneda,
+      items: payload.items.map((it) => ({
+        sku: it.sku,
+        descripcion: it.descripcion,
+        cantidad: it.cantidad,
+        unidad: it.unidad,
+        precioUnitario: it.precioUnitario,
+        subtotal: it.cantidad * it.precioUnitario,
+      })),
+    });
+
+    this.isViewerOpen.set(true);
+  }
+
+  protected handleAction(evt: { actionId: string; item: Pedido }): void {
+    if (evt.actionId === 'print' || evt.actionId === 'view') {
+      this.selectedDocument.set({
+        tipoDocumento: 'ORDEN DE PEDIDO FISCAL',
+        numero: evt.item.codigo,
+        cliente: evt.item.cliente,
+        documentoIdentidad: '20501234567',
+        direccion: 'Av. Industrial N° 450, Urb. Vulcano, Lima',
+        fechaEmision: evt.item.fecha,
+        condicionPago: 'Crédito 30 días',
+        moneda: 'PEN',
+        items: [
+          { sku: 'BEB-001', descripcion: 'INCA KOLA PET 500ML RETORNABLE PACK X24', cantidad: 20, unidad: 'CJA', precioUnitario: 38.50, subtotal: 770.00 },
+          { sku: 'BEB-002', descripcion: 'COCA COLA REGULAR 1.5L PACK X12', cantidad: 15, unidad: 'CJA', precioUnitario: 52.00, subtotal: 780.00 },
+          { sku: 'ACE-201', descripcion: 'ACEITE VEGETAL PRIMOR CLÁSICO 1L CAJA X12', cantidad: 30, unidad: 'CJA', precioUnitario: 88.00, subtotal: 2640.00 },
+        ],
+      });
+      this.isViewerOpen.set(true);
+    } else if (evt.actionId === 'delete') {
+      this.pedidos.update((prev) =>
+        prev.map((it) => (it.id === evt.item.id ? { ...it, estado: 'Anulado' } : it))
+      );
+    }
   }
 }

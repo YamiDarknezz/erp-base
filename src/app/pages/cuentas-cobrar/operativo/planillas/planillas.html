@@ -1,0 +1,10 @@
+<app-data-grid
+  [columns]="columns"
+  [data]="planillas()"
+  [actions]="actions"
+  newButtonTitle="Generar nueva planilla de cobranza"
+  searchPlaceholder="Buscar por n° planilla, cobrador o banco..."
+  storageKey="cuentas-cobrar-planillas"
+  (onNew)="handleNew()"
+  (onAction)="handleAction($event)"
+/>

@@ -1,5 +1,7 @@
 import { Component, signal, ChangeDetectionStrategy } from '@angular/core';
 import { DataGrid, GridColumn, GridAction } from '../../../shared/components/data-grid/data-grid';
+import { OrderEditorModal, CreatedOrderPayload } from '../../../shared/components/order-editor-modal/order-editor-modal';
+import { DocumentViewerModal, FiscalDocumentData } from '../../../shared/components/document-viewer/document-viewer';
 
 export interface Factura {
   id: string;
@@ -15,12 +17,17 @@ export interface Factura {
 
 @Component({
   selector: 'app-facturacion',
-  imports: [DataGrid],
+  standalone: true,
+  imports: [DataGrid, OrderEditorModal, DocumentViewerModal],
   templateUrl: './facturacion.html',
   styleUrl: './facturacion.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Facturacion {
+  protected readonly isEditorOpen = signal<boolean>(false);
+  protected readonly isViewerOpen = signal<boolean>(false);
+  protected readonly selectedDocument = signal<FiscalDocumentData | null>(null);
+
   protected readonly columns: GridColumn[] = [
     { field: 'serieNumero', header: 'COMPROBANTE', width: '130px', align: 'left' },
     { field: 'cliente', header: 'RAZÓN SOCIAL CLIENTE', minWidth: '240px' },
@@ -51,9 +58,9 @@ export class Facturacion {
   ];
 
   protected readonly actions: GridAction[] = [
-    { id: 'pdf', icon: 'file', title: 'Descargar representación impresa PDF', color: 'primary' },
-    { id: 'xml', icon: 'check', title: 'Descargar comprobante XML firmado', color: 'emerald' },
-    { id: 'print', icon: 'print', title: 'Imprimir comprobante térmico', color: 'blue' },
+    { id: 'view', icon: 'view', title: 'Ver factura en visor PDF', color: 'primary' },
+    { id: 'print', icon: 'print', title: 'Imprimir comprobante fiscal', color: 'blue' },
+    { id: 'xml', icon: 'check', title: 'Descargar comprobante XML firmado SUNAT', color: 'emerald' },
   ];
 
   protected readonly facturas = signal<Factura[]>([
@@ -65,10 +72,73 @@ export class Facturacion {
   ]);
 
   protected handleNew(): void {
-    console.info('Emitir nuevo comprobante');
+    this.isEditorOpen.set(true);
   }
 
-  protected handleAction(evt: { actionId: string; item: any }): void {
-    console.info(`Acción ${evt.actionId} ejecutada para comprobante:`, evt.item.serieNumero);
+  protected onOrderSaved(payload: CreatedOrderPayload): void {
+    const nextNum = `F001-000${4525 + this.facturas().length}`;
+    const newFactura: Factura = {
+      id: String(Date.now()),
+      serieNumero: nextNum,
+      cliente: payload.clienteNombre,
+      ruc: payload.documentoIdentidad,
+      fechaEmision: payload.fechaEmision,
+      monto: payload.subtotal,
+      igv: payload.igv,
+      total: payload.total,
+      estadoEnvio: 'Aceptado',
+    };
+
+    this.facturas.update((prev) => [newFactura, ...prev]);
+
+    this.selectedDocument.set({
+      tipoDocumento: 'FACTURA ELECTRÓNICA',
+      numero: nextNum,
+      cliente: payload.clienteNombre,
+      documentoIdentidad: payload.documentoIdentidad,
+      direccion: 'Av. Las Begonias 441, San Isidro, Lima',
+      fechaEmision: payload.fechaEmision,
+      condicionPago: payload.condicionPago,
+      moneda: payload.moneda,
+      items: payload.items.map((it) => ({
+        sku: it.sku,
+        descripcion: it.descripcion,
+        cantidad: it.cantidad,
+        unidad: it.unidad,
+        precioUnitario: it.precioUnitario,
+        subtotal: it.cantidad * it.precioUnitario,
+      })),
+    });
+
+    this.isViewerOpen.set(true);
+  }
+
+  protected handleAction(evt: { actionId: string; item: Factura }): void {
+    if (evt.actionId === 'view' || evt.actionId === 'print') {
+      this.selectedDocument.set({
+        tipoDocumento: evt.item.serieNumero.startsWith('B') ? 'BOLETA DE VENTA ELECTRÓNICA' : 'FACTURA ELECTRÓNICA',
+        numero: evt.item.serieNumero,
+        cliente: evt.item.cliente,
+        documentoIdentidad: evt.item.ruc,
+        direccion: 'Av. Víctor Andrés Belaúnde 147, San Isidro, Lima',
+        fechaEmision: evt.item.fechaEmision,
+        condicionPago: 'Crédito 30 días',
+        moneda: 'PEN',
+        items: [
+          { sku: 'BEB-001', descripcion: 'INCA KOLA PET 500ML RETORNABLE PACK X24', cantidad: 10, unidad: 'CJA', precioUnitario: 38.50, subtotal: 385.00 },
+          { sku: 'ACE-201', descripcion: 'ACEITE VEGETAL PRIMOR CLÁSICO 1L CAJA X12', cantidad: 5, unidad: 'CJA', precioUnitario: 88.00, subtotal: 440.00 },
+        ],
+      });
+      this.isViewerOpen.set(true);
+    } else if (evt.actionId === 'xml') {
+      const xmlContent = `<?xml version="1.0" encoding="UTF-8"?><Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2"><ID>${evt.item.serieNumero}</ID><IssueDate>${evt.item.fechaEmision}</IssueDate></Invoice>`;
+      const blob = new Blob([xmlContent], { type: 'application/xml;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `20501234567-01-${evt.item.serieNumero}.xml`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
   }
 }

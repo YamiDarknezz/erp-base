@@ -8,3 +8,15 @@
   (onNew)="handleNew()"
   (onAction)="handleAction($event)"
 />
+
+<app-order-editor-modal
+  [isOpen]="isEditorOpen()"
+  (closed)="isEditorOpen.set(false)"
+  (saved)="onOrderSaved($event)"
+/>
+
+<app-document-viewer
+  [isOpen]="isViewerOpen()"
+  [document]="selectedDocument()"
+  (closed)="isViewerOpen.set(false)"
+/>

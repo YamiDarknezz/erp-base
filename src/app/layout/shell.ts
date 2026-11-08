@@ -86,6 +86,8 @@ export class Shell {
     if (url.includes('/inventarios/reportes/stock-disponible') || url.includes('/reportes/stock-disponible') || url.includes('/inventarios/stock-disponible')) return 'INVENTARIOS \\ REPORTES \\ STOCK DISPONIBLE';
     if (url.includes('/inventarios/reportes/stock-fisico') || url.includes('/reportes/stock-fisico') || url.includes('/inventarios/stock-fisico')) return 'INVENTARIOS \\ REPORTES \\ STOCK FÍSICO';
     if (url.includes('/inventarios/reportes/lotes') || url.includes('/reportes/lotes') || url.includes('/inventarios/lotes')) return 'INVENTARIOS \\ REPORTES \\ TRAZABILIDAD DE LOTES';
+    if (url.includes('/cuentas-cobrar/operativo/planillas') || url.includes('/cuentas-cobrar/planillas')) return 'CUENTAS POR COBRAR \\ OPERATIVO \\ PLANILLAS DE COBRANZA';
+    if (url.includes('/cuentas-cobrar/reportes/antiguedad-deuda') || url.includes('/cuentas-cobrar/antiguedad-deuda') || url.includes('/cuentas-cobrar')) return 'CUENTAS POR COBRAR \\ REPORTES \\ ANTIGÜEDAD DE DEUDA';
     return 'DASHBOARD';
   });
 
@@ -93,6 +95,54 @@ export class Shell {
   protected readonly companyName = signal('DISTRIBUIDORA GLOBAL S.A.C. - PE');
   protected readonly userName = signal('admin');
   protected readonly userFullName = signal('Administrador General');
+
+  // Multi-Branch Active Sede Selector
+  protected readonly selectedBranch = signal('SEDE CENTRAL LIMA');
+  protected readonly branchSelectorOpen = signal(false);
+  protected readonly availableBranches = signal([
+    { id: 'lima', name: 'SEDE CENTRAL LIMA', code: '001', address: 'Av. Víctor Andrés Belaúnde 147, San Isidro' },
+    { id: 'callao', name: 'ALMACÉN PRINCIPAL CALLAO', code: '002', address: 'Av. Argentina N° 2440, Callao' },
+    { id: 'norte', name: 'SUCURSAL NORTE CHICLAYO', code: '003', address: 'Av. Salaverry 850, Chiclayo' },
+  ]);
+
+  // Global Search / Spotlight (Ctrl + K)
+  protected readonly spotlightOpen = signal(false);
+  protected readonly spotlightQuery = signal('');
+
+  protected readonly spotlightItems = [
+    { title: 'Órdenes de Pedido', category: 'Ventas / Preventa', path: '/ventas/preventa/ordenes-pedido', keywords: 'pedidos preventa orden cotizacion' },
+    { title: 'Pedidos de Venta', category: 'Ventas / Preventa', path: '/ventas/preventa/pedidos', keywords: 'pedidos ventas comercial' },
+    { title: 'Facturación Electrónica', category: 'Ventas / Facturación', path: '/ventas/facturacion', keywords: 'facturas boletas sunat comprobantes xml ubl' },
+    { title: 'Clientes y Proveedores', category: 'Ventas / Gestión', path: '/ventas/gestion/clientes', keywords: 'clientes ruc padron proveedores razon social' },
+    { title: 'Personal Comercial', category: 'Ventas / Gestión', path: '/ventas/gestion/personal-comercial', keywords: 'vendedores comisiones personal asesores' },
+    { title: 'Precios de Venta', category: 'Ventas / Gestión', path: '/ventas/gestion/precios-venta', keywords: 'listas tarifas precios descuentos productos' },
+    { title: 'Comprobantes de Venta', category: 'Ventas / Reportes', path: '/ventas/reportes/comprobantes', keywords: 'reporte comprobantes facturas boletas' },
+    { title: 'Pedidos y Efectividad', category: 'Ventas / Reportes', path: '/ventas/reportes/pedidos', keywords: 'reporte pedidos cumplimiento efectividad' },
+    { title: 'Comisiones de Ventas', category: 'Ventas / Reportes', path: '/ventas/reportes/comisiones', keywords: 'reporte comisiones liquidacion asesores' },
+    { title: 'Kardex Valorizado', category: 'Inventarios / Operativo', path: '/inventarios/operativo/kardex', keywords: 'kardex existencias inventario valorizado entradas salidas' },
+    { title: 'Artículos (SKU)', category: 'Inventarios / Gestión', path: '/inventarios/gestion/articulos', keywords: 'sku articulos productos catalogo inventarios' },
+    { title: 'Depósitos y Almacenes', category: 'Inventarios / Gestión', path: '/inventarios/gestion/depositos', keywords: 'almacenes depositos ubicaciones sedes' },
+    { title: 'Grupos de Productos', category: 'Inventarios / Gestión', path: '/inventarios/gestion/grupos', keywords: 'categorias familias lineas grupos articulos' },
+    { title: 'Stock Disponible', category: 'Inventarios / Reportes', path: '/inventarios/reportes/stock-disponible', keywords: 'stock saldo disponible existencia despacho' },
+    { title: 'Stock Físico', category: 'Inventarios / Reportes', path: '/inventarios/reportes/stock-fisico', keywords: 'conteo toma inventario fisico cuadre' },
+    { title: 'Trazabilidad de Lotes', category: 'Inventarios / Reportes', path: '/inventarios/reportes/lotes', keywords: 'lotes vencimiento fecha perecibles cuarentena' },
+    { title: 'Planillas de Cobranza', category: 'Cuentas por Cobrar / Operativo', path: '/cuentas-cobrar/operativo/planillas', keywords: 'cobranzas liquidacion vouchers amortizacion bancos' },
+    { title: 'Antigüedad de Deuda', category: 'Cuentas por Cobrar / Reportes', path: '/cuentas-cobrar/reportes/antiguedad-deuda', keywords: 'cartera vencida mora creditos semaforo clientes' },
+  ];
+
+  protected readonly filteredSpotlightItems = computed(() => {
+    const normalize = (str: string) =>
+      str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+
+    const q = normalize(this.spotlightQuery().trim());
+    if (!q) return this.spotlightItems.slice(0, 8);
+    return this.spotlightItems.filter(item => {
+      const title = normalize(item.title);
+      const cat = normalize(item.category);
+      const kw = normalize(item.keywords);
+      return title.includes(q) || cat.includes(q) || kw.includes(q);
+    });
+  });
 
   // Modals state for bottom sidebar buttons
   protected readonly permissionsOpen = signal(false);
@@ -393,8 +443,43 @@ export class Shell {
     this.closeProfile();
   }
 
+  toggleBranchSelector(): void {
+    this.branchSelectorOpen.update(v => !v);
+  }
+
+  selectBranch(branchName: string): void {
+    this.selectedBranch.set(branchName);
+    this.branchSelectorOpen.set(false);
+  }
+
+  toggleSpotlight(): void {
+    this.spotlightOpen.update(v => !v);
+    if (this.spotlightOpen()) {
+      this.spotlightQuery.set('');
+    }
+  }
+
+  closeSpotlight(): void {
+    this.spotlightOpen.set(false);
+  }
+
+  selectSpotlightItem(path: string): void {
+    this.closeSpotlight();
+    this.router.navigate([path]);
+  }
+
+  @HostListener('window:keydown', ['$event'])
+  handleGlobalShortcuts(evt: KeyboardEvent): void {
+    if ((evt.ctrlKey || evt.metaKey) && evt.key.toLowerCase() === 'k') {
+      evt.preventDefault();
+      this.toggleSpotlight();
+    }
+  }
+
   @HostListener('document:keydown.escape')
   handleEscape(): void {
+    if (this.spotlightOpen()) this.closeSpotlight();
+    if (this.branchSelectorOpen()) this.branchSelectorOpen.set(false);
     if (this.notificationsOpen()) this.closeNotifications();
     if (this.sidebarOpen()) this.closeSidebar();
     if (this.permissionsOpen()) this.closePermissions();

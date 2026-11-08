@@ -1,0 +1,290 @@
+@if (isOpen()) {
+  <!-- Backdrop con cierre al clic fuera -->
+  <div class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-2 sm:p-4 animate-in fade-in duration-150">
+    
+    <!-- Contenedor Modal de Captura Transaccional -->
+    <div class="bg-surface rounded-xs border border-outline shadow-2xl w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden text-on-surface">
+      
+      <!-- Cabecera de la Modal (Acciones SOLO con ICONOS) -->
+      <div class="h-10 px-3 bg-surface-alt border-b border-outline flex items-center justify-between shrink-0 select-none">
+        <div class="flex items-center gap-2">
+          <svg class="w-4 h-4 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+            <polyline points="14 2 14 8 20 8" />
+            <line x1="12" y1="18" x2="12" y2="12" /><line x1="9" y1="15" x2="15" y2="15" />
+          </svg>
+          <span class="text-xs font-bold uppercase tracking-wide">
+            Captura Transaccional — Emisión de Pedido / Comprobante
+          </span>
+        </div>
+
+        <div class="flex items-center gap-1.5">
+          <!-- 💾 Guardar y Emitir (SOLO ICONO) -->
+          <button
+            type="button"
+            (click)="saveOrder()"
+            title="Guardar y procesar comprobante"
+            aria-label="Guardar y procesar comprobante"
+            class="w-7 h-7 rounded-xs bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center cursor-pointer transition-colors shadow-2xs"
+          >
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+              <polyline points="17 21 17 13 7 13 7 21" />
+              <polyline points="7 3 7 8 15 8" />
+            </svg>
+          </button>
+
+          <!-- ↺ Limpiar Formulario (SOLO ICONO) -->
+          <button
+            type="button"
+            (click)="resetForm()"
+            title="Limpiar datos del formulario"
+            aria-label="Limpiar datos del formulario"
+            class="w-7 h-7 rounded-xs border border-outline bg-surface hover:bg-surface-muted text-on-surface flex items-center justify-center cursor-pointer transition-colors shadow-2xs"
+          >
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+              <path d="M3 3v5h5" />
+            </svg>
+          </button>
+
+          <!-- ✕ Cerrar (SOLO ICONO) -->
+          <button
+            type="button"
+            (click)="close()"
+            title="Cerrar ventana"
+            aria-label="Cerrar ventana"
+            class="w-7 h-7 rounded-xs border border-outline bg-surface hover:bg-surface-muted text-on-surface flex items-center justify-center cursor-pointer transition-colors shadow-2xs"
+          >
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Cuerpo del Formulario: Maestro y Detalle -->
+      <div class="flex-1 overflow-y-auto p-3 sm:p-4 space-y-4 text-[11px]">
+        
+        <!-- SECCIÓN MAESTRO (DATOS DE CABECERA) -->
+        <div class="bg-surface-alt/40 border border-outline rounded-xs p-3 space-y-3">
+          <div class="text-[10px] font-bold uppercase tracking-wider text-primary border-b border-outline pb-1">
+            Datos Generales de la Operación
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <!-- Selector de Cliente con Buscador Integrado (SearchableSelect) -->
+            <div class="md:col-span-2 space-y-1">
+              <label class="block font-semibold text-on-surface-variant text-[10px] uppercase">
+                Cliente Receptor (RUC / Razón Social) *
+              </label>
+              <app-searchable-select
+                [options]="clientOptions()"
+                [value]="selectedClientId()"
+                placeholder="Buscar cliente por RUC, Razón Social o Localidad..."
+                [searchPlaceholder]="'Escriba RUC o nombre comercial...'"
+                (valueChange)="onClientSelected($event)"
+              />
+            </div>
+
+            <!-- Condición de Pago -->
+            <div class="space-y-1">
+              <label class="block font-semibold text-on-surface-variant text-[10px] uppercase">
+                Condición de Pago *
+              </label>
+              <app-searchable-select
+                [options]="paymentTermOptions"
+                [value]="paymentTerm()"
+                placeholder="Seleccionar condición..."
+                (valueChange)="paymentTerm.set($event)"
+              />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 pt-1">
+            <!-- Depósito / Almacén de Despacho -->
+            <div class="space-y-1">
+              <label class="block font-semibold text-on-surface-variant text-[10px] uppercase">
+                Almacén Despacho *
+              </label>
+              <app-searchable-select
+                [options]="warehouseOptions"
+                [value]="warehouse()"
+                placeholder="Seleccionar almacén..."
+                (valueChange)="warehouse.set($event)"
+              />
+            </div>
+
+            <!-- Moneda -->
+            <div class="space-y-1">
+              <label class="block font-semibold text-on-surface-variant text-[10px] uppercase">
+                Moneda
+              </label>
+              <app-searchable-select
+                [options]="currencyOptions"
+                [value]="currency()"
+                placeholder="Seleccionar moneda..."
+                (valueChange)="currency.set($event)"
+              />
+            </div>
+
+            <!-- Fecha de Emisión -->
+            <div class="space-y-1">
+              <label class="block font-semibold text-on-surface-variant text-[10px] uppercase">
+                Fecha Emisión
+              </label>
+              <input
+                type="date"
+                [value]="emissionDate()"
+                (input)="emissionDate.set($any($event.target).value)"
+                class="w-full h-7 px-2 bg-surface border border-outline rounded-xs text-[11px] focus:outline-hidden focus:border-primary text-on-surface"
+              />
+            </div>
+
+            <!-- Vendedor / Asesor -->
+            <div class="space-y-1">
+              <label class="block font-semibold text-on-surface-variant text-[10px] uppercase">
+                Asesor Comercial
+              </label>
+              <input
+                type="text"
+                readonly
+                value="Carlos Mendoza Salazar"
+                class="w-full h-7 px-2 bg-surface-muted border border-outline rounded-xs text-[11px] text-on-surface-variant font-medium cursor-not-allowed"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- SECCIÓN DETALLE (GRILLA DINÁMICA DE ARTÍCULOS) -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <div class="text-[10px] font-bold uppercase tracking-wider text-primary">
+              Ítems y Mercadería ({{ lines().length }} líneas)
+            </div>
+
+            <!-- Botón Agregar Línea (SOLO ICONO) -->
+            <button
+              type="button"
+              (click)="addLine()"
+              title="Añadir nueva fila de producto"
+              aria-label="Añadir nueva fila de producto"
+              class="w-7 h-7 rounded-xs bg-primary hover:bg-primary-hover text-white flex items-center justify-center cursor-pointer transition-colors shadow-2xs"
+            >
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+            </button>
+          </div>
+
+          <!-- Tabla de Detalle -->
+          <div class="border border-outline rounded-xs overflow-hidden bg-surface shadow-2xs">
+            <table class="w-full border-collapse text-[11px]">
+              <thead>
+                <tr class="h-6.5 bg-surface-alt border-b border-outline text-[10px] font-bold uppercase text-on-surface-variant">
+                  <th class="w-8 px-1 text-center border-r border-outline">#</th>
+                  <th class="px-2 text-left border-r border-outline min-w-[260px]">Artículo / SKU</th>
+                  <th class="w-16 px-1 text-center border-r border-outline">Unidad</th>
+                  <th class="w-20 px-2 text-right border-r border-outline">Cantidad</th>
+                  <th class="w-24 px-2 text-right border-r border-outline">P. Unit (S/)</th>
+                  <th class="w-24 px-2 text-right border-r border-outline">Subtotal (S/)</th>
+                  <th class="w-10 px-1 text-center">Acc.</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (line of lines(); track line.id; let idx = $index) {
+                  <tr class="border-b border-outline/70 hover:bg-surface-muted/30 transition-colors">
+                    <!-- Índice -->
+                    <td class="text-center font-mono text-[10px] text-on-surface-variant border-r border-outline">
+                      {{ idx + 1 }}
+                    </td>
+
+                    <!-- Selector de SKU (SearchableSelect Integrado) -->
+                    <td class="p-1 border-r border-outline">
+                      <app-searchable-select
+                        [options]="skuOptions()"
+                        [value]="line.sku"
+                        placeholder="Seleccione artículo o producto..."
+                        (valueChange)="onSkuChanged(line.id, $event)"
+                      />
+                    </td>
+
+                    <!-- Unidad de Medida -->
+                    <td class="text-center font-semibold text-[10px] text-on-surface-variant border-r border-outline">
+                      {{ line.unidad || 'NIU' }}
+                    </td>
+
+                    <!-- Cantidad -->
+                    <td class="p-1 border-r border-outline">
+                      <input
+                        type="number"
+                        min="1"
+                        [value]="line.cantidad"
+                        (input)="updateQuantity(line.id, $any($event.target).value)"
+                        class="w-full h-6 px-1.5 text-right font-mono text-[11px] bg-surface border border-outline rounded-xs focus:outline-hidden focus:border-primary"
+                      />
+                    </td>
+
+                    <!-- Precio Unitario -->
+                    <td class="p-1 border-r border-outline">
+                      <input
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        [value]="line.precioUnitario"
+                        (input)="updatePrice(line.id, $any($event.target).value)"
+                        class="w-full h-6 px-1.5 text-right font-mono text-[11px] bg-surface border border-outline rounded-xs focus:outline-hidden focus:border-primary"
+                      />
+                    </td>
+
+                    <!-- Subtotal de Línea -->
+                    <td class="px-2 text-right font-mono font-bold text-on-surface border-r border-outline">
+                      S/ {{ (line.cantidad * line.precioUnitario) | number:'1.2-2' }}
+                    </td>
+
+                    <!-- Acción: Eliminar Fila (SOLO ICONO) -->
+                    <td class="text-center p-1">
+                      <button
+                        type="button"
+                        (click)="removeLine(line.id)"
+                        title="Eliminar fila"
+                        aria-label="Eliminar fila"
+                        class="w-5.5 h-5.5 mx-auto rounded-xs border border-transparent hover:border-danger/30 hover:bg-danger/10 text-on-surface-variant hover:text-danger flex items-center justify-center cursor-pointer transition-colors"
+                      >
+                        <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <polyline points="3 6 5 6 21 6" />
+                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                        </svg>
+                      </button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- RESUMEN DE TOTALES CON IGV -->
+        <div class="flex justify-end pt-2">
+          <div class="w-72 bg-surface-alt/50 border border-outline rounded-xs p-2.5 space-y-1.5 text-[11px]">
+            <div class="flex justify-between items-center text-on-surface-variant">
+              <span>Subtotal Neto:</span>
+              <span class="font-mono font-medium">S/ {{ subtotalTotal() | number:'1.2-2' }}</span>
+            </div>
+            <div class="flex justify-between items-center text-on-surface-variant">
+              <span>I.G.V. (18.00%):</span>
+              <span class="font-mono font-medium">S/ {{ igvTotal() | number:'1.2-2' }}</span>
+            </div>
+            <div class="flex justify-between items-center pt-1.5 border-t border-outline font-bold text-xs text-primary">
+              <span>TOTAL A PAGAR:</span>
+              <span class="font-mono text-sm">S/ {{ grandTotal() | number:'1.2-2' }}</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+}

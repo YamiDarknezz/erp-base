@@ -1,0 +1,9 @@
+<app-data-grid
+  [columns]="columns"
+  [data]="cartera()"
+  [actions]="actions"
+  [showNewButton]="false"
+  searchPlaceholder="Buscar cliente por RUC o Razón Social..."
+  storageKey="cuentas-cobrar-antiguedad"
+  (onAction)="handleAction($event)"
+/>

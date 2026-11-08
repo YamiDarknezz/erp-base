@@ -1,0 +1,188 @@
+@if (isOpen()) {
+  <!-- Backdrop con cierre al clic fuera -->
+  <div class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-2 sm:p-4 animate-in fade-in duration-150">
+    
+    <!-- Contenedor Principal del Visor Modal -->
+    <div class="bg-surface rounded-xs border border-outline shadow-2xl w-full max-w-3xl max-h-[92vh] flex flex-col overflow-hidden text-on-surface">
+      
+      <!-- Barra Superior de Herramientas del Visor (Botones Exclusivamente Iconos) -->
+      <div class="h-10 px-3 bg-surface-alt border-b border-outline flex items-center justify-between shrink-0 select-none">
+        <div class="flex items-center gap-2">
+          <svg class="w-4 h-4 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+            <polyline points="14 2 14 8 20 8" />
+            <line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" />
+          </svg>
+          <span class="text-xs font-bold uppercase tracking-wide">
+            Vista Previa de Impresión — {{ document()?.tipoDocumento || 'Comprobante Fiscal' }}
+          </span>
+        </div>
+
+        <div class="flex items-center gap-1.5">
+          <!-- 🖨️ Botón Imprimir (SOLO ICONO) -->
+          <button
+            type="button"
+            (click)="printDocument()"
+            title="Imprimir documento"
+            aria-label="Imprimir documento"
+            class="w-7 h-7 rounded-xs bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center cursor-pointer transition-colors shadow-2xs"
+          >
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 6 2 18 2 18 9" />
+              <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+              <rect x="6" y="14" width="12" height="8" />
+            </svg>
+          </button>
+
+          <!-- ⬇️ Botón Descargar PDF (SOLO ICONO) -->
+          <button
+            type="button"
+            (click)="downloadPdf()"
+            title="Descargar archivo en PDF"
+            aria-label="Descargar PDF"
+            class="w-7 h-7 rounded-xs bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center cursor-pointer transition-colors shadow-2xs"
+          >
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+          </button>
+
+          <!-- ✕ Botón Cerrar (SOLO ICONO) -->
+          <button
+            type="button"
+            (click)="close()"
+            title="Cerrar vista previa"
+            aria-label="Cerrar vista previa"
+            class="w-7 h-7 rounded-xs border border-outline bg-surface hover:bg-surface-muted text-on-surface flex items-center justify-center cursor-pointer transition-colors shadow-2xs"
+          >
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Lienzo Imprimible A4 de Documento Fiscal -->
+      <div class="flex-1 overflow-y-auto p-4 sm:p-6 bg-slate-100 dark:bg-slate-950/70">
+        <div class="bg-white text-slate-900 border border-slate-300 shadow-md p-6 max-w-2xl mx-auto rounded-xs text-[11px] leading-relaxed">
+          
+          <!-- Encabezado: Datos de la Empresa y Recuadro RUC -->
+          <div class="flex flex-col sm:flex-row justify-between items-start gap-4 pb-4 border-b border-slate-300">
+            <!-- Emisor -->
+            <div class="space-y-1 max-w-sm">
+              <div class="flex items-center gap-2 mb-2">
+                <app-erp-logo size="md" customClass="text-blue-700" />
+                <span class="text-base font-black tracking-tight text-blue-900">DISTRIBUIDORA GLOBAL S.A.C.</span>
+              </div>
+              <p class="text-[10px] text-slate-600">DISTRIBUCIÓN MAYORISTA DE CONSUMO MASIVO</p>
+              <p class="text-[10px] text-slate-600">Av. Víctor Andrés Belaúnde 147, San Isidro - Lima, Perú</p>
+              <p class="text-[10px] text-slate-600">Central: (01) 710-4000 | Email: ventas&#64;globalerp.com</p>
+            </div>
+
+            <!-- Recuadro Fiscal RUC -->
+            <div class="border-2 border-blue-900 rounded-xs p-3 text-center min-w-[210px] bg-blue-50/50 shrink-0">
+              <p class="font-bold text-xs tracking-wider text-slate-800">R.U.C. 20501234567</p>
+              <p class="font-black text-sm my-1 text-blue-900 tracking-wide uppercase">{{ document()?.tipoDocumento || 'FACTURA ELECTRÓNICA' }}</p>
+              <p class="font-mono font-bold text-xs text-rose-700">{{ document()?.numero || 'F001-0004812' }}</p>
+            </div>
+          </div>
+
+          <!-- Datos del Cliente / Receptor -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5 py-3 border-b border-slate-200 text-[10.5px]">
+            <div>
+              <span class="font-bold text-slate-700">Señor(es): </span>
+              <span class="font-medium text-slate-900">{{ document()?.cliente || 'CORPORACION LOGISTICA DEL CENTRO SAC' }}</span>
+            </div>
+            <div>
+              <span class="font-bold text-slate-700">RUC / Doc: </span>
+              <span class="font-mono text-slate-900">{{ document()?.documentoIdentidad || '20100039207' }}</span>
+            </div>
+            <div>
+              <span class="font-bold text-slate-700">Dirección: </span>
+              <span class="text-slate-800">{{ document()?.direccion || 'Av. Argentina N° 2440, Callao - Lima' }}</span>
+            </div>
+            <div>
+              <span class="font-bold text-slate-700">Fecha Emisión: </span>
+              <span class="text-slate-900">{{ document()?.fechaEmision || '08/11/2026' }}</span>
+            </div>
+            <div>
+              <span class="font-bold text-slate-700">Condición de Pago: </span>
+              <span class="text-slate-900">{{ document()?.condicionPago || 'Crédito 30 días' }}</span>
+            </div>
+            <div>
+              <span class="font-bold text-slate-700">Moneda: </span>
+              <span class="text-slate-900">{{ document()?.moneda || 'SOLES (PEN S/)' }}</span>
+            </div>
+          </div>
+
+          <!-- Tabla de Ítems / Detalle del Comprobante -->
+          <div class="mt-4">
+            <table class="w-full border-collapse border border-slate-300 text-[10px]">
+              <thead>
+                <tr class="bg-blue-900 text-white text-center font-bold">
+                  <th class="p-1.5 border-r border-blue-800 w-10">CANT.</th>
+                  <th class="p-1.5 border-r border-blue-800 w-12">UNID.</th>
+                  <th class="p-1.5 border-r border-blue-800 text-left">DESCRIPCIÓN DEL PRODUCTO / SERVICIO</th>
+                  <th class="p-1.5 border-r border-blue-800 w-20 text-right">P. UNIT (S/)</th>
+                  <th class="p-1.5 w-24 text-right">TOTAL (S/)</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of items(); track item.sku) {
+                  <tr class="border-b border-slate-200 hover:bg-slate-50 transition-colors">
+                    <td class="p-1.5 text-center font-mono border-r border-slate-200">{{ item.cantidad }}</td>
+                    <td class="p-1.5 text-center font-semibold border-r border-slate-200">{{ item.unidad }}</td>
+                    <td class="p-1.5 border-r border-slate-200">
+                      <span class="font-bold text-slate-800">[{{ item.sku }}]</span> {{ item.descripcion }}
+                    </td>
+                    <td class="p-1.5 text-right font-mono border-r border-slate-200">{{ item.precioUnitario | number:'1.2-2' }}</td>
+                    <td class="p-1.5 text-right font-mono font-bold text-slate-900">{{ item.subtotal | number:'1.2-2' }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Resumen de Totales y Bloque de Seguridad Fiscal -->
+          <div class="mt-4 flex flex-col sm:flex-row justify-between items-start gap-4 pt-2">
+            <!-- QR y Leyenda -->
+            <div class="flex items-center gap-3">
+              <div class="w-16 h-16 border border-slate-400 p-1 flex items-center justify-center bg-white shrink-0">
+                <!-- Simulación gráfica de código QR de alta densidad -->
+                <svg class="w-full h-full text-slate-900" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M2 2h8v8H2V2zm2 2v4h4V4H4zm10-2h8v8h-8V2zm2 2v4h4V4h-4zM2 14h8v8H2v-8zm2 2v4h4v-4H4zm14-2h4v2h-4v-2zm-4 0h2v4h-2v-4zm2 4h4v4h-4v-4zm2-2h2v2h-2v-2zm-6 2h2v2h-2v-2z" />
+                </svg>
+              </div>
+              <div class="space-y-0.5 text-[9px] text-slate-600 max-w-xs">
+                <p class="font-semibold text-slate-800">Código Hash: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855</p>
+                <p>Representación impresa autorizada de la Factura Electrónica.</p>
+                <p>Consulte su validez en: <span class="font-mono text-blue-700">consulta.globalerp.com</span></p>
+              </div>
+            </div>
+
+            <!-- Tabla de Totales -->
+            <div class="w-full sm:w-56 space-y-1 text-right text-[10.5px]">
+              <div class="flex justify-between py-0.5 border-b border-slate-200">
+                <span class="text-slate-600">OP. GRAVADA:</span>
+                <span class="font-mono font-medium">S/ {{ subtotalTotal() | number:'1.2-2' }}</span>
+              </div>
+              <div class="flex justify-between py-0.5 border-b border-slate-200">
+                <span class="text-slate-600">I.G.V. (18%):</span>
+                <span class="font-mono font-medium">S/ {{ igvTotal() | number:'1.2-2' }}</span>
+              </div>
+              <div class="flex justify-between py-1 border-t-2 border-blue-900 font-bold text-xs text-blue-950">
+                <span>TOTAL A PAGAR:</span>
+                <span class="font-mono">S/ {{ totalPagar() | number:'1.2-2' }}</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+}

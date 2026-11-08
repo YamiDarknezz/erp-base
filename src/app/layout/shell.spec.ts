@@ -60,4 +60,26 @@ describe('Shell', () => {
     component.closeAccount();
     expect(component['accountOpen']()).toBe(false);
   });
+
+  it('should switch active branch', () => {
+    const fixture = TestBed.createComponent(Shell);
+    const component = fixture.componentInstance;
+    expect(component['selectedBranch']()).toBe('SEDE CENTRAL LIMA');
+    component.selectBranch('ALMACÉN PRINCIPAL CALLAO');
+    expect(component['selectedBranch']()).toBe('ALMACÉN PRINCIPAL CALLAO');
+  });
+
+  it('should toggle and filter spotlight items', () => {
+    const fixture = TestBed.createComponent(Shell);
+    const component = fixture.componentInstance;
+    expect(component['spotlightOpen']()).toBe(false);
+    component.toggleSpotlight();
+    expect(component['spotlightOpen']()).toBe(true);
+
+    component['spotlightQuery'].set('facturacion');
+    expect(component['filteredSpotlightItems']().some(i => i.title.includes('Facturación'))).toBe(true);
+
+    component.closeSpotlight();
+    expect(component['spotlightOpen']()).toBe(false);
+  });
 });

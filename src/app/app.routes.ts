@@ -134,6 +134,21 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./pages/inventarios/reportes/lotes/lotes').then(m => m.Lotes),
       },
+
+      // ── MÓDULO CUENTAS POR COBRAR (OPERATIVO Y REPORTES) ──
+      { path: 'cuentas-cobrar', redirectTo: 'cuentas-cobrar/operativo/planillas', pathMatch: 'full' },
+      { path: 'cuentas-cobrar/planillas', redirectTo: 'cuentas-cobrar/operativo/planillas', pathMatch: 'full' },
+      {
+        path: 'cuentas-cobrar/operativo/planillas',
+        loadComponent: () =>
+          import('./pages/cuentas-cobrar/operativo/planillas/planillas').then(m => m.Planillas),
+      },
+      { path: 'cuentas-cobrar/antiguedad-deuda', redirectTo: 'cuentas-cobrar/reportes/antiguedad-deuda', pathMatch: 'full' },
+      {
+        path: 'cuentas-cobrar/reportes/antiguedad-deuda',
+        loadComponent: () =>
+          import('./pages/cuentas-cobrar/reportes/antiguedad-deuda/antiguedad-deuda').then(m => m.AntiguedadDeuda),
+      },
     ],
   },
   { path: '**', redirectTo: 'login' },
