@@ -6,43 +6,82 @@ export interface NotificationItem {
   time: string;
   type: 'danger' | 'warning' | 'info';
   read?: boolean;
+  module?: string;
+  route?: string;
 }
 
 export const DEFAULT_NOTIFICATIONS: NotificationItem[] = [
   {
     id: 'n1',
     title: 'Cierre de turno operativo N° 01 conciliado exitosamente',
-    time: 'Hace 8 minutos',
+    time: 'Hace 8 min',
     type: 'info',
     read: false,
+    module: 'Ventas',
+    route: '/ventas/facturacion',
   },
   {
     id: 'n2',
     title: 'Actualización general de listas de precios mayoristas completada',
-    time: 'Hace 20 minutos',
+    time: 'Hace 20 min',
     type: 'info',
     read: false,
+    module: 'Precios',
+    route: '/ventas/gestion/precios-venta',
   },
   {
     id: 'n3',
     title: 'Límite de crédito superado para cliente comercial CLI-00102',
-    time: 'Hace 45 minutos',
+    time: 'Hace 45 min',
     type: 'warning',
     read: false,
+    module: 'Clientes',
+    route: '/ventas/gestion/clientes',
   },
   {
     id: 'n4',
-    title: 'Sincronización periódica de existencias con Depósito Central finalizada',
-    time: 'Hoy 08:30 a. m.',
-    type: 'info',
-    read: true,
-  },
-  {
-    id: 'n5',
     title: 'Alerta de reposición: 4 SKUs alcanzaron el punto de reorden',
     time: 'Hoy 07:15 a. m.',
     type: 'danger',
     read: false,
+    module: 'Inventario',
+    route: '/inventarios/operativo/kardex',
+  },
+  {
+    id: 'n5',
+    title: 'Sincronización periódica de existencias con Depósito Central finalizada',
+    time: 'Hoy 08:30 a. m.',
+    type: 'info',
+    read: true,
+    module: 'Depósitos',
+    route: '/inventarios/operativo/kardex',
+  },
+  {
+    id: 'n6',
+    title: 'Factura F001-000492 anulada y nota de crédito generada',
+    time: 'Ayer 18:40',
+    type: 'warning',
+    read: true,
+    module: 'Facturación',
+    route: '/ventas/facturacion',
+  },
+  {
+    id: 'n7',
+    title: 'Nueva orden de pedido PED-2026-0084 ingresada desde App Preventa',
+    time: 'Ayer 16:15',
+    type: 'info',
+    read: true,
+    module: 'Preventa',
+    route: '/ventas/preventa/pedidos',
+  },
+  {
+    id: 'n8',
+    title: 'Discrepancia en arqueo de cobranzas de la zona Norte',
+    time: 'Ayer 14:00',
+    type: 'danger',
+    read: true,
+    module: 'Cobranzas',
+    route: '/cuentas-cobrar/operativo/planillas',
   },
 ];
 
@@ -68,6 +107,18 @@ export class NotificationService {
 
   dismiss(id: string): void {
     this.notificationsState.update((prev) => prev.filter((n) => n.id !== id));
+  }
+
+  markAsRead(id: string): void {
+    this.notificationsState.update((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
+    );
+  }
+
+  toggleRead(id: string): void {
+    this.notificationsState.update((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, read: !n.read } : n))
+    );
   }
 
   markAllAsRead(): void {

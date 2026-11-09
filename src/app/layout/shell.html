@@ -1,17 +1,9 @@
 <div class="h-screen flex flex-col bg-surface-alt text-on-surface overflow-hidden">
 
-  <!-- Backdrop global transparente para notificaciones y sedes (cierra al hacer clic en cualquier parte fuera) -->
-  @if (notificationsOpen()) {
-    <div class="fixed inset-0 z-40 bg-transparent" (click)="closeNotifications()"></div>
-  }
-  @if (branchSelectorOpen()) {
-    <div class="fixed inset-0 z-40 bg-transparent" (click)="branchSelectorOpen.set(false)"></div>
-  }
-
   <!-- ═══════════════════════════════════════════════════════════ -->
   <!-- 1. TOP BAR / HEADER CORPORATIVO (Fijo, Angosto h-11)        -->
   <!-- ═══════════════════════════════════════════════════════════ -->
-  <header class="h-11 sticky top-0 z-30 bg-surface/85 backdrop-blur-md border-b border-outline/70 px-3 sm:px-4 flex items-center justify-between shrink-0 select-none shadow-xs">
+  <header class="h-11 sticky top-0 z-40 bg-surface/85 backdrop-blur-md border-b border-outline/70 px-3 sm:px-4 flex items-center justify-between shrink-0 select-none shadow-xs">
     
     <!-- ── Lado Izquierdo: Menú Hamburguesa + Logo ERP + Módulo Activo ── -->
     <div class="flex items-center gap-2 sm:gap-3">
@@ -154,23 +146,64 @@
 
           <!-- Popover de Notificaciones con Cierre Automático al Hacer Clic Fuera (Tarjeta Apple) -->
           @if (notificationsOpen()) {
-            <div id="notifications-popover" class="absolute right-0 mt-1.5 w-[calc(100vw-1.5rem)] sm:w-84 max-w-sm rounded-2xl bg-surface/95 backdrop-blur-xl border border-outline/70 shadow-2xl z-50 p-3.5 animate-in fade-in zoom-in-95 duration-150">
-              <div class="flex items-center justify-between pb-2 border-b border-outline/60">
+            <div
+              id="notifications-popover"
+              (click)="$event.stopPropagation()"
+              class="absolute right-0 mt-1.5 w-[calc(100vw-1.5rem)] sm:w-92 max-w-sm rounded-2xl bg-surface/95 backdrop-blur-xl border border-outline/70 shadow-2xl z-50 p-3 animate-in fade-in zoom-in-95 duration-150 flex flex-col"
+            >
+              <div class="flex items-center justify-between pb-2 border-b border-outline/60 shrink-0">
                 <div class="flex items-center gap-1.5">
                   <span class="text-[11px] font-bold text-on-surface uppercase tracking-wider">Centro de Notificaciones</span>
                   <span class="text-[9px] font-mono px-2 py-0.5 rounded-full bg-primary/10 text-primary font-bold">
                     {{ notifications().length }}
                   </span>
+                  @if (unreadNotificationsCount() > 0) {
+                    <span class="text-[9px] font-mono px-1.5 py-0.5 rounded-full bg-rose-500/15 text-rose-600 dark:text-rose-400 font-bold" title="No leídas">
+                      {{ unreadNotificationsCount() }} no leídas
+                    </span>
+                  }
                 </div>
                 <div class="flex items-center gap-1">
-                  <!-- Botón Limpiar Todo (SOLO ICONO) -->
+                  <!-- Botón Filtro Solo No Leídas vs Todas (SOLO ICONO SEGÚN REGLA 1) -->
+                  <button
+                    type="button"
+                    (click)="toggleUnreadFilter($event)"
+                    [title]="notificationFilter() === 'unread' ? 'Mostrar todas las notificaciones' : 'Filtrar solo notificaciones no leídas'"
+                    [attr.aria-label]="notificationFilter() === 'unread' ? 'Mostrar todas las notificaciones' : 'Filtrar solo no leídas'"
+                    class="w-6.5 h-6.5 rounded-full flex items-center justify-center transition-all cursor-pointer"
+                    [class.bg-primary/20]="notificationFilter() === 'unread'"
+                    [class.text-primary]="notificationFilter() === 'unread'"
+                    [class.text-on-surface-variant]="notificationFilter() !== 'unread'"
+                    [class.hover:bg-surface-muted]="notificationFilter() !== 'unread'"
+                  >
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+                    </svg>
+                  </button>
+
+                  <!-- Botón Marcar Todas como Leídas (SOLO ICONO SEGÚN REGLA 1) -->
+                  @if (unreadNotificationsCount() > 0) {
+                    <button
+                      type="button"
+                      (click)="markAllNotificationsAsRead($event)"
+                      title="Marcar todas como leídas"
+                      aria-label="Marcar todas como leídas"
+                      class="w-6.5 h-6.5 rounded-full flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-primary/10 active:scale-90 transition-all cursor-pointer"
+                    >
+                      <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    </button>
+                  }
+
+                  <!-- Botón Limpiar Todo (SOLO ICONO SEGÚN REGLA 1) -->
                   @if (notifications().length > 0) {
                     <button
                       type="button"
-                      (click)="clearAllNotifications()"
+                      (click)="clearAllNotifications($event)"
                       title="Limpiar todas las notificaciones"
                       aria-label="Limpiar todas las notificaciones"
-                      class="w-6 h-6 rounded-full flex items-center justify-center text-on-surface-variant hover:text-danger hover:bg-danger-soft active:scale-90 transition-all cursor-pointer"
+                      class="w-6.5 h-6.5 rounded-full flex items-center justify-center text-on-surface-variant hover:text-danger hover:bg-danger-soft active:scale-90 transition-all cursor-pointer"
                     >
                       <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <polyline points="3 6 5 6 21 6" />
@@ -178,13 +211,14 @@
                       </svg>
                     </button>
                   }
-                  <!-- Botón Cerrar (SOLO ICONO) -->
+
+                  <!-- Botón Cerrar (SOLO ICONO SEGÚN REGLA 1) -->
                   <button
                     type="button"
                     (click)="closeNotifications()"
                     title="Cerrar notificaciones"
                     aria-label="Cerrar notificaciones"
-                    class="w-6 h-6 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-muted active:scale-90 transition-all cursor-pointer"
+                    class="w-6.5 h-6.5 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-muted active:scale-90 transition-all cursor-pointer"
                   >
                     <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                       <line x1="18" y1="6" x2="6" y2="18" />
@@ -193,38 +227,89 @@
                   </button>
                 </div>
               </div>
-              <div class="divide-y divide-outline/50 max-h-60 overflow-y-auto mt-1.5">
-                @if (notifications().length === 0) {
-                  <div class="py-6 text-center text-on-surface-muted text-xs">
-                    Bandeja de notificaciones vacía
+
+              <!-- Lista con Scroll Real y Alta Densidad -->
+              <div class="divide-y divide-outline/40 max-h-72 overflow-y-auto overscroll-contain pr-1 mt-1">
+                @if (filteredNotifications().length === 0) {
+                  <div class="py-8 text-center text-on-surface-muted text-xs flex flex-col items-center justify-center gap-1.5">
+                    <svg class="w-7 h-7 text-on-surface-muted/40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                      <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                    </svg>
+                    <span>{{ notificationFilter() === 'unread' ? 'Sin notificaciones pendientes de lectura' : 'Bandeja de notificaciones vacía' }}</span>
                   </div>
                 }
-                @for (item of notifications(); track item.id) {
-                  <div class="py-2.5 flex items-start justify-between gap-2 group px-1 rounded-lg hover:bg-surface-muted/50 transition-colors">
-                    <div class="flex items-start gap-2.5 min-w-0">
-                      <div
-                        class="w-2 h-2 rounded-full mt-1 shrink-0"
-                        [class.bg-rose-500]="item.type === 'danger'"
-                        [class.bg-amber-500]="item.type === 'warning'"
-                        [class.bg-primary]="item.type === 'info'"
-                      ></div>
-                      <div class="min-w-0">
-                        <p class="text-xs font-medium text-on-surface leading-snug">{{ item.title }}</p>
-                        <span class="text-[10px] text-on-surface-muted">{{ item.time }}</span>
+                @for (item of filteredNotifications(); track item.id) {
+                  <div
+                    (click)="onNotificationClick(item, $event)"
+                    class="py-2.5 px-2 flex items-start justify-between gap-2 group rounded-xl transition-all cursor-pointer hover:bg-surface-muted/60 active:scale-[0.99] select-none"
+                    [class.bg-primary/5]="!item.read"
+                  >
+                    <div class="flex items-start gap-2.5 min-w-0 flex-1">
+                      <!-- Indicador de tipo -->
+                      <div class="relative shrink-0 mt-1">
+                        <div
+                          class="w-2.5 h-2.5 rounded-full"
+                          [class.bg-rose-500]="item.type === 'danger'"
+                          [class.bg-amber-500]="item.type === 'warning'"
+                          [class.bg-primary]="item.type === 'info'"
+                        ></div>
+                        @if (!item.read) {
+                          <span class="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-blue-500 rounded-full ring-1 ring-surface animate-pulse"></span>
+                        }
+                      </div>
+
+                      <div class="min-w-0 flex-1">
+                        <div class="flex items-center gap-1.5 flex-wrap">
+                          @if (item.module) {
+                            <span class="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.2 rounded bg-surface-muted text-on-surface-variant font-mono">
+                              {{ item.module }}
+                            </span>
+                          }
+                          <span class="text-[10px] text-on-surface-muted">{{ item.time }}</span>
+                        </div>
+                        <p class="text-xs text-on-surface leading-snug mt-0.5" [class.font-bold]="!item.read" [class.font-normal]="item.read">
+                          {{ item.title }}
+                        </p>
                       </div>
                     </div>
-                    <!-- Botón Descartar Notificación (SOLO ICONO) -->
-                    <button
-                      type="button"
-                      (click)="dismissNotification(item.id)"
-                      title="Descartar notificación"
-                      aria-label="Descartar notificación"
-                      class="w-5 h-5 rounded-full flex items-center justify-center text-on-surface-muted hover:text-danger active:scale-90 opacity-0 group-hover:opacity-100 transition-all cursor-pointer shrink-0 mt-0.5"
-                    >
-                      <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-                      </svg>
-                    </button>
+
+                    <!-- Botones de Acción por Notificación (SOLO ICONOS SEGÚN REGLA 1) -->
+                    <div class="flex items-center gap-1 shrink-0 mt-0.5">
+                      <!-- Alternar leída/no leída -->
+                      <button
+                        type="button"
+                        (click)="toggleNotificationRead(item.id, $event)"
+                        [title]="item.read ? 'Marcar como no leída' : 'Marcar como leída'"
+                        [attr.aria-label]="item.read ? 'Marcar como no leída' : 'Marcar como leída'"
+                        class="w-6 h-6 rounded-full flex items-center justify-center text-on-surface-muted hover:text-primary hover:bg-surface-muted active:scale-90 transition-all cursor-pointer opacity-70 group-hover:opacity-100"
+                      >
+                        @if (item.read) {
+                          <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10" />
+                            <polyline points="12 6 12 12 16 14" />
+                          </svg>
+                        } @else {
+                          <svg class="w-3 h-3 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <polyline points="20 6 9 17 4 12" />
+                          </svg>
+                        }
+                      </button>
+
+                      <!-- Eliminar / Descartar -->
+                      <button
+                        type="button"
+                        (click)="dismissNotification(item.id, $event)"
+                        title="Eliminar notificación"
+                        aria-label="Eliminar notificación"
+                        class="w-6 h-6 rounded-full flex items-center justify-center text-on-surface-muted hover:text-danger hover:bg-danger-soft active:scale-90 transition-all cursor-pointer opacity-70 group-hover:opacity-100"
+                      >
+                        <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <polyline points="3 6 5 6 21 6" />
+                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                        </svg>
+                      </button>
+                    </div>
                   </div>
                 }
               </div>

@@ -37,4 +37,22 @@ describe('NotificationService', () => {
     expect(service.notifications().length).toBe(0);
     expect(service.unreadCount()).toBe(0);
   });
+
+  it('should mark a notification as read and toggle read state', () => {
+    const target = DEFAULT_NOTIFICATIONS.find((n) => !n.read);
+    expect(target).toBeTruthy();
+    if (target) {
+      service.markAsRead(target.id);
+      expect(service.notifications().find((n) => n.id === target.id)?.read).toBe(true);
+
+      service.toggleRead(target.id);
+      expect(service.notifications().find((n) => n.id === target.id)?.read).toBe(false);
+    }
+  });
+
+  it('should mark all notifications as read', () => {
+    service.markAllAsRead();
+    expect(service.unreadCount()).toBe(0);
+    expect(service.notifications().every((n) => n.read)).toBe(true);
+  });
 });

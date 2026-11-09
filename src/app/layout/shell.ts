@@ -167,6 +167,15 @@ export class Shell {
   // Centralized ERP Operational Notifications
   protected readonly notifications = this.notificationService.notifications;
   protected readonly unreadNotificationsCount = this.notificationService.unreadCount;
+  protected readonly notificationFilter = signal<'all' | 'unread'>('all');
+
+  protected readonly filteredNotifications = computed(() => {
+    const list = this.notifications();
+    if (this.notificationFilter() === 'unread') {
+      return list.filter((n) => !n.read);
+    }
+    return list;
+  });
 
   // Sidebar Sections matching screenshot structure
   protected readonly sections = signal<NavSection[]>([
@@ -434,11 +443,49 @@ export class Shell {
 
   toggleNotifications(evt?: MouseEvent): void {
     evt?.stopPropagation();
-    this.notificationsOpen.update(open => !open);
+    this.notificationsOpen.update((open) => !open);
   }
 
   closeNotifications(): void {
     this.notificationsOpen.set(false);
+  }
+
+  toggleUnreadFilter(evt?: MouseEvent): void {
+    evt?.stopPropagation();
+    this.notificationFilter.update((f) => (f === 'all' ? 'unread' : 'all'));
+  }
+
+  toggleNotificationRead(id: string, evt?: MouseEvent): void {
+    evt?.stopPropagation();
+    this.notificationService.toggleRead(id);
+  }
+
+  markAllNotificationsAsRead(evt?: MouseEvent): void {
+    evt?.stopPropagation();
+    this.notificationService.markAllAsRead();
+    this.toast.success('Todas las notificaciones marcadas como leídas');
+  }
+
+  onNotificationClick(item: NotificationItem, evt?: MouseEvent): void {
+    evt?.stopPropagation();
+    this.notificationService.markAsRead(item.id);
+    if (item.route) {
+      this.closeNotifications();
+      this.navigateTo(item.route);
+      this.toast.info(`Accediendo a: ${item.title}`);
+    }
+  }
+
+  dismissNotification(id: string, evt?: MouseEvent): void {
+    evt?.stopPropagation();
+    this.notificationService.dismiss(id);
+    this.toast.info('Notificación descartada');
+  }
+
+  clearAllNotifications(evt?: MouseEvent): void {
+    evt?.stopPropagation();
+    this.notificationService.clearAll();
+    this.toast.info('Bandeja de notificaciones vaciada');
   }
 
   async installPwa(): Promise<void> {
@@ -494,29 +541,25 @@ export class Shell {
   @HostListener('document:click', ['$event'])
   handleDocumentClick(evt: MouseEvent): void {
     const target = evt.target as HTMLElement | null;
-    if (!target) return;
+    const path = typeof evt.composedPath === 'function' ? evt.composedPath() : [];
 
     if (this.notificationsOpen()) {
-      const isInside = target.closest('#notifications-popover') || target.closest('#notifications-btn');
+      const isInside =
+        (target && (target.closest('#notifications-popover') || target.closest('#notifications-btn'))) ||
+        path.some((el) => el instanceof HTMLElement && (el.id === 'notifications-popover' || el.id === 'notifications-btn'));
       if (!isInside) {
         this.closeNotifications();
       }
     }
 
     if (this.branchSelectorOpen()) {
-      const isInside = target.closest('#branch-selector-popover') || target.closest('#branch-selector-btn');
+      const isInside =
+        (target && (target.closest('#branch-selector-popover') || target.closest('#branch-selector-btn'))) ||
+        path.some((el) => el instanceof HTMLElement && (el.id === 'branch-selector-popover' || el.id === 'branch-selector-btn'));
       if (!isInside) {
         this.branchSelectorOpen.set(false);
       }
     }
-  }
-
-  dismissNotification(id: string): void {
-    this.notificationService.dismiss(id);
-  }
-
-  clearAllNotifications(): void {
-    this.notificationService.clearAll();
   }
 
   onRoleChange(role: string): void {
