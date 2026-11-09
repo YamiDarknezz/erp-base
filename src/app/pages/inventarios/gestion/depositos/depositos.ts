@@ -46,7 +46,7 @@ export class Depositos {
   ];
 
   protected readonly depositos = signal<Deposito[]>([
-    { id: '1', codigo: 'ALM-01', nombre: 'Almacén Central Global', tipo: 'Principal / Despacho', direccion: 'Av. Nicolás Arriola 1840, La Victoria', responsable: 'Manuel Quispe', capacidadUtilizada: '84.5%', estado: 'Operativo' },
+    { id: '1', codigo: 'ALM-01', nombre: 'Almacén Central Principal', tipo: 'Principal / Despacho', direccion: 'Av. Nicolás Arriola 1840, La Victoria', responsable: 'Manuel Quispe', capacidadUtilizada: '84.5%', estado: 'Operativo' },
     { id: '2', codigo: 'ALM-02', nombre: 'Depósito Pulmón Callao', tipo: 'Tránsito / Pulmón', direccion: 'Av. Elmer Faucett 3400, Callao', responsable: 'David Cornejo', capacidadUtilizada: '62.0%', estado: 'Operativo' },
     { id: '3', codigo: 'ALM-03', nombre: 'Sucursal Norte Los Olivos', tipo: 'Distribución Local', direccion: 'Av. Alfredo Mendiola 5890, Los Olivos', responsable: 'Rosa Huamán', capacidadUtilizada: '78.2%', estado: 'Operativo' },
     { id: '4', codigo: 'ALM-04', nombre: 'Cámara de Frío N°1', tipo: 'Refrigerados', direccion: 'Av. Nicolás Arriola 1840, La Victoria', responsable: 'Alberto Vega', capacidadUtilizada: '91.0%', estado: 'Operativo' },

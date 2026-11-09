@@ -97,7 +97,7 @@ export const INITIAL_AGING_SEED: AgingAccountEntity[] = [
   {
     id: '2',
     ruc: '20501234567',
-    cliente: 'CORPORACION LOGISTICA DEL CENTRO SAC',
+    cliente: 'CORPORACION LOGISTICA DEL CENTRO S.A.C.',
     limiteCredito: 350000,
     deudaTotal: 142300.50,
     corriente: 110000.00,

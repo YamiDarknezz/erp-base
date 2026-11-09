@@ -15,12 +15,12 @@ export interface CompanyConfig {
 
 export const DEFAULT_COMPANY_CONFIG: CompanyConfig = {
   name: 'DISTRIBUIDORA GLOBAL S.A.C. - PE',
-  tradeName: 'DISTRIBUCIÓN MAYORISTA DE CONSUMO MASIVO',
+  tradeName: 'DISTRIBUCIÓN Y LOGÍSTICA CORPORATIVA',
   ruc: '20501234567',
-  address: 'Av. Víctor Andrés Belaúnde 147, San Isidro - Lima, Perú',
-  phone: '(01) 710-4000',
-  email: 'ventas@globalerp.com',
-  website: 'consulta.globalerp.com',
+  address: 'Av. Los Robles 450, San Isidro - Lima, Perú',
+  phone: '(01) 710-5000',
+  email: 'contacto@globalerp.pe',
+  website: 'portal.globalerp.pe',
   appTitle: 'ERP BASE',
   appSubtitle: 'Sistema de Gestión Empresarial Integral',
   logoUrl: null,

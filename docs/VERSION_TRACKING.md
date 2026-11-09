@@ -9,6 +9,7 @@ Este archivo registra el historial cronológico de versiones, hashes de compilac
 | Versión | Build ID | Fecha / Hora (UTC) | Descripción del Cambio | Estado |
 | :--- | :--- | :--- | :--- | :--- |
 <!-- VERSION_ENTRIES -->
+| v0.0.13 | `d6e3ee2a3680` | 2026-11-09T01:12:19.101Z | Build generado automáticamente | Activo |
 | v0.0.13 | `037855912242` | 2026-11-09T01:00:45.120Z | Build generado automáticamente | Activo |
 | v0.0.13 | `56a13b9874ee` | 2026-11-08T22:29:18.454Z | Build generado automáticamente | Activo |
 | v0.0.13 | `7b34480a24fe` | 2026-11-08T21:27:17.294Z | Estandarización de sangrías del Sidebar (guía vertical ml-3 pl-2 border-l); reemplazo de flechas en pestañas terminales por estrellas de favoritos persistentes y acordeón 'Favoritos'; micro-iconos SVG en todas las opciones de 3er nivel con altura y margen optimizados (py-1.5, min-h-[26px], rounded-md); sidebar persistente al abrir modales; y cierre automático de notificaciones al clic fuera. | Activo |

@@ -22,8 +22,8 @@ export interface RolePermission {
 export const DEFAULT_USER_PROFILE: UserProfile = {
   username: 'admin',
   fullName: 'Carlos Mendoza Salazar',
-  initials: 'HG',
-  email: 'admin@globalerp.com',
+  initials: 'CM',
+  email: 'admin@globalerp.pe',
   role: 'Administrador General',
   avatarUrl: null,
   timeoutMinutes: 30,

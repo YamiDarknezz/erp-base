@@ -19,7 +19,7 @@ describe('InvoiceService', () => {
   it('should issue a new invoice and prepend to list', () => {
     const issued = service.issueInvoice({
       clienteId: '20501234567',
-      clienteNombre: 'CORPORACION LOGISTICA DEL CENTRO SAC',
+      clienteNombre: 'CORPORACION LOGISTICA DEL CENTRO S.A.C.',
       documentoIdentidad: '20501234567',
       condicionPago: 'CREDITO_30',
       almacen: 'ALM_CENTRAL',

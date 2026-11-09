@@ -45,7 +45,7 @@ export class Clientes {
   ];
 
   protected readonly registros = signal<ProveedorCliente[]>([
-    { codigo: '0', razonSocial: 'MOVIMIENTOS S/CPBTE.FISCAL', anulado: false, domicilio: 'AV. VICTOR ANDRE...', provincia: 'LIMA', departamento: 'LIMA', localidad: 'SAN ISIDRO', telefono: '', tipoContribuyente: 'PJ', identificador: '20501234567', fechaAlta: '01/02/2016' },
+    { codigo: '0', razonSocial: 'MOVIMIENTOS S/CPBTE.FISCAL', anulado: false, domicilio: 'AV. LOS ROBLES 450', provincia: 'LIMA', departamento: 'LIMA', localidad: 'SAN ISIDRO', telefono: '', tipoContribuyente: 'PJ', identificador: '20501234567', fechaAlta: '01/02/2016' },
     { codigo: '1', razonSocial: 'CORPORACION LOGISTICA DEL CENTRO SAC', anulado: false, domicilio: 'AV. ARGENTINA N°...', provincia: 'LIMA', departamento: 'LIMA', localidad: '', telefono: '3136000..3136..', tipoContribuyente: 'PJ', identificador: '20100039207', fechaAlta: '27/06/2015' },
     { codigo: '2', razonSocial: 'RANSA COMERCIAL SA', anulado: false, domicilio: 'GREGORIO PAREDE...', provincia: 'LIMA', departamento: 'LIMA', localidad: '', telefono: '4313980', tipoContribuyente: 'PJ', identificador: '20508778920', fechaAlta: '23/02/2016' },
     { codigo: '3', razonSocial: 'INVERSIONES QUISSEL SRL', anulado: false, domicilio: 'AV ANTENOR ORR...', provincia: 'LIMA', departamento: 'LIMA', localidad: '', telefono: '044266065', tipoContribuyente: 'PJ', identificador: '20539721870', fechaAlta: '27/01/2020' },
@@ -74,7 +74,7 @@ export class Clientes {
     { codigo: '33', razonSocial: 'BAUER LUBRICENTROS S.A.C.', anulado: false, domicilio: 'AV. JOSE PARDO N...', provincia: 'LIMA', departamento: 'LIMA', localidad: '', telefono: '123456', tipoContribuyente: 'PJ', identificador: '20569290610', fechaAlta: '01/01/1900' },
     { codigo: '34', razonSocial: 'BENITES HATADA JUAN ANTONIO', anulado: false, domicilio: 'SIN DIRECCIÓN', provincia: 'LIMA', departamento: 'LIMA', localidad: '', telefono: '123456', tipoContribuyente: 'PN', identificador: '10178002584', fechaAlta: '01/01/1900' },
     { codigo: '35', razonSocial: 'CARGO EXPRESS AMERICANO S.A.C.', anulado: false, domicilio: 'NRO. S/N INT. B-12...', provincia: 'LIMA', departamento: 'LIMA', localidad: '', telefono: '123456', tipoContribuyente: 'PJ', identificador: '20532029008', fechaAlta: '06/01/2020' },
-    { codigo: '36', razonSocial: 'CORPORACION LOGISTICA DEL CENTRO S.A.C', anulado: false, domicilio: 'AV. VICTOR ANDRE...', provincia: 'LIMA', departamento: 'LIMA', localidad: '', telefono: '123456', tipoContribuyente: 'PJ', identificador: '20501234567', fechaAlta: '06/01/2020' },
+    { codigo: '36', razonSocial: 'CORPORACION LOGISTICA DEL CENTRO S.A.C.', anulado: false, domicilio: 'AV. LOS ROBLES 450', provincia: 'LIMA', departamento: 'LIMA', localidad: '', telefono: '123456', tipoContribuyente: 'PJ', identificador: '20501234567', fechaAlta: '06/01/2020' },
     { codigo: '37', razonSocial: 'CENTRAL PARKING SYSTEM PERU S.A.', anulado: false, domicilio: 'AV. JAVIER PRADO...', provincia: 'LIMA', departamento: 'LIMA', localidad: '', telefono: '123456', tipoContribuyente: 'PJ', identificador: '20505205791', fechaAlta: '01/01/1900' },
   ]);
 

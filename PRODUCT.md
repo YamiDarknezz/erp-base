@@ -99,7 +99,7 @@ Configuración centralizada en `src/tailwind.css` utilizando variables CSS nativ
 Inspirada en el sistema CHESS ERP:
 - **Header Superior (Angosto y Compacto `h-11`)**:
   - **Izquierda**: Botón hamburguesa (icono), Isotipo + Texto "CHESS 6.2.57", Pestaña activa en badge "DASHBOARD".
-  - **Derecha**: Nombre de la empresa (`DISTRIBUIDORA GLOBAL S.A.C. - PE`), Chip de usuario (`admin` - `Administrador General`), y fila de botones circulares de acción tipo icono:
+  - **Derecha**: Nombre de la empresa (`DISTRIBUIDORA GLOBAL S.A.C. - PE`), Chip de usuario (`admin` - `Carlos Mendoza Salazar`), y fila de botones circulares de acción tipo icono:
     - 🔔 **Notificaciones** con badge flotante y popover de alertas recientes.
     - 🌓 **Tema** claro/oscuro.
     - 🎧 **Soporte** / Mesa de ayuda.

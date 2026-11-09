@@ -19,7 +19,7 @@ describe('SalesService', () => {
   it('should create a new order and prepend to list', () => {
     const created = service.createOrder({
       clienteId: '20501234567',
-      clienteNombre: 'CORPORACION LOGISTICA DEL CENTRO SAC',
+      clienteNombre: 'CORPORACION LOGISTICA DEL CENTRO S.A.C.',
       documentoIdentidad: '20501234567',
       condicionPago: 'CREDITO_30',
       almacen: 'ALM_CENTRAL',

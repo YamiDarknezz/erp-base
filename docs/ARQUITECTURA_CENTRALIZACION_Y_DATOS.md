@@ -71,7 +71,7 @@ Centraliza la información del usuario autenticado, roles y matriz de permisos p
 * **Señales reactivas expuestas**:
   * `username()`: Nombre de usuario (ej. `admin`).
   * `fullName()`: Nombre completo (ej. `Carlos Mendoza Salazar`).
-  * `initials()`: Iniciales computadas automáticamente a 2 letras (ej. `HG`).
+  * `initials()`: Iniciales computadas automáticamente a 2 letras (ej. `CM`).
   * `email()`: Correo del usuario.
   * `role()`: Rol principal asignado.
   * `roles()`: Catálogo de roles disponibles (`['Administrador General', 'Vendedor', ...]`).

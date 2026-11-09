@@ -19,12 +19,12 @@ describe('UserContextService', () => {
   it('should update user profile and auto-generate initials', () => {
     service.updateProfile({
       fullName: 'Carlos Mendoza Ramos',
-      email: 'carlos@globalerp.com',
+      email: 'carlos@globalerp.pe',
     });
 
     expect(service.fullName()).toBe('Carlos Mendoza Ramos');
     expect(service.initials()).toBe('CM');
-    expect(service.email()).toBe('carlos@globalerp.com');
+    expect(service.email()).toBe('carlos@globalerp.pe');
   });
 
   it('should update role and permissions', () => {
