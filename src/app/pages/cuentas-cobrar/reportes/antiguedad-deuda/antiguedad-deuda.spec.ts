@@ -21,5 +21,7 @@ describe('AntiguedadDeuda', () => {
 
   it('should have initial aging accounts listed', () => {
     expect(component['cartera']().length).toBeGreaterThan(0);
+    expect(component['kpis']().totalDeuda).toBeGreaterThan(0);
+    expect(component['donutTramosMora']().length).toBeGreaterThan(0);
   });
 });

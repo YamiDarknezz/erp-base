@@ -1,5 +1,8 @@
-import { Component, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, signal, computed, ChangeDetectionStrategy } from '@angular/core';
+import { DecimalPipe } from '@angular/common';
 import { DataGrid, GridColumn, GridAction } from '../../../../shared/components/data-grid/data-grid';
+import { DonutChart, DonutChartItem } from '../../../../shared/components/donut-chart/donut-chart';
+import { BarChart, BarChartItem } from '../../../../shared/components/bar-chart/bar-chart';
 
 export interface ComprobanteEmitido {
   id: string;
@@ -16,12 +19,14 @@ export interface ComprobanteEmitido {
 
 @Component({
   selector: 'app-comprobantes',
-  imports: [DataGrid],
+  imports: [DataGrid, DonutChart, BarChart, DecimalPipe],
   templateUrl: './comprobantes.html',
   styleUrl: './comprobantes.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Comprobantes {
+  protected readonly showCharts = signal(true);
+
   protected readonly columns: GridColumn[] = [
     { field: 'tipoDoc', header: 'TIPO', width: '90px', align: 'center' },
     { field: 'numero', header: 'N° COMPROBANTE', width: '130px', align: 'center' },
@@ -59,7 +64,54 @@ export class Comprobantes {
     { id: 'c5', tipoDoc: 'NOTA CRÉD.', numero: 'NC01-0000312', fechaEmision: '08/11/2026', cliente: 'MERCANTIL INCA S.A.', documentoIdentidad: '20451583060', subtotal: -500.00, igv: -90.00, total: -590.00, estadoSunat: 'Aceptado' },
   ]);
 
-  protected handleAction(evt: { actionId: string; item: ComprobanteEmitido }): void {
+  protected readonly kpis = computed(() => {
+    const list = this.comprobantes();
+    const subtotal = list.reduce((acc, c) => acc + c.subtotal, 0);
+    const igv = list.reduce((acc, c) => acc + c.igv, 0);
+    const total = list.reduce((acc, c) => acc + c.total, 0);
+    const aceptados = list.filter(c => c.estadoSunat === 'Aceptado').length;
+    const tasaAceptacion = list.length > 0 ? (aceptados / list.length) * 100 : 0;
+
+    return {
+      total,
+      subtotal,
+      igv,
+      tasaAceptacion,
+      count: list.length,
+    };
+  });
+
+  protected readonly donutTipos = computed<DonutChartItem[]>(() => {
+    const counts: Record<string, number> = {};
+    this.comprobantes().forEach(c => {
+      counts[c.tipoDoc] = (counts[c.tipoDoc] || 0) + 1;
+    });
+
+    return [
+      { label: 'Factura Electrónica', value: counts['FACTURA'] || 0, color: '#3b82f6' },
+      { label: 'Boleta de Venta', value: counts['BOLETA'] || 0, color: '#10b981' },
+      { label: 'Nota de Crédito', value: counts['NOTA CRÉD.'] || 0, color: '#f59e0b' },
+    ].filter(it => it.value > 0);
+  });
+
+  protected readonly barTopFacturados = computed<BarChartItem[]>(() => {
+    return this.comprobantes()
+      .filter(c => c.total > 0)
+      .sort((a, b) => b.total - a.total)
+      .slice(0, 4)
+      .map(c => ({
+        label: c.cliente,
+        value: c.total,
+        color: '#10b981',
+        tag: c.tipoDoc,
+      }));
+  });
+
+  protected toggleCharts(): void {
+    this.showCharts.update(v => !v);
+  }
+
+  protected handleAction(evt: { actionId: string; item: any }): void {
     console.info(`Acción ${evt.actionId} ejecutada para comprobante:`, evt.item.numero);
   }
 }

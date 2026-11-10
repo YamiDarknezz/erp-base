@@ -51,16 +51,20 @@
 
       <!-- Lado Derecho: BOTONES DE ACCIÓN (Con acento de color distinguible) -->
       <div class="flex items-center gap-1.5 shrink-0">
-        <!-- 🔵 Botón Exportar (Con acento azul) -->
+        <!-- 🟢 Botón Exportar a Excel (Con acento verde corporativo Excel) -->
         <button
           type="button"
-          (click)="onExport.emit()"
-          title="Exportar datos de la grilla"
-          aria-label="Exportar datos"
-          class="w-6.5 h-6.5 rounded-lg flex items-center justify-center bg-blue-500/10 hover:bg-blue-600 hover:text-white text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-900/60 active:scale-95 cursor-pointer transition-all shadow-2xs"
+          (click)="handleExportClick()"
+          title="Exportar registros a Excel (.csv)"
+          aria-label="Exportar registros a Excel"
+          class="w-6.5 h-6.5 rounded-lg flex items-center justify-center bg-emerald-500/10 hover:bg-emerald-600 hover:text-white text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/60 active:scale-95 cursor-pointer transition-all shadow-2xs"
         >
           <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+            <polyline points="14 2 14 8 20 8" />
+            <line x1="8" y1="13" x2="16" y2="13" />
+            <line x1="8" y1="17" x2="16" y2="17" />
+            <line x1="10" y1="9" x2="8" y2="9" />
           </svg>
         </button>
 

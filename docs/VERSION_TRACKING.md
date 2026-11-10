@@ -9,6 +9,8 @@ Este archivo registra el historial cronológico de versiones, hashes de compilac
 | Versión | Build ID | Fecha / Hora (UTC) | Descripción del Cambio | Estado |
 | :--- | :--- | :--- | :--- | :--- |
 <!-- VERSION_ENTRIES -->
+| v0.0.14 | `pending-build` | 2026-11-10T03:20:00.000Z | Módulos de analítica visual y reportería interactiva con gráficos vectoriales SVG Apple-style (DonutChart y BarChart) con micro-KPIs ejecutivos y franja analítica colapsable; exportación enterprise automática a Excel (.csv con UTF-8 BOM e icono dedicado) integrada directamente en el componente compartido DataGrid para todos los módulos del sistema con 0 boilerplate. | Activo |
+| v0.0.13 | `378d656e43e8` | 2026-11-10T03:18:17.692Z | Build generado automáticamente | Activo |
 | v0.0.13 | `d6e3ee2a3680` | 2026-11-09T01:12:19.101Z | Build generado automáticamente | Activo |
 | v0.0.13 | `037855912242` | 2026-11-09T01:00:45.120Z | Build generado automáticamente | Activo |
 | v0.0.13 | `56a13b9874ee` | 2026-11-08T22:29:18.454Z | Build generado automáticamente | Activo |

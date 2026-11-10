@@ -112,4 +112,20 @@ describe('DataGrid', () => {
     fixture.detectChanges();
     expect(instance['currentPage']()).toBe(1);
   });
+
+  it('should trigger excel export when handleExportClick is called', () => {
+    const fixture = TestBed.createComponent(DataGrid);
+    fixture.componentRef.setInput('columns', mockColumns);
+    fixture.componentRef.setInput('data', mockData);
+    fixture.detectChanges();
+
+    const instance = fixture.componentInstance;
+    let exportEmitted = false;
+    instance.onExport.subscribe(() => {
+      exportEmitted = true;
+    });
+
+    instance['handleExportClick']();
+    expect(exportEmitted).toBe(true);
+  });
 });

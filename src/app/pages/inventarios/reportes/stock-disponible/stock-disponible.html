@@ -1,9 +1,86 @@
-<app-data-grid
-  [columns]="columns"
-  [data]="reporte()"
-  [actions]="actions"
-  [showNewButton]="false"
-  searchPlaceholder="Buscar SKU o descripción en stock disponible..."
-  storageKey="reportes-stock-disponible"
-  (onAction)="handleAction($event)"
-/>
+<div class="w-full h-full flex flex-col p-2 gap-2 overflow-hidden bg-surface-alt">
+
+  <!-- ── FRANJA ANALÍTICA Y GRÁFICOS DE STOCK Y DISPONIBILIDAD ── -->
+  <div class="flex flex-col rounded-xl border border-outline/70 bg-surface overflow-hidden shadow-xs shrink-0 transition-all">
+    
+    <!-- Barra Superior de Control de Reportería -->
+    <div class="h-8 px-2.5 bg-surface-alt/60 backdrop-blur-xs border-b border-outline/70 flex items-center justify-between gap-2 shrink-0">
+      <div class="flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span class="text-[10px] font-bold text-on-surface uppercase tracking-wider">Disponibilidad Operativa y Rotación de Inventarios</span>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <!-- Tarjetas Micro-KPI -->
+        <div class="hidden sm:flex items-center gap-2 text-[10px]">
+          <div class="flex items-center gap-1 px-2 py-0.5 rounded-md bg-surface border border-outline/60">
+            <span class="text-on-surface-muted">Stock Físico:</span>
+            <span class="font-bold text-on-surface">{{ kpis().fisico | number:'1.0-0' }} uds</span>
+          </div>
+          <div class="flex items-center gap-1 px-2 py-0.5 rounded-md bg-surface border border-outline/60">
+            <span class="text-on-surface-muted">Comprometido:</span>
+            <span class="font-bold text-amber-600 dark:text-amber-400">{{ kpis().comprometido | number:'1.0-0' }} uds</span>
+          </div>
+          <div class="flex items-center gap-1 px-2 py-0.5 rounded-md bg-surface border border-outline/60">
+            <span class="text-on-surface-muted">Disponible Venta:</span>
+            <span class="font-bold text-emerald-600 dark:text-emerald-400">{{ kpis().disponible | number:'1.0-0' }} uds</span>
+          </div>
+        </div>
+
+        <!-- Botón de Icono para colapsar/expandir franja de gráficos -->
+        <button
+          type="button"
+          (click)="toggleCharts()"
+          [title]="showCharts() ? 'Ocultar gráficos analíticos' : 'Mostrar gráficos analíticos'"
+          [attr.aria-label]="showCharts() ? 'Ocultar gráficos' : 'Mostrar gráficos'"
+          class="w-6 h-6 rounded-lg flex items-center justify-center bg-surface hover:bg-surface-alt text-on-surface-variant border border-outline/70 active:scale-95 transition-all shadow-2xs cursor-pointer"
+        >
+          <svg class="w-3.5 h-3.5 transition-transform duration-200" [class.rotate-180]="!showCharts()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="18 15 12 9 6 15" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Contenedor Plegable de Gráficos -->
+    @if (showCharts()) {
+      <div class="p-2 grid grid-cols-1 md:grid-cols-2 gap-2 bg-surface/50 max-h-56 overflow-y-auto">
+        <!-- Gráfico 1: Dona de Estado de Disponibilidad -->
+        <div class="h-44">
+          <app-donut-chart
+            [items]="donutDisponibilidad()"
+            title="Calificación de Stock Disponible"
+            subtitle="Artículos en nivel crítico vs óptimo"
+            centerLabel="SKUS"
+            [size]="110"
+          />
+        </div>
+
+        <!-- Gráfico 2: Barras de Stock Disponible vs Físico -->
+        <div class="h-44">
+          <app-bar-chart
+            [items]="barStockArticulos()"
+            title="Stock Disponible vs Existencia Física Total"
+            subtitle="Inventario neto libre para venta"
+            unit="uds"
+          />
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- ── GRILLA DE DATOS PRINCIPAL CON EXPORTACIÓN A EXCEL ── -->
+  <div class="flex-1 min-h-0">
+    <app-data-grid
+      [columns]="columns"
+      [data]="reporte()"
+      [actions]="actions"
+      [showNewButton]="false"
+      exportFileName="reporte-stock-disponible"
+      searchPlaceholder="Buscar por SKU, descripción o depósito..."
+      storageKey="reportes-stock-disponible"
+      (onAction)="handleAction($event)"
+    />
+  </div>
+
+</div>

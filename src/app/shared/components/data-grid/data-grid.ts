@@ -11,9 +11,12 @@ import {
   OnDestroy,
   ViewChild,
   ElementRef,
+  inject,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DecimalPipe } from '@angular/common';
+import { ToastService } from '../../../core/notifications/toast.service';
+import { exportToExcel } from '../../../core/utils/excel-export.util';
 
 export interface GridColumn {
   field: string;
@@ -57,6 +60,9 @@ export class DataGrid implements AfterViewInit, OnDestroy {
   readonly minRows = input(4);
   readonly maxRows = input(50);
   readonly rowHeight = input(26);
+  readonly exportFileName = input<string>('reporte-datos');
+
+  private readonly toast = inject(ToastService);
 
   // Outputs
   readonly onNew = output<void>();
@@ -330,6 +336,30 @@ export class DataGrid implements AfterViewInit, OnDestroy {
   protected triggerAction(actionId: string, item: any, event?: Event): void {
     if (event) event.stopPropagation();
     this.onAction.emit({ actionId, item });
+  }
+
+  protected handleExportClick(): void {
+    const cols = this.visibleColumns();
+    const rows = this.filteredData();
+
+    if (rows.length === 0) {
+      this.toast.warning('No existen registros para exportar');
+      return;
+    }
+
+    const success = exportToExcel({
+      fileName: this.exportFileName(),
+      columns: cols.map(c => ({ header: c.header, field: c.field, type: c.type })),
+      data: rows,
+    });
+
+    if (success) {
+      this.toast.success(`Exportación completada (${rows.length} registros generados)`);
+    } else {
+      this.toast.danger('No se pudo generar el archivo de exportación');
+    }
+
+    this.onExport.emit();
   }
 
   protected getCellValue(item: any, col: GridColumn): string {

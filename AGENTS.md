@@ -179,8 +179,26 @@ Al crear una nueva pantalla o maestro, el desarrollador **NO** necesita volver a
      [data]="miData()"
      [actions]="actions"
      storageKey="nombre-modulo-grid"
+     exportFileName="reporte-mi-modulo"
      (onNew)="abrirModalNuevo()"
      (onAction)="ejecutarAccion($event)"
    />
    ```
-   *Listo. La grilla automáticamente medirá la pantalla, paginará las filas exactas, activará scroll lateral fluido con columna sticky y respetará el diseño corporativo sin configuración adicional.*
+   *Listo. La grilla automáticamente medirá la pantalla, paginará las filas exactas, activará scroll lateral fluido con columna sticky, botón funcional de exportación a Excel (.csv con UTF-8 BOM) y respetará el diseño corporativo sin configuración adicional.*
+
+---
+
+## 📈 12. Componentes Reutilizables de Analítica Visual y Gráficos (DonutChart y BarChart)
+
+1. **Cero Dependencias Pesadas**: Gráficos vectoriales SVG puros con renderizado instantáneo y 0ms de retardo, adaptables automáticamente a dark/light mode con las variables de color del ERP.
+2. **Componente DonutChart (`<app-donut-chart />`)**:
+   - Ideal para distribuciones porcentuales (ej. estados de despacho, tipos de comprobantes, tramos de morosidad, composición de cartera).
+   - Recibe `items: { label: string; value: number; color: string }[]`, `title`, `subtitle`, `centerLabel`, `unit`.
+   - Incluye micro-interacción de hover sobre sectores, total dinámico central y leyenda compacta con valor y porcentaje.
+3. **Componente BarChart (`<app-bar-chart />`)**:
+   - Ideal para comparativas de volumen, cuotas y cumplimiento (ej. ventas vs meta, solicitado vs entregado, disponible vs stock físico).
+   - Recibe `items: { label: string; value: number; target?: number; color?: string; tag?: string }[]`.
+   - Renderiza barras con progresión animada, marca vertical de meta y badges numéricos.
+4. **Franjas Analíticas Colapsables**:
+   - En vistas de reportes, los gráficos deben residir dentro de un contenedor colapsable con botón de icono (`toggleCharts()`) para que el usuario pueda alternar entre vista analítica completa o maximizar el espacio de la tabla al 100% del viewport.
+

@@ -1,5 +1,8 @@
-import { Component, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, signal, computed, ChangeDetectionStrategy } from '@angular/core';
+import { DecimalPipe } from '@angular/common';
 import { DataGrid, GridColumn, GridAction } from '../../../../shared/components/data-grid/data-grid';
+import { DonutChart, DonutChartItem } from '../../../../shared/components/donut-chart/donut-chart';
+import { BarChart, BarChartItem } from '../../../../shared/components/bar-chart/bar-chart';
 
 export interface StockDisponibleItem {
   id: string;
@@ -16,12 +19,14 @@ export interface StockDisponibleItem {
 
 @Component({
   selector: 'app-stock-disponible',
-  imports: [DataGrid],
+  imports: [DataGrid, DonutChart, BarChart, DecimalPipe],
   templateUrl: './stock-disponible.html',
   styleUrl: './stock-disponible.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StockDisponible {
+  protected readonly showCharts = signal(true);
+
   protected readonly columns: GridColumn[] = [
     { field: 'sku', header: 'SKU', width: '110px', align: 'left' },
     { field: 'descripcion', header: 'DESCRIPCIÓN ARTÍCULO', minWidth: '260px' },
@@ -58,7 +63,50 @@ export class StockDisponible {
     { id: '5', sku: 'SKU-00105', descripcion: 'ACEITE VEGETAL 900ML CAJA X12', deposito: 'Sucursal Norte', stockFisico: 90, comprometido: 70, disponibleVenta: 20, enTransito: 150, unidad: 'CJ', estadoDisponibilidad: 'Crítico' },
   ]);
 
+  protected readonly kpis = computed(() => {
+    const list = this.reporte();
+    const fisico = list.reduce((acc, r) => acc + r.stockFisico, 0);
+    const comprometido = list.reduce((acc, r) => acc + r.comprometido, 0);
+    const disponible = list.reduce((acc, r) => acc + r.disponibleVenta, 0);
+    const transito = list.reduce((acc, r) => acc + r.enTransito, 0);
+
+    return {
+      fisico,
+      comprometido,
+      disponible,
+      transito,
+      articulosCount: list.length,
+    };
+  });
+
+  protected readonly donutDisponibilidad = computed<DonutChartItem[]>(() => {
+    const counts: Record<string, number> = {};
+    this.reporte().forEach(r => {
+      counts[r.estadoDisponibilidad] = (counts[r.estadoDisponibilidad] || 0) + 1;
+    });
+
+    return [
+      { label: 'Óptimo', value: counts['Óptimo'] || 0, color: '#10b981' },
+      { label: 'Aceptable', value: counts['Aceptable'] || 0, color: '#f59e0b' },
+      { label: 'Crítico / Rotura', value: counts['Crítico'] || 0, color: '#f43f5e' },
+    ].filter(it => it.value > 0);
+  });
+
+  protected readonly barStockArticulos = computed<BarChartItem[]>(() => {
+    return this.reporte().map(r => ({
+      label: r.descripcion,
+      value: r.disponibleVenta,
+      target: r.stockFisico,
+      color: r.estadoDisponibilidad === 'Crítico' ? '#f43f5e' : r.estadoDisponibilidad === 'Aceptable' ? '#f59e0b' : '#10b981',
+      tag: r.unidad,
+    }));
+  });
+
+  protected toggleCharts(): void {
+    this.showCharts.update(v => !v);
+  }
+
   protected handleAction(evt: { actionId: string; item: any }): void {
-    console.info(`Acción ${evt.actionId} sobre stock disponible:`, evt.item.sku);
+    console.info(`Acción ${evt.actionId} ejecutada para artículo:`, evt.item.sku);
   }
 }

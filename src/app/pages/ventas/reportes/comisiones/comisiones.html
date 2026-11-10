@@ -1,9 +1,87 @@
-<app-data-grid
-  [columns]="columns"
-  [data]="reportes()"
-  [actions]="actions"
-  [showNewButton]="false"
-  searchPlaceholder="Buscar por asesor comercial..."
-  storageKey="ventas-reportes"
-  (onAction)="handleAction($event)"
-/>
+<div class="w-full h-full flex flex-col p-2 gap-2 overflow-hidden bg-surface-alt">
+
+  <!-- ── FRANJA ANALÍTICA Y GRÁFICOS DE COMISIONES ── -->
+  <div class="flex flex-col rounded-xl border border-outline/70 bg-surface overflow-hidden shadow-xs shrink-0 transition-all">
+    
+    <!-- Barra Superior de Control de Reportería -->
+    <div class="h-8 px-2.5 bg-surface-alt/60 backdrop-blur-xs border-b border-outline/70 flex items-center justify-between gap-2 shrink-0">
+      <div class="flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span class="text-[10px] font-bold text-on-surface uppercase tracking-wider">Cumplimiento de Metas y Comisiones Comerciales</span>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <!-- Tarjetas Micro-KPI -->
+        <div class="hidden sm:flex items-center gap-2 text-[10px]">
+          <div class="flex items-center gap-1 px-2 py-0.5 rounded-md bg-surface border border-outline/60">
+            <span class="text-on-surface-muted">Venta Total:</span>
+            <span class="font-bold text-on-surface">S/ {{ kpis().ventas | number:'1.2-2' }}</span>
+          </div>
+          <div class="flex items-center gap-1 px-2 py-0.5 rounded-md bg-surface border border-outline/60">
+            <span class="text-on-surface-muted">Comisiones:</span>
+            <span class="font-bold text-emerald-600 dark:text-emerald-400">S/ {{ kpis().comisiones | number:'1.2-2' }}</span>
+          </div>
+          <div class="flex items-center gap-1 px-2 py-0.5 rounded-md bg-surface border border-outline/60">
+            <span class="text-on-surface-muted">Cumplimiento Cuota:</span>
+            <span class="font-bold text-primary">{{ kpis().cumplimientoMedio | number:'1.1-1' }}%</span>
+          </div>
+        </div>
+
+        <!-- Botón de Icono para colapsar/expandir franja de gráficos -->
+        <button
+          type="button"
+          (click)="toggleCharts()"
+          [title]="showCharts() ? 'Ocultar gráficos analíticos' : 'Mostrar gráficos analíticos'"
+          [attr.aria-label]="showCharts() ? 'Ocultar gráficos' : 'Mostrar gráficos'"
+          class="w-6 h-6 rounded-lg flex items-center justify-center bg-surface hover:bg-surface-alt text-on-surface-variant border border-outline/70 active:scale-95 transition-all shadow-2xs cursor-pointer"
+        >
+          <svg class="w-3.5 h-3.5 transition-transform duration-200" [class.rotate-180]="!showCharts()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="18 15 12 9 6 15" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Contenedor Plegable de Gráficos -->
+    @if (showCharts()) {
+      <div class="p-2 grid grid-cols-1 md:grid-cols-2 gap-2 bg-surface/50 max-h-56 overflow-y-auto">
+        <!-- Gráfico 1: Barras de Ventas vs Cuota -->
+        <div class="h-44">
+          <app-bar-chart
+            [items]="barVentasCuota()"
+            title="Ventas Acumuladas vs Cuota Asignada"
+            subtitle="Rendimiento individual por asesor"
+            currencySymbol="S/"
+          />
+        </div>
+
+        <!-- Gráfico 2: Dona de Distribución de Comisiones -->
+        <div class="h-44">
+          <app-donut-chart
+            [items]="donutComisiones()"
+            title="Distribución de Comisiones Asignadas"
+            subtitle="Participación porcentual en incentivos"
+            centerLabel="COMISIÓN"
+            unit="S/"
+            [size]="110"
+          />
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- ── GRILLA DE DATOS PRINCIPAL CON EXPORTACIÓN A EXCEL ── -->
+  <div class="flex-1 min-h-0">
+    <app-data-grid
+      [columns]="columns"
+      [data]="reportes()"
+      [actions]="actions"
+      [showNewButton]="false"
+      exportFileName="reporte-comisiones-asesores"
+      searchPlaceholder="Buscar por asesor..."
+      storageKey="reportes-comisiones"
+      (onAction)="handleAction($event)"
+    />
+  </div>
+
+</div>
