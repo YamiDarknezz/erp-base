@@ -9,12 +9,15 @@ import { APP_BUILD } from '../core/version/app-build';
 import { ErpLogo } from '../shared/components/erp-logo/erp-logo';
 import { ConfirmDialog } from '../shared/components/confirm-dialog/confirm-dialog';
 import { Toast } from '../shared/components/toast/toast';
+import { TourGuide } from '../shared/components/tour-guide/tour-guide';
 import { ConfirmDialogService } from '../core/dialog/confirm-dialog.service';
 import { ToastService } from '../core/notifications/toast.service';
 import { CompanyConfigService } from '../core/config/company-config.service';
 import { UserContextService } from '../core/context/user-context.service';
 import { BranchContextService } from '../core/context/branch-context.service';
 import { NotificationService, NotificationItem } from '../core/notifications/notification.service';
+import { NetworkStatusService } from '../core/pwa/network-status.service';
+import { TourService } from '../core/tour/tour.service';
 
 export interface SubMenuItem {
   id: string;
@@ -43,7 +46,7 @@ export interface NavSection {
 
 @Component({
   selector: 'app-shell',
-  imports: [RouterOutlet, FormsModule, ErpLogo, ConfirmDialog, Toast],
+  imports: [RouterOutlet, FormsModule, ErpLogo, ConfirmDialog, Toast, TourGuide],
   templateUrl: './shell.html',
   styleUrl: './shell.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -53,12 +56,17 @@ export class Shell {
   private readonly router = inject(Router);
   protected readonly theme = inject(ThemeService);
   protected readonly pwa = inject(PwaInstallService);
+  protected readonly networkStatus = inject(NetworkStatusService);
+  protected readonly tourService = inject(TourService);
   protected readonly companyConfig = inject(CompanyConfigService);
   protected readonly userContext = inject(UserContextService);
   protected readonly branchContext = inject(BranchContextService);
   protected readonly notificationService = inject(NotificationService);
   protected readonly confirmDialog = inject(ConfirmDialogService);
   protected readonly toast = inject(ToastService);
+
+  // Network Connectivity / PWA Status
+  protected readonly isOnline = this.networkStatus.isOnline;
 
   // App Build & Version
   protected readonly appVersion = signal(APP_BUILD.version || '0.0.2');
@@ -650,10 +658,23 @@ export class Shell {
       this.toast.info('Navegando a Gestión de Pedidos (F2)');
       return;
     }
+
+    // Ctrl + T: Iniciar Recorrido Guiado Interactivo
+    if ((evt.ctrlKey || evt.metaKey) && evt.key.toLowerCase() === 't') {
+      evt.preventDefault();
+      this.startTour();
+      return;
+    }
+  }
+
+  startTour(): void {
+    if (this.keyboardShortcutsOpen()) this.closeKeyboardShortcuts();
+    this.tourService.startTour();
   }
 
   @HostListener('document:keydown.escape')
   handleEscape(): void {
+    if (this.tourService.isTourActive()) this.tourService.finishTour();
     if (this.keyboardShortcutsOpen()) this.closeKeyboardShortcuts();
     if (this.spotlightOpen()) this.closeSpotlight();
     if (this.branchSelectorOpen()) this.branchSelectorOpen.set(false);

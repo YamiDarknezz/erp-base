@@ -1,0 +1,278 @@
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- 1. BURBUJA FLOTANTE DE BIENVENIDA (Welcome Bubble)          -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+@if (tour.showWelcomeBubble() && !tour.isTourActive()) {
+  <aside
+    aria-label="Aviso de recorrido guiado"
+    class="tour-bubble-enter fixed bottom-3.5 right-3.5 sm:bottom-5 sm:right-5 z-50 max-w-sm sm:max-w-md w-[calc(100vw-1.75rem)] bg-surface/95 dark:bg-surface/95 backdrop-blur-xl border border-outline/80 shadow-2xl rounded-2xl p-3.5 sm:p-4 text-on-surface select-none"
+  >
+    <div class="flex items-start justify-between gap-2 mb-2">
+      <div class="flex items-center gap-1.5">
+        <span class="inline-flex items-center justify-center w-6 h-6 rounded-lg bg-primary/15 text-primary text-xs">
+          ✨
+        </span>
+        <span class="text-xs font-bold uppercase tracking-wider text-primary">
+          Recorrido Interactivo
+        </span>
+        <span class="text-[10px] font-mono px-1.5 py-0.2 rounded bg-surface-muted text-on-surface-variant border border-outline/50">
+          Ctrl + T
+        </span>
+      </div>
+
+      <!-- Botón X (Cierre temporal para la sesión según solicitud) -->
+      <button
+        type="button"
+        (click)="onCloseWelcome()"
+        title="Cerrar aviso temporalmente"
+        aria-label="Cerrar aviso"
+        class="w-6 h-6 rounded-full flex items-center justify-center text-on-surface-muted hover:text-on-surface hover:bg-surface-muted active:scale-90 transition-all cursor-pointer"
+      >
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Mensaje del Bubble -->
+    <p class="text-xs text-on-surface leading-relaxed mb-3">
+      ¿Primera vez en el ERP? Inicia un tour rápido interactivo para conocer las herramientas de alta productividad, multisede, grillas y facturación fiscal.
+    </p>
+
+    <!-- Botones de Acción (Texto explícito solicitado por el usuario) -->
+    <div class="flex items-center justify-between gap-2 pt-1 border-t border-outline/50">
+      <button
+        type="button"
+        (click)="onDismissPermanently()"
+        class="text-[11px] font-medium text-on-surface-muted hover:text-on-surface px-2 py-1 rounded-lg hover:bg-surface-muted/60 transition-colors cursor-pointer"
+      >
+        No volver a mostrar
+      </button>
+
+      <button
+        type="button"
+        (click)="onStartTour()"
+        class="text-[11px] font-bold text-white bg-primary hover:bg-primary-hover active:scale-95 px-3 py-1.5 rounded-xl shadow-xs transition-all flex items-center gap-1.5 cursor-pointer"
+      >
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="5 3 19 12 5 21 5 3" />
+        </svg>
+        <span>Empezar tutorial</span>
+      </button>
+    </div>
+  </aside>
+}
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- 2. MODAL DEL RECORRIDO INTERACTIVO (Interactive Tour Modal) -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+@if (tour.isTourActive()) {
+  <div
+    class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 select-none"
+    (click)="onCloseTour()"
+  >
+    <div
+      class="tour-modal-enter w-full max-w-lg bg-surface/95 dark:bg-surface/95 backdrop-blur-2xl border border-outline/80 shadow-2xl rounded-3xl overflow-hidden flex flex-col text-on-surface"
+      (click)="$event.stopPropagation()"
+    >
+      <!-- Cabecera del Tour -->
+      <div class="px-5 pt-4 pb-3 flex items-center justify-between border-b border-outline/60 bg-surface-muted/30">
+        <div class="flex items-center gap-2">
+          <span class="text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+            Paso {{ tour.currentStepIndex() + 1 }} de {{ tour.totalSteps }}
+          </span>
+          @if (tour.currentStep().badge) {
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-surface text-on-surface-variant border border-outline/60">
+              {{ tour.currentStep().badge }}
+            </span>
+          }
+        </div>
+
+        <!-- Botón Cerrar (SOLO ICONO SEGÚN REGLA 1) -->
+        <button
+          type="button"
+          (click)="onCloseTour()"
+          title="Cerrar recorrido guiado (Esc)"
+          aria-label="Cerrar recorrido"
+          class="w-7 h-7 rounded-full flex items-center justify-center text-on-surface-muted hover:text-on-surface hover:bg-surface-muted active:scale-90 transition-all cursor-pointer"
+        >
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Barra de Progreso del Recorrido -->
+      <div class="w-full h-1 bg-surface-muted overflow-hidden">
+        <div
+          class="h-full bg-gradient-to-r from-primary to-blue-400 transition-all duration-300"
+          [style.width.%]="tour.progressPercent()"
+        ></div>
+      </div>
+
+      <!-- Cuerpo del Paso con Ilustración Vectorial Dinámica -->
+      <div class="p-5 sm:p-6 flex flex-col gap-4">
+        
+        <!-- Ilustración / Banner Vectorial representativo del paso -->
+        <div class="w-full h-32 rounded-2xl bg-gradient-to-br from-primary/10 via-surface-muted/50 to-primary/5 border border-outline/60 flex items-center justify-center relative overflow-hidden shadow-inner">
+          @switch (tour.currentStep().iconType) {
+            @case ('topbar') {
+              <!-- Ilustración Barra Superior y Multisede -->
+              <div class="flex flex-col items-center gap-2">
+                <div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface/90 border border-outline/70 shadow-sm text-xs font-semibold text-primary">
+                  <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                  <span>Sede Central • En línea PWA</span>
+                </div>
+                <div class="text-[10px] text-on-surface-muted font-mono">Búsqueda Global: <kbd class="px-1 py-0.5 rounded bg-surface border text-primary">Ctrl + K</kbd></div>
+              </div>
+            }
+            @case ('sidebar') {
+              <!-- Ilustración Menú Lateral -->
+              <div class="flex items-center gap-3">
+                <div class="w-24 h-18 rounded-xl bg-surface/90 border border-outline/70 shadow-sm p-1.5 flex flex-col gap-1 justify-center">
+                  <div class="h-2 w-14 rounded bg-primary/40"></div>
+                  <div class="h-2 w-18 rounded bg-primary/20"></div>
+                  <div class="h-2 w-10 rounded bg-primary/30"></div>
+                </div>
+                <div class="flex flex-col gap-1 text-[11px] font-bold text-on-surface">
+                  <span class="text-primary flex items-center gap-1">★ Favoritos Persistentes</span>
+                  <span class="text-[10px] text-on-surface-muted font-mono"><kbd class="px-1 py-0.5 rounded bg-surface border text-primary">Ctrl + B</kbd> Colapsar</span>
+                </div>
+              </div>
+            }
+            @case ('datagrid') {
+              <!-- Ilustración DataGrid Inteligente -->
+              <div class="flex flex-col items-center gap-1.5">
+                <div class="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-surface/90 border border-outline/70 shadow-sm text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                  </svg>
+                  <span>Exportación Excel con UTF-8 BOM</span>
+                </div>
+                <div class="text-[10px] text-on-surface-muted">Zero scrollbar parásito • Auto-Viewport 100%</div>
+              </div>
+            }
+            @case ('invoice') {
+              <!-- Ilustración Facturación Fiscal -->
+              <div class="flex items-center gap-3">
+                <div class="w-14 h-18 rounded-lg bg-surface/90 border border-outline/70 shadow-sm p-1 flex flex-col justify-between items-center text-[8px] font-mono">
+                  <div class="w-8 h-1 rounded bg-rose-500/60"></div>
+                  <div class="w-8 h-8 rounded bg-on-surface/10 border border-outline/50 flex items-center justify-center text-[7px]">QR</div>
+                  <div class="w-10 h-1 rounded bg-primary/40"></div>
+                </div>
+                <div class="flex flex-col text-left">
+                  <span class="text-xs font-bold text-on-surface">Comprobantes Fiscales SUNAT</span>
+                  <span class="text-[10px] text-on-surface-muted">Impresión membretada A4 real</span>
+                </div>
+              </div>
+            }
+            @case ('shortcuts') {
+              <!-- Ilustración Atajos de Teclado -->
+              <div class="flex flex-wrap items-center justify-center gap-1.5 max-w-xs">
+                <kbd class="px-2 py-1 rounded-lg bg-surface/90 border border-outline/70 shadow-2xs font-mono text-xs font-bold text-primary">Ctrl + K</kbd>
+                <kbd class="px-2 py-1 rounded-lg bg-surface/90 border border-outline/70 shadow-2xs font-mono text-xs font-bold text-primary">Ctrl + B</kbd>
+                <kbd class="px-2 py-1 rounded-lg bg-surface/90 border border-outline/70 shadow-2xs font-mono text-xs font-bold text-primary">Ctrl + D</kbd>
+                <kbd class="px-2 py-1 rounded-lg bg-surface/90 border border-outline/70 shadow-2xs font-mono text-xs font-bold text-primary">F1 / ?</kbd>
+              </div>
+            }
+          }
+        </div>
+
+        <!-- Títulos y Texto Descriptivo -->
+        <div>
+          <h3 class="text-base sm:text-lg font-bold text-on-surface tracking-tight">
+            {{ tour.currentStep().title }}
+          </h3>
+          <p class="text-xs font-semibold text-primary mt-0.5">
+            {{ tour.currentStep().subtitle }}
+          </p>
+          <p class="text-xs sm:text-sm text-on-surface-variant leading-relaxed mt-2">
+            {{ tour.currentStep().description }}
+          </p>
+        </div>
+
+        @if (tour.currentStep().shortcut) {
+          <div class="flex items-center gap-2 p-2 rounded-xl bg-surface-muted/50 border border-outline/50 text-xs">
+            <span class="text-on-surface-muted text-[11px]">Atajo rápido sugerido:</span>
+            <kbd class="px-2 py-0.5 rounded-lg bg-surface border border-outline/60 text-primary font-mono font-bold text-xs shadow-2xs">
+              {{ tour.currentStep().shortcut }}
+            </kbd>
+          </div>
+        }
+      </div>
+
+      <!-- Pie del Modal: Paginador y Botones de Icono (Regla 1) -->
+      <div class="px-5 py-3.5 bg-surface-muted/40 border-t border-outline/60 flex items-center justify-between">
+        
+        <!-- Paginador de Puntos (Indicadores interactivos) -->
+        <div class="flex items-center gap-1.5">
+          @for (s of tour.steps; track s.id; let idx = $index) {
+            <button
+              type="button"
+              (click)="onGoToStep(idx)"
+              [title]="'Ir al paso ' + (idx + 1) + ': ' + s.title"
+              [attr.aria-label]="'Ir al paso ' + (idx + 1)"
+              class="w-2.5 h-2.5 rounded-full transition-all cursor-pointer"
+              [class.bg-primary]="tour.currentStepIndex() === idx"
+              [class.w-6]="tour.currentStepIndex() === idx"
+              [class.bg-outline]="tour.currentStepIndex() !== idx"
+              [class.hover:bg-on-surface-muted]="tour.currentStepIndex() !== idx"
+            ></button>
+          }
+        </div>
+
+        <!-- Botones de Navegación (SOLO ICONOS SEGÚN REGLA 1) -->
+        <div class="flex items-center gap-1.5">
+          <!-- Botón Descartar Permanentemente (SOLO ICONO) -->
+          <button
+            type="button"
+            (click)="onDismissPermanently()"
+            title="Finalizar y no volver a mostrar el recorrido"
+            aria-label="No volver a mostrar el recorrido"
+            class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-muted hover:text-danger hover:bg-danger-soft active:scale-90 transition-all cursor-pointer"
+          >
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+              <line x1="1" y1="1" x2="23" y2="23" />
+            </svg>
+          </button>
+
+          <!-- Botón Anterior (SOLO ICONO) -->
+          <button
+            type="button"
+            (click)="onPrev()"
+            [disabled]="tour.isFirstStep()"
+            title="Paso anterior (←)"
+            aria-label="Paso anterior"
+            class="w-8 h-8 rounded-full flex items-center justify-center border border-outline/70 text-on-surface hover:bg-surface active:scale-90 transition-all cursor-pointer disabled:opacity-30 disabled:pointer-events-none"
+          >
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+          </button>
+
+          <!-- Botón Siguiente / Finalizar (SOLO ICONO) -->
+          <button
+            type="button"
+            (click)="onNext()"
+            [title]="tour.isLastStep() ? 'Finalizar recorrido (Enter)' : 'Siguiente paso (→)'"
+            [attr.aria-label]="tour.isLastStep() ? 'Finalizar recorrido' : 'Siguiente paso'"
+            class="w-8 h-8 rounded-full flex items-center justify-center bg-primary text-white hover:bg-primary-hover active:scale-90 transition-all cursor-pointer shadow-xs"
+          >
+            @if (tour.isLastStep()) {
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            } @else {
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            }
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}

@@ -4,10 +4,10 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
 [![PWA Ready](https://img.shields.io/badge/PWA-Ready-5A0FC8?style=for-the-badge&logo=pwa&logoColor=white)](https://web.dev/progressive-web-apps/)
-[![Vitest](https://img.shields.io/badge/Tests-97%2F97%20Passing-6E9F18?style=for-the-badge&logo=vitest&logoColor=white)](https://vitest.dev/)
+[![Vitest](https://img.shields.io/badge/Tests-113%2F113%20Passing-6E9F18?style=for-the-badge&logo=vitest&logoColor=white)](https://vitest.dev/)
 [![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
 [![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub_Actions_%2B_Oracle_VPS-2088FF?style=for-the-badge&logo=github-actions&logoColor=white)](https://github.com/features/actions)
-[![Versión](https://img.shields.io/badge/Release-v0.0.14-0ea5e9?style=for-the-badge)](docs/VERSION_TRACKING.md)
+[![Versión](https://img.shields.io/badge/Release-v0.0.15-0ea5e9?style=for-the-badge)](docs/VERSION_TRACKING.md)
 
 Solución de software empresarial de **alta densidad de información, ultra responsiva y desacoplada**, diseñada como base sólida para sistemas ERP corporativos modernos (inspirado en la ergonomía y rendimiento de sistemas ERP de clase mundial como CHESS ERP).
 
@@ -65,15 +65,29 @@ Diseñado para operadores que minimizan el uso del ratón:
 | `Ctrl + K` | Búsqueda global Spotlight en todo el ERP |
 | `Ctrl + B` | Colapsar / Desplegar barra lateral (Sidebar) |
 | `Ctrl + D` | Alternar entre tema claro y tema oscuro |
+| `Ctrl + T` | Iniciar recorrido guiado interactivo por el ERP |
 | `F2` | Acceso directo a creación y gestión de pedidos |
 | `?` o `F1` | Modal interactivo de referencia de atajos de teclado |
-| `Esc` | Cerrar cualquier modal, diálogo o popover activo |
+| `Esc` | Cerrar cualquier modal, diálogo, popover o tour activo |
 
-### 9. Impresión Real y Comprobantes Fiscales A4 (`@media print`)
+### 9. Indicador de Conectividad y Modo PWA en TopBar
+- **Sutil, no intrusivo e intuitivo**: Micro-LED pulsante y chip adaptativo (verde `En línea` / ámbar `Modo PWA Local`) en la TopBar.
+- **Monitoreo en Tiempo Real**: Escucha eventos de red `online`/`offline` con notificaciones toast reactivas sin recargar la página.
+- **Micro-indicador Móvil**: En pantallas pequeñas se condensa a un micro-LED discreto con tooltip informativo para no saturar el viewport.
+
+### 10. Recorrido Guiado Interactivo (Interactive Tour) & Nube de Bienvenida
+- **Burbuja de Bienvenida Flotante (Welcome Bubble)**: Al cargar el sistema por primera vez, presenta una invitación sutil informando del recorrido guiado.
+- **Controles Intuitivos de Frecuencia**:
+  - Botón **"Empezar tutorial"**: Lanza el recorrido guiado interactivo.
+  - Botón **"No volver a mostrar"**: Persiste en `localStorage` para no volver a desplegar la nube automáticamente.
+  - Botón **"X"** (Cerrar): Cierra la nube en la sesión actual manteniéndola disponible para futuras sesiones.
+- **Modal Interactivo de 5 Pasos**: Recorre de manera visual la Multisede, Menú y Favoritos, DataGrid con auto-viewport y exportación a Excel, Facturación Fiscal SUNAT A4 y Atajos de Teclado con soporte para navegación táctil y de teclado (flechas y Enter).
+
+### 11. Impresión Real y Comprobantes Fiscales A4 (`@media print`)
 - El visor de documentos fiscal **`<app-document-viewer />`** cuenta con formateo `@media print` completo para imprimir directo en hoja A4 o ticket térmico:
 - Oculta automáticamente elementos de navegación de la app (topbar, drawer, botones de acción) y genera la representación impresa con código QR tributario SUNAT simulado, código Hash y desglose de impuestos (Subtotal, IGV 18%, Total).
 
-### 10. Micro-Interacciones y Transiciones Estilo Apple
+### 12. Micro-Interacciones y Transiciones Estilo Apple
 - Barra de carga de navegación superior (`Top Progress Bar`) durante la transición entre rutas.
 - Indicador visual animado de selección activa en el sidebar.
 - Efecto táctil `active:scale-95` en todos los botones de icono y modales flotantes esmerilados (`backdrop-blur-xl`).
@@ -86,7 +100,7 @@ Diseñado para operadores que minimizan el uso del ratón:
 | :--- | :--- |
 | **Framework** | Angular 21 (Signals reactivos, Control Flow `@if` / `@for`, Standalone Components) |
 | **Estilos** | Tailwind CSS v4, SCSS modular con variables centralizadas de tokens de diseño |
-| **Pruebas** | Vitest + jsdom (30 suites, 97 pruebas unitarias automatizadas) |
+| **Pruebas** | Vitest + jsdom (33 suites, 113 pruebas unitarias automatizadas) |
 | **PWA** | Angular Service Worker (`@angular/service-worker`), Manifest v2, soporte de instalación nativa |
 | **Contenerización** | Docker multi-stage (Node 22 Alpine builder + Nginx Alpine runtime) |
 | **Servidor Web** | Nginx con compresión Gzip, políticas estrictas de CSP y caché inmutable para assets |
@@ -103,7 +117,7 @@ Inspirado en flujos de entrega continua de nivel de producción:
 flowchart LR
     A["Push a master/main"] --> B["GitHub Actions CI"]
     B --> C["Instalación pnpm"]
-    C --> D["Pruebas Unitarias (97 tests)"]
+    C --> D["Pruebas Unitarias (113 tests)"]
     D --> E["Build Producción Angular"]
     E --> F["Construcción Imagen Docker"]
     F --> G["Validación Sintaxis Nginx"]

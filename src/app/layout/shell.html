@@ -101,6 +101,32 @@
         }
       </div>
 
+      <!-- Indicador de Conectividad y Estado PWA (Sutil, No intrusivo e Intuitivo) -->
+      <div
+        class="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10.5px] font-semibold border transition-all duration-300 select-none shadow-2xs"
+        [class.bg-emerald-500/10]="isOnline()"
+        [class.text-emerald-700]="isOnline()"
+        [class.dark:text-emerald-300]="isOnline()"
+        [class.border-emerald-500/25]="isOnline()"
+        [class.bg-amber-500/10]="!isOnline()"
+        [class.text-amber-800]="!isOnline()"
+        [class.dark:text-amber-300]="!isOnline()"
+        [class.border-amber-500/35]="!isOnline()"
+        [title]="isOnline() ? 'Sistema en línea • Sincronización en tiempo real activa' : 'Sin conexión: Operando en modo local PWA (Cache first)'"
+      >
+        <span class="relative flex h-2 w-2">
+          @if (isOnline()) {
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+          }
+          <span
+            class="relative inline-flex rounded-full h-2 w-2"
+            [class.bg-emerald-500]="isOnline()"
+            [class.bg-amber-500]="!isOnline()"
+          ></span>
+        </span>
+        <span class="tracking-tight">{{ isOnline() ? 'En línea' : 'Modo PWA' }}</span>
+      </div>
+
       <!-- Separador visual -->
       <div class="hidden xl:block h-4 w-px bg-outline/70"></div>
 
@@ -118,6 +144,23 @@
       <!-- Fila de Acciones (ESTRICTAMENTE SOLO BOTONES DE ICONO CON EFECTO TÁCTIL APPLE) -->
       <div class="flex items-center gap-0.5 sm:gap-1 pl-1 sm:pl-1.5 border-l border-outline/70">
         
+        <!-- Indicador de Red Móvil (Micro-dot para pantallas pequeñas) -->
+        <div
+          class="flex sm:hidden items-center justify-center w-5 h-5 cursor-default"
+          [title]="isOnline() ? 'Sistema en línea' : 'Sin conexión (Modo PWA)'"
+        >
+          <span class="relative flex h-2 w-2">
+            @if (isOnline()) {
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            }
+            <span
+              class="relative inline-flex rounded-full h-2 w-2"
+              [class.bg-emerald-500]="isOnline()"
+              [class.bg-amber-500]="!isOnline()"
+            ></span>
+          </span>
+        </div>
+
         <!-- Botón Búsqueda Global / Spotlight (SOLO ICONO) -->
         <button
           type="button"
@@ -337,6 +380,22 @@
             <path d="M6 8h.001" /><path d="M10 8h.001" /><path d="M14 8h.001" /><path d="M18 8h.001" />
             <path d="M6 12h.001" /><path d="M18 12h.001" /><path d="M8 12h8" />
             <path d="M6 16h.001" /><path d="M10 16h.001" /><path d="M14 16h.001" /><path d="M18 16h.001" />
+          </svg>
+        </button>
+
+        <!-- Botón Recorrido Guiado Interactivo (SOLO ICONO SEGÚN REGLA 1) -->
+        <button
+          type="button"
+          (click)="startTour()"
+          title="Recorrido guiado interactivo (Ctrl + T)"
+          aria-label="Recorrido guiado interactivo"
+          class="w-7.5 h-7.5 rounded-full flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-surface-muted/70 active:scale-95 transition-all cursor-pointer"
+          [class.text-primary]="tourService.isTourActive()"
+          [class.bg-surface-muted]="tourService.isTourActive()"
+        >
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
           </svg>
         </button>
 
@@ -1848,6 +1907,10 @@
                 <span class="text-on-surface font-medium">Abrir esta guía de atajos de teclado</span>
                 <div class="flex items-center gap-1 font-mono"><kbd>?</kbd> o <kbd>F1</kbd></div>
               </div>
+              <div class="flex items-center justify-between py-1.5 px-2.5 rounded-xl bg-surface-alt/50 border border-outline/50">
+                <span class="text-on-surface font-medium">Iniciar Recorrido Guiado Interactivo</span>
+                <div class="flex items-center gap-1 font-mono"><kbd>Ctrl</kbd> + <kbd>T</kbd></div>
+              </div>
             </div>
           </div>
         </div>
@@ -1867,5 +1930,6 @@
   <!-- ═══════════════════════════════════════════════════════════ -->
   <app-confirm-dialog />
   <app-toast />
+  <app-tour-guide />
 
 </div>

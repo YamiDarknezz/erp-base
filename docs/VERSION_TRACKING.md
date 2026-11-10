@@ -9,6 +9,9 @@ Este archivo registra el historial cronológico de versiones, hashes de compilac
 | Versión | Build ID | Fecha / Hora (UTC) | Descripción del Cambio | Estado |
 | :--- | :--- | :--- | :--- | :--- |
 <!-- VERSION_ENTRIES -->
+| v0.0.15 | `232e5ee8b144` | 2026-11-10T04:17:31.311Z | Build generado automáticamente | Activo |
+| v0.0.15 | `232e5ee8b144` | 2026-11-10T04:17:31.311Z | Indicador de conectividad y estado PWA en TopBar (no intrusivo, micro-LED y micro-chip intuitivo adaptativo a móvil y desktop); y Recorrido Guiado Interactivo (Interactive Tour) activable mediante atajo Ctrl + T o botón TopBar, con burbuja inicial de bienvenida no intrusiva (botones 'Empezar tutorial', 'No volver a mostrar' persistente en localStorage y 'X' de cierre de sesión temporal). Dashboard ultra ligero preservado para alta escala sin cuellos de botella. | Activo |
+| v0.0.14 | `960ebd52af54` | 2026-11-10T04:16:00.629Z | Build generado automáticamente | Activo |
 | v0.0.14 | `30b53afeda1f` | 2026-11-10T03:45:34.890Z | Build generado automáticamente | Activo |
 | v0.0.14 | `pending-build` | 2026-11-10T03:20:00.000Z | Módulos de analítica visual y reportería interactiva con gráficos vectoriales SVG Apple-style (DonutChart y BarChart) con micro-KPIs ejecutivos y franja analítica colapsable; exportación enterprise automática a Excel (.csv con UTF-8 BOM e icono dedicado) integrada directamente en el componente compartido DataGrid para todos los módulos del sistema con 0 boilerplate. | Activo |
 | v0.0.13 | `378d656e43e8` | 2026-11-10T03:18:17.692Z | Build generado automáticamente | Activo |

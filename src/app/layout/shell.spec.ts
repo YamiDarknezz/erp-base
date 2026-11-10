@@ -174,4 +174,20 @@ describe('Shell', () => {
     component.handleEscape();
     expect(component['sidebarOpen']()).toBe(false);
   });
+
+  it('debe exponer el estado isOnline y manejar el tour con Ctrl+T', () => {
+    const fixture = TestBed.createComponent(Shell);
+    const component = fixture.componentInstance;
+
+    expect(typeof component['isOnline']()).toBe('boolean');
+
+    // Ctrl + T inicia el tour interactivo
+    const ctrlT = new KeyboardEvent('keydown', { key: 't', ctrlKey: true });
+    component.handleGlobalShortcuts(ctrlT);
+    expect(component['tourService'].isTourActive()).toBe(true);
+
+    // Escape cierra el tour activo
+    component.handleEscape();
+    expect(component['tourService'].isTourActive()).toBe(false);
+  });
 });
