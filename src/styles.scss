@@ -33,3 +33,61 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--on-surface-muted);
 }
+
+/* Apple-style Keyboard Keys (<kbd>) */
+kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  padding: 2px 6px;
+  border-radius: 5px;
+  border: 1px solid var(--outline);
+  background: var(--surface);
+  color: var(--on-surface);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  user-select: none;
+}
+
+/* Global Print Styles (Impresión Real A4 / Ticket) */
+@media print {
+  @page {
+    size: A4;
+    margin: 10mm;
+  }
+
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  /* Ocultar elementos de UI no imprimibles */
+  header,
+  aside,
+  nav,
+  app-toast,
+  app-confirm-dialog,
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* Top Progress Bar Loading Animation */
+@keyframes routeLoadingProgress {
+  0% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(-20%);
+  }
+  100% {
+    transform: translateX(0%);
+  }
+}
+
+.route-progress-bar {
+  animation: routeLoadingProgress 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}

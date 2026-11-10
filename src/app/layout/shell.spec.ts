@@ -148,4 +148,30 @@ describe('Shell', () => {
     expect(component['notificationsOpen']()).toBe(false);
     document.body.removeChild(outsideElement);
   });
+
+  it('should toggle keyboard shortcuts modal and close on escape', () => {
+    const fixture = TestBed.createComponent(Shell);
+    const component = fixture.componentInstance;
+    expect(component['keyboardShortcutsOpen']()).toBe(false);
+
+    component.toggleKeyboardShortcuts();
+    expect(component['keyboardShortcutsOpen']()).toBe(true);
+
+    component.handleEscape();
+    expect(component['keyboardShortcutsOpen']()).toBe(false);
+  });
+
+  it('should handle global shortcut for sidebar and spotlight', () => {
+    const fixture = TestBed.createComponent(Shell);
+    const component = fixture.componentInstance;
+
+    // Ctrl + B toggles sidebar
+    const ctrlB = new KeyboardEvent('keydown', { key: 'b', ctrlKey: true });
+    component.handleGlobalShortcuts(ctrlB);
+    expect(component['sidebarOpen']()).toBe(true);
+
+    // Escape closes it
+    component.handleEscape();
+    expect(component['sidebarOpen']()).toBe(false);
+  });
 });

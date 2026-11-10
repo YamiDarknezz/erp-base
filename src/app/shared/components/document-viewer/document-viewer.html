@@ -1,12 +1,12 @@
 @if (isOpen()) {
   <!-- Backdrop con cierre al clic fuera -->
-  <div class="fixed inset-0 z-50 bg-black/40 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 animate-in fade-in duration-150">
+  <div class="print-backdrop fixed inset-0 z-50 bg-black/40 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 animate-in fade-in duration-150">
     
     <!-- Contenedor Principal del Visor Modal Estilo Apple -->
-    <div class="bg-surface/95 backdrop-blur-xl rounded-2xl border border-outline/70 shadow-2xl w-full max-w-3xl max-h-[92vh] flex flex-col overflow-hidden text-on-surface">
+    <div class="print-modal-container bg-surface/95 backdrop-blur-xl rounded-2xl border border-outline/70 shadow-2xl w-full max-w-3xl max-h-[92vh] flex flex-col overflow-hidden text-on-surface">
       
       <!-- Barra Superior de Herramientas del Visor (Botones Exclusivamente Iconos) -->
-      <div class="h-11 px-4 bg-surface-alt/50 border-b border-outline/60 flex items-center justify-between shrink-0 select-none">
+      <div class="no-print h-11 px-4 bg-surface-alt/50 border-b border-outline/60 flex items-center justify-between shrink-0 select-none">
         <div class="flex items-center gap-2">
           <svg class="w-4 h-4 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
@@ -65,8 +65,8 @@
       </div>
 
       <!-- Lienzo Imprimible A4 de Documento Fiscal -->
-      <div class="flex-1 overflow-y-auto p-2 sm:p-6 bg-slate-100 dark:bg-slate-950/70">
-        <div class="bg-white text-slate-900 border border-slate-200/80 shadow-xl p-3 sm:p-6 max-w-2xl mx-auto rounded-xl text-[11px] leading-relaxed">
+      <div class="print-scroll-container flex-1 overflow-y-auto p-2 sm:p-6 bg-slate-100 dark:bg-slate-950/70">
+        <div class="print-sheet bg-white text-slate-900 border border-slate-200/80 shadow-xl p-3 sm:p-6 max-w-2xl mx-auto rounded-xl text-[11px] leading-relaxed">
           
           <!-- Encabezado: Datos de la Empresa y Recuadro RUC -->
           <div class="flex flex-col sm:flex-row justify-between items-start gap-4 pb-4 border-b border-slate-300">

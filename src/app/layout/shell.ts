@@ -1,5 +1,5 @@
 import { Component, inject, signal, computed, ChangeDetectionStrategy, HostListener } from '@angular/core';
-import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
+import { Router, RouterOutlet, NavigationStart, NavigationEnd, NavigationCancel, NavigationError } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { filter } from 'rxjs/operators';
 import { AuthService } from '../core/auth/auth.service';
@@ -62,6 +62,12 @@ export class Shell {
 
   // App Build & Version
   protected readonly appVersion = signal(APP_BUILD.version || '0.0.2');
+
+  // Route Progress Loading State
+  protected readonly isNavigating = signal(false);
+
+  // Keyboard Shortcuts Modal State
+  protected readonly keyboardShortcutsOpen = signal(false);
 
   // Sidebar starts CLOSED as requested
   protected readonly sidebarOpen = signal(false);
@@ -335,11 +341,20 @@ export class Shell {
   ]);
 
   constructor() {
-    this.router.events
-      .pipe(filter(event => event instanceof NavigationEnd))
-      .subscribe((event: any) => {
-        this.currentUrl.set(event.urlAfterRedirects || event.url);
-      });
+    this.router.events.subscribe((event: any) => {
+      if (event instanceof NavigationStart) {
+        this.isNavigating.set(true);
+      } else if (
+        event instanceof NavigationEnd ||
+        event instanceof NavigationCancel ||
+        event instanceof NavigationError
+      ) {
+        if (event instanceof NavigationEnd) {
+          this.currentUrl.set(event.urlAfterRedirects || event.url);
+        }
+        setTimeout(() => this.isNavigating.set(false), 250);
+      }
+    });
 
     // Cargar favoritos guardados
     try {
@@ -582,16 +597,64 @@ export class Shell {
     this.router.navigate([path]);
   }
 
+  toggleKeyboardShortcuts(): void {
+    this.keyboardShortcutsOpen.update(v => !v);
+  }
+
+  closeKeyboardShortcuts(): void {
+    this.keyboardShortcutsOpen.set(false);
+  }
+
   @HostListener('window:keydown', ['$event'])
   handleGlobalShortcuts(evt: KeyboardEvent): void {
+    const target = evt.target as HTMLElement | null;
+    const isInput =
+      target &&
+      (target.tagName === 'INPUT' ||
+        target.tagName === 'TEXTAREA' ||
+        target.tagName === 'SELECT' ||
+        target.isContentEditable);
+
+    // Ctrl + K: Spotlight
     if ((evt.ctrlKey || evt.metaKey) && evt.key.toLowerCase() === 'k') {
       evt.preventDefault();
       this.toggleSpotlight();
+      return;
+    }
+
+    // Ctrl + B: Toggle Barra Lateral (Sidebar)
+    if ((evt.ctrlKey || evt.metaKey) && evt.key.toLowerCase() === 'b') {
+      evt.preventDefault();
+      this.toggleSidebar();
+      return;
+    }
+
+    // Ctrl + D: Toggle Tema Claro / Oscuro
+    if ((evt.ctrlKey || evt.metaKey) && evt.key.toLowerCase() === 'd') {
+      evt.preventDefault();
+      this.theme.toggle();
+      return;
+    }
+
+    // F1 o ? : Abrir Atajos de Teclado
+    if (evt.key === 'F1' || (evt.key === '?' && !isInput)) {
+      evt.preventDefault();
+      this.toggleKeyboardShortcuts();
+      return;
+    }
+
+    // F2: Acceso rápido a Nueva Orden / Pedido
+    if (evt.key === 'F2') {
+      evt.preventDefault();
+      this.router.navigate(['/ventas/preventa/pedidos']);
+      this.toast.info('Navegando a Gestión de Pedidos (F2)');
+      return;
     }
   }
 
   @HostListener('document:keydown.escape')
   handleEscape(): void {
+    if (this.keyboardShortcutsOpen()) this.closeKeyboardShortcuts();
     if (this.spotlightOpen()) this.closeSpotlight();
     if (this.branchSelectorOpen()) this.branchSelectorOpen.set(false);
     if (this.notificationsOpen()) this.closeNotifications();

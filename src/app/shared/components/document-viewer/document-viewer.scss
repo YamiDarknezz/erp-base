@@ -1,3 +1,56 @@
 :host {
   display: block;
 }
+
+@media print {
+  :host {
+    display: block !important;
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 999999 !important;
+    background: #ffffff !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .print-backdrop {
+    position: static !important;
+    background: transparent !important;
+    backdrop-filter: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: block !important;
+  }
+
+  .print-modal-container {
+    border: none !important;
+    box-shadow: none !important;
+    max-width: 100% !important;
+    max-height: none !important;
+    overflow: visible !important;
+    background: transparent !important;
+    border-radius: 0 !important;
+  }
+
+  .print-sheet {
+    box-shadow: none !important;
+    border: none !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 10mm !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    border-radius: 0 !important;
+  }
+
+  .print-scroll-container {
+    overflow: visible !important;
+    padding: 0 !important;
+    background: transparent !important;
+  }
+}

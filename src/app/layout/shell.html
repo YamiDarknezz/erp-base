@@ -1,4 +1,9 @@
-<div class="h-screen flex flex-col bg-surface-alt text-on-surface overflow-hidden">
+<div class="h-screen flex flex-col bg-surface-alt text-on-surface overflow-hidden relative">
+
+  <!-- Barra de progreso de carga superior (Top Progress Bar de navegación) -->
+  @if (isNavigating()) {
+    <div class="fixed top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary via-blue-400 to-emerald-400 z-50 route-progress-bar shadow-[0_0_8px_rgba(59,130,246,0.8)]"></div>
+  }
 
   <!-- ═══════════════════════════════════════════════════════════ -->
   <!-- 1. TOP BAR / HEADER CORPORATIVO (Fijo, Angosto h-11)        -->
@@ -316,6 +321,24 @@
             </div>
           }
         </div>
+
+        <!-- Botón Atajos de Teclado (SOLO ICONO SEGÚN REGLA 1) -->
+        <button
+          type="button"
+          (click)="toggleKeyboardShortcuts()"
+          title="Atajos de teclado (?)"
+          aria-label="Atajos de teclado"
+          class="w-7.5 h-7.5 rounded-full flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-surface-muted/70 active:scale-95 transition-all cursor-pointer"
+          [class.bg-surface-muted]="keyboardShortcutsOpen()"
+          [class.text-primary]="keyboardShortcutsOpen()"
+        >
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect width="20" height="16" x="2" y="4" rx="2" ry="2" />
+            <path d="M6 8h.001" /><path d="M10 8h.001" /><path d="M14 8h.001" /><path d="M18 8h.001" />
+            <path d="M6 12h.001" /><path d="M18 12h.001" /><path d="M8 12h8" />
+            <path d="M6 16h.001" /><path d="M10 16h.001" /><path d="M14 16h.001" /><path d="M18 16h.001" />
+          </svg>
+        </button>
 
         <!-- Botón Selector de Tema Claro / Oscuro (SOLO ICONO) -->
         <button
@@ -1733,6 +1756,106 @@
         <div class="h-8 px-3.5 bg-surface-alt/50 border-t border-outline/60 flex items-center justify-between text-[10px] text-on-surface-muted">
           <span>Navegación global rápida</span>
           <span>Presione <kbd class="font-mono font-bold text-primary px-1.5 py-0.5 rounded-full bg-primary/10">Enter</kbd> para navegar</span>
+        </div>
+
+      </div>
+    </div>
+  }
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- MODAL DE GUÍA DE ATAJOS DE TECLADO (?) / F1                -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  @if (keyboardShortcutsOpen()) {
+    <div class="fixed inset-0 z-50 bg-black/40 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 animate-in fade-in duration-150">
+      <div class="fixed inset-0" (click)="closeKeyboardShortcuts()"></div>
+
+      <div class="relative bg-surface/95 backdrop-blur-2xl rounded-2xl border border-outline/70 shadow-2xl w-full max-w-lg overflow-hidden text-on-surface z-10 animate-in zoom-in-95 duration-150">
+        
+        <!-- Cabecera -->
+        <div class="h-11 px-4 border-b border-outline/60 flex items-center justify-between bg-surface-alt/40">
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect width="20" height="16" x="2" y="4" rx="2" ry="2" />
+              <path d="M6 8h.001" /><path d="M10 8h.001" /><path d="M14 8h.001" /><path d="M18 8h.001" />
+              <path d="M6 12h.001" /><path d="M18 12h.001" /><path d="M8 12h8" />
+              <path d="M6 16h.001" /><path d="M10 16h.001" /><path d="M14 16h.001" /><path d="M18 16h.001" />
+            </svg>
+            <span class="text-xs font-bold uppercase tracking-wider text-on-surface">Atajos de Teclado del Sistema</span>
+          </div>
+
+          <button
+            type="button"
+            (click)="closeKeyboardShortcuts()"
+            title="Cerrar atajos de teclado"
+            aria-label="Cerrar atajos de teclado"
+            class="w-6.5 h-6.5 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-muted active:scale-90 cursor-pointer transition-all"
+          >
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Contenido Categorizado -->
+        <div class="p-4 space-y-4 max-h-[75vh] overflow-y-auto text-xs">
+          <!-- Categoría 1: Navegación Global -->
+          <div>
+            <h4 class="text-[10px] font-bold uppercase tracking-wider text-primary mb-2">Navegación Global</h4>
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between py-1.5 px-2.5 rounded-xl bg-surface-alt/50 border border-outline/50">
+                <span class="text-on-surface font-medium">Búsqueda rápida / Spotlight</span>
+                <div class="flex items-center gap-1 font-mono"><kbd>Ctrl</kbd> + <kbd>K</kbd></div>
+              </div>
+              <div class="flex items-center justify-between py-1.5 px-2.5 rounded-xl bg-surface-alt/50 border border-outline/50">
+                <span class="text-on-surface font-medium">Colapsar / Desplegar Menú Lateral</span>
+                <div class="flex items-center gap-1 font-mono"><kbd>Ctrl</kbd> + <kbd>B</kbd></div>
+              </div>
+              <div class="flex items-center justify-between py-1.5 px-2.5 rounded-xl bg-surface-alt/50 border border-outline/50">
+                <span class="text-on-surface font-medium">Alternar Modo Oscuro / Claro</span>
+                <div class="flex items-center gap-1 font-mono"><kbd>Ctrl</kbd> + <kbd>D</kbd></div>
+              </div>
+              <div class="flex items-center justify-between py-1.5 px-2.5 rounded-xl bg-surface-alt/50 border border-outline/50">
+                <span class="text-on-surface font-medium">Cerrar modales, menús o popovers</span>
+                <div class="font-mono"><kbd>Esc</kbd></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Categoría 2: Operaciones y Productividad -->
+          <div>
+            <h4 class="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 mb-2">Operaciones y Transacciones</h4>
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between py-1.5 px-2.5 rounded-xl bg-surface-alt/50 border border-outline/50">
+                <span class="text-on-surface font-medium">Nuevo Registro / Crear Pedido</span>
+                <div class="font-mono"><kbd>F2</kbd></div>
+              </div>
+              <div class="flex items-center justify-between py-1.5 px-2.5 rounded-xl bg-surface-alt/50 border border-outline/50">
+                <span class="text-on-surface font-medium">Imprimir Documento Fiscal A4</span>
+                <div class="flex items-center gap-1 font-mono"><kbd>Ctrl</kbd> + <kbd>P</kbd></div>
+              </div>
+              <div class="flex items-center justify-between py-1.5 px-2.5 rounded-xl bg-surface-alt/50 border border-outline/50">
+                <span class="text-on-surface font-medium">Exportar Registros a Excel</span>
+                <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">Botón en DataGrid</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Categoría 3: Asistencia -->
+          <div>
+            <h4 class="text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-2">Ayuda del Sistema</h4>
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between py-1.5 px-2.5 rounded-xl bg-surface-alt/50 border border-outline/50">
+                <span class="text-on-surface font-medium">Abrir esta guía de atajos de teclado</span>
+                <div class="flex items-center gap-1 font-mono"><kbd>?</kbd> o <kbd>F1</kbd></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="h-8 px-4 bg-surface-alt/60 border-t border-outline/60 flex items-center justify-between text-[10px] text-on-surface-muted">
+          <span>Accesos rápidos de alta densidad para operadores</span>
+          <span>Presione <kbd>Esc</kbd> para salir</span>
         </div>
 
       </div>
